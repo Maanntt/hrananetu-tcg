@@ -1366,7 +1366,7 @@ async function loadTopPlayers() {
 }
 
 // Spusť po načtení stránky
-document.addEventListener('DOMContentLoaded', loadTopPlayers);
+
 
 
 /* ── Render sezón ── */
@@ -1483,7 +1483,7 @@ async function detectAndRenderSeason() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', detectAndRenderSeason);
+
 
 
 /* ── SETUP PANEL ── */
@@ -1543,7 +1543,20 @@ function saveSetup() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', initSetupPanel);
+
+
+/* ── INIT ── */
+window.addEventListener('load', async function() {
+  try { initSetupPanel(); } catch(e) {}
+  try { renderSeasons(getCurrentSeason().id); } catch(e) {}
+  try {
+    const yr = new Date().getFullYear();
+    const s = getCurrentSeason();
+    const el = document.getElementById('hero-label');
+    if (el) el.textContent = s.label + ' ' + yr;
+  } catch(e) {}
+  try { await loadTopPlayers(); } catch(e) { console.log('loadTopPlayers error:', e); }
+});
 
 </script>
 </body>
