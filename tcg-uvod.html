@@ -306,32 +306,54 @@ async function loadAllTopPlayers(season) {
   await Promise.all(LEAGUES.map(l => loadLeagueTop3(l, season)));
 }
 
+function parseCSV(text) {
+  const rows = [];
+  for (const line of text.trim().split('\n')) {
+    if (!line.trim()) continue;
+    const cells = []; let cur = '', inQ = false;
+    for (const c of line) {
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+      else cur += c;
+    }
+    cells.push(cur.trim());
+    rows.push(cells);
+  }
+  return rows;
+}
+
 async function loadLeagueTop3(l, season) {
   const el = document.getElementById('top-' + l.id);
   if (!el) return;
   try {
     const saved = JSON.parse(localStorage.getItem('hn_' + l.id) || 'null');
-    if (!saved || !saved.sheetId) {
-      el.innerHTML = '<div class="th-msg">—</div>';
+    if (!saved || !saved.sheetId) { el.innerHTML = '<div class="th-msg">—</div>'; return; }
+
+    // Použij export CSV místo gviz - spolehlivější
+    const sheetId = saved.sheetId;
+    const tab = saved.tab || season;
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const text = await res.text();
+
+    // Detekuj jestli to je CSV nebo JS error
+    if (text.trim().startsWith('google') || text.trim().startsWith('/*') || text.includes('google.visualization')) {
+      el.innerHTML = '<div class="th-msg">Špatný název listu</div>';
       return;
     }
-    const url = `https://docs.google.com/spreadsheets/d/${saved.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(season)}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('nedostupné');
-    const text = await res.text();
-    const lines = text.trim().split('\n').filter(Boolean);
-    if (lines.length < 2) { el.innerHTML = '<div class="th-msg">Žádná data</div>'; return; }
 
-    const players = lines.slice(1).map(line => {
-      const cells = []; let cur = '', inQ = false;
-      for (const c of line) {
-        if (c === '"') { inQ = !inQ; }
-        else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
-        else cur += c;
-      }
-      cells.push(cur.trim());
-      return {name: cells[0]?.trim() || '', pts: parseFloat(cells[1]) || 0};
-    }).filter(p => p.name).sort((a,b) => b.pts - a.pts).slice(0, 3);
+    const rows = parseCSV(text);
+    if (rows.length < 2) { el.innerHTML = '<div class="th-msg">Žádná data</div>'; return; }
+
+    // Header řádek = rows[0], data od rows[1]
+    // Sloupec 0 = Jméno, sloupec 1 = Body Celkově
+    const players = rows.slice(1)
+      .map(r => ({name: (r[0]||'').replace(/^"+|"+$/g,'').trim(), pts: parseFloat((r[1]||'').replace(/^"+|"+$/g,'')) || 0}))
+      .filter(p => p.name && p.name.length > 0 && !p.name.toLowerCase().includes('jméno'))
+      .sort((a,b) => b.pts - a.pts)
+      .slice(0, 3);
 
     if (!players.length) { el.innerHTML = '<div class="th-msg">Žádní hráči</div>'; return; }
 
@@ -347,7 +369,7 @@ async function loadLeagueTop3(l, season) {
       </div>`;
     }).join('');
   } catch(e) {
-    el.innerHTML = '<div class="th-msg">Nelze načíst</div>';
+    el.innerHTML = `<div class="th-msg">Chyba: ${e.message}</div>`;
   }
 }
 
