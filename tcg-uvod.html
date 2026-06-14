@@ -1300,7 +1300,15 @@ async function loadTopPlayers() {
     {id:'so',   sheet:'Sorcery liga'},
   ];
 
-  const season = 'Jaro 2026';
+  // Vezmi sezónu z localStorage (uložená při setup) nebo aktuální
+  let season = 'Léto 2026';
+  try {
+    // Zkus načíst z libovolné ligy
+    for (const lid of ['pk','rb','mtgp','op','fab','gd','so','mtgd','mtgm']) {
+      const s = localStorage.getItem('hrana_sheets_' + lid);
+      if (s) { const d = JSON.parse(s); if (d.tab) { season = d.tab; break; } }
+    }
+  } catch(e) {}
 
   await Promise.all(LEAGUES_CFG.map(async l => {
     const el = document.getElementById('th-' + l.id);
@@ -1528,7 +1536,7 @@ function saveSetup() {
   setStatus(`✓ Uloženo ${saved} lig · Načítám hráče…`);
   loadTopPlayers().then(() => {
     setStatus(`✓ Hotovo — ${saved} lig načteno`);
-    detectAndRenderSeason();
+    try { detectAndRenderSeason(); } catch(e) {}
   }).catch(e => {
     setStatus('⚠ ' + e.message);
   });
