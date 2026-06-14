@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hráči – HranaNetu.cz TCG Klub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f;--bg2:#0f0f1c;--bg3:#16162a;--card:#111120;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --purple:#c51df5;--pl:#d44fff;--pd:rgba(197,29,245,0.15);
+  --gold:#f0a500;--text:#eeeaf8;--text2:#9490b0;--text3:#504c6a;
+  --green:#22c55e;--r:10px;--rl:16px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* HEADER */
+header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.hi{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:24px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+
+nav{display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto}
+nav a{text-decoration:none;font-size:12px;font-weight:500;color:var(--text2);padding:5px 10px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap}
+nav a:hover,nav a.act{color:var(--text);background:var(--bg3)}
+nav a.act{color:var(--pl)}
+.ha{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.bo{border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center}
+.bo:hover{border-color:var(--purple);color:var(--pl)}
+.bp{background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:6px 16px;border-radius:6px;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center}
+.bp:hover{background:var(--pl)}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f0f1a 0%,#1a1040 50%,#0f0f1a 100%);border-bottom:1px solid var(--border);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(124,77,255,.2) 0%,transparent 70%);pointer-events:none}
+.hero-label{display:inline-block;background:var(--pd);color:var(--pl);font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;padding:4px 14px;border-radius:20px;border:1px solid rgba(124,77,255,.3);margin-bottom:18px}
+.hero h1{font-family:'Rajdhani',sans-serif;font-size:50px;font-weight:700;line-height:1.1;margin-bottom:14px}
+.hero h1 b{color:var(--pl);font-weight:700}
+.hero p{font-size:15px;color:var(--text2);max-width:520px;margin:0 auto 28px}
+.hero-stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap}
+.hs-num{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:700;color:var(--text);line-height:1}
+.hs-lbl{font-size:11px;color:var(--text3);font-weight:500;margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
+
+/* LAYOUT */
+.con{max-width:1280px;margin:0 auto;padding:0 24px}
+.sec{padding:44px 0}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.st{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700}
+.st b{color:var(--pl);font-weight:700}
+.sd{width:3px;height:24px;background:var(--purple);border-radius:2px;display:inline-block;margin-right:10px;vertical-align:middle}
+
+/* CONFIG PANEL */
+.config-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:24px;margin-bottom:32px}
+.config-panel h3{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.config-panel h3 span{color:var(--pl)}
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cfg-row{display:flex;flex-direction:column;gap:6px}
+.cfg-row.full{grid-column:1/-1}
+.cfg-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+.cfg-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none;width:100%}
+.cfg-input:focus{border-color:var(--purple)}
+.cfg-actions{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn-cfg{background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;border:none;font-family:'Inter',sans-serif}
+.btn-cfg:hover{background:var(--pl)}
+.btn-cfg-sec{background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:500;padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-cfg-sec:hover{border-color:var(--purple);color:var(--pl)}
+.cfg-status{font-size:12px;color:var(--text3)}
+.cfg-hint{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
+.cfg-hint code{background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:monospace;color:var(--pl);font-size:11px}
+
+/* SEASON TABS */
+.season-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.stab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 16px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);font-family:'Inter',sans-serif;transition:all .15s}
+.stab:hover{border-color:var(--border2);color:var(--text)}
+.stab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
+
+/* LEAGUE TABS */
+.ltabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.ltab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all .15s;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
+.ltab:hover{border-color:var(--border2);color:var(--text)}
+.ltab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
+.ltab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* LEAGUE CARD */
+.lcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:24px}
+.lcard-top{padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.lcard-info{display:flex;align-items:center;gap:14px}
+.lcard-logo{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;font-family:'Rajdhani',sans-serif}
+.lcard-name{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1.1}
+.lcard-season{font-size:13px;color:var(--text3);margin-top:2px}
+.lcard-metas{display:flex;gap:24px;flex-wrap:wrap}
+.lmeta{text-align:center}
+.lmeta-val{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;line-height:1}
+.lmeta-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-top:2px}
+
+/* FINALE BADGE */
+.finale-badge{padding:12px 24px;background:rgba(240,165,0,.05);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fb-icon{width:32px;height:32px;background:rgba(240,165,0,.15);border:1px solid rgba(240,165,0,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.fb-title{font-weight:600;font-size:13px;color:var(--gold)}
+.fb-desc{font-size:12px;color:var(--text3);margin-top:1px}
+.fb-type{margin-left:auto;background:rgba(240,165,0,.15);color:var(--gold);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(240,165,0,.3);white-space:nowrap}
+
+/* STANDINGS */
+.shead{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--bg2)}
+.sbadge{background:var(--pd);color:var(--pl);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(124,77,255,.3)}
+.legend{display:flex;gap:14px;padding:8px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.li-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
+.ld{width:10px;height:10px;border-radius:2px}
+.ld.fin{background:rgba(34,197,94,.3);border:1px solid rgba(34,197,94,.4)}
+.ld.abs{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2)}
+.ld.pre{background:rgba(255,255,255,.06);border:1px solid var(--border2)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:600px}
+thead th{padding:8px 10px;text-align:center;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap}
+thead th.cn{text-align:left;padding-left:20px;min-width:150px}
+thead th.ct{color:var(--pl)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+tbody td{padding:9px 10px;font-size:13px;vertical-align:middle;text-align:center}
+tbody td.cn{text-align:left;padding-left:20px}
+.rank{font-weight:700;font-size:13px;color:var(--text3);display:inline-block;text-align:center;min-width:20px}
+.r1{color:#f0a500}.r2{color:#c0c0c0}.r3{color:#cd7f32}
+.pcell{display:flex;align-items:center;gap:9px}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.pname{font-weight:500;font-size:13px}
+.tot{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700}
+.rp{font-size:12px;font-weight:500}
+.rp.ab{color:rgba(239,68,68,.45)}
+.rp.pr{color:var(--text)}
+.rp.fi{color:#4ade80;font-weight:700}
+.tr1 td{background:rgba(240,165,0,.05)}
+.tr3 td{background:rgba(240,165,0,.02)}
+.trf td.cn{border-left:3px solid var(--green)}
+.empty-row td{text-align:center;padding:36px;color:var(--text3);font-size:13px}
+
+/* KALENDÁŘ */
+.kal-wrap{padding:48px 0}
+.kal-eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px}
+.kal-title{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;color:var(--text);line-height:1;margin-bottom:8px;letter-spacing:.5px}
+.kal-sub{font-size:13px;color:var(--text3);font-style:italic;margin-bottom:28px}
+.kal-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.kal-bar-left{display:flex;align-items:center;gap:8px}
+.kal-filter-label{font-size:12px;color:var(--text3);font-weight:500}
+.kal-select{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:7px 32px 7px 12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+.kal-select:focus{border-color:var(--purple)}
+.kal-select-wrap{position:relative;display:inline-block}
+.kal-select-wrap::after{content:"▾";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);pointer-events:none}
+.kal-bar-right{display:flex;align-items:center;gap:8px}
+.kal-arrow{background:transparent;border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:'Inter',sans-serif;line-height:1}
+.kal-arrow:hover{border-color:var(--purple);color:var(--pl)}
+.kal-month{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:1.5px;text-transform:uppercase;min-width:160px;text-align:center}
+.kal-add{border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;padding:7px 14px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-decoration:none}
+.kal-add:hover{border-color:var(--purple);color:var(--pl)}
+/* Grid */
+.kal-grid{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.kal-head{display:grid;grid-template-columns:repeat(7,1fr);background:var(--bg2);border-bottom:1px solid var(--border);border-left:1px solid var(--border)}
+.kal-hdr{padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.kal-body{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--border)}
+.kal-cell{background:var(--bg);min-height:100px;padding:8px 6px 6px;display:flex;flex-direction:column;gap:3px;position:relative;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.kal-cell.kc-out{background:#07070e;opacity:.55}
+.kal-cell.kc-today{background:var(--bg3)}
+.kal-cell.kc-today .kal-num{background:var(--purple);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.kal-num{font-size:12px;font-weight:600;color:var(--text3);width:22px;height:22px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;flex-shrink:0}
+.kal-pills{display:flex;flex-direction:column;gap:2px;overflow:hidden}
+/* Pilly — barevné pozadí, zaoblené, jako na screenshotu */
+.kp{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6;transition:opacity .12s}
+.kp:hover{opacity:.78}
+.kp-mtgp{background:#3d2275;color:#e0ccff}
+.kp-mtgd{background:#2e1a60;color:#c9b8f0}
+.kp-rb{background:#0f2d5a;color:#a8caff}
+.kp-pk{background:#c87f00;color:#fff3cc}
+.kp-op{background:#7a1f1f;color:#ffcece}
+.kp-fab{background:#0f3d20;color:#a8f0c0}
+.kp-gd{background:#4a3200;color:#ffe8a0}
+.kp-so{background:#2d0f5a;color:#d8b8ff}
+.kp-finale{background:#5a3800;color:#ffe0a0;font-weight:700}
+.kp-other{background:#1e1e34;color:#9090b8}
+@media(max-width:800px){.kal-cell{min-height:70px;padding:5px 4px 4px}.kp{font-size:9px;padding:1px 4px}}
+@media(max-width:560px){.kal-title{font-size:28px}.kal-hdr{font-size:9px;padding:7px 0}}
+
+/* PRIZES */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:22px;text-align:center;position:relative;overflow:hidden}
+.pcard.feat{border-color:var(--gold);background:rgba(240,165,0,.04)}
+.pcard.feat::before{content:'★ TOP CENA';position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:9px;font-weight:700;padding:3px 10px;border-radius:0 0 5px 5px;letter-spacing:.5px}
+.pplace{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;line-height:1;margin-bottom:2px}
+.pcard:nth-child(1) .pplace{color:var(--gold)}
+.pcard:nth-child(2) .pplace{color:#c0c0c0}
+.pcard:nth-child(3) .pplace{color:#cd7f32}
+.pcard:nth-child(n+4) .pplace{color:var(--text2)}
+.plbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.pval{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px}
+.pitems{display:flex;flex-direction:column;gap:5px}
+.pitem{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--text2)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:var(--rl);max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;line-height:1.2}
+.modal-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.modal-detail{display:flex;flex-direction:column;gap:3px}
+.modal-detail-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px}
+.modal-detail-val{font-size:14px;color:var(--text);font-weight:500}
+.modal-prizes{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.modal-prizes-title{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.modal-prizes-val{font-size:13px;color:var(--text2);line-height:1.7}
+.modal-divider{height:1px;background:var(--border)}
+
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:40px;text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--pl);text-decoration:none}
+
+@media(max-width:768px){.hero h1{font-size:36px}.hero-stats{gap:20px}.hi{gap:12px}nav a{font-size:11px;padding:5px 7px}.cfg-grid{grid-template-columns:1fr}.ecard-details{grid-template-columns:1fr}}
+@media(max-width:500px){nav{display:none}.pgrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hi">
+    <a href="https://www.hrananetu.cz" class="logo">
+      <img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz" style="height:36px;width:auto;display:block">
+    </a>
+    <nav>
+      <a href="/tcg-klub/kalendar">Kalendář</a>
+      <a href="/tcg-klub/ligy">Ligy</a>
+      <a href="/tcg-klub/ceny">Ceny</a>
+      <a href="/tcg-klub/hraci" class="act">Hráči</a>
+      <a href="/tcg-klub/archiv">Archiv</a>
+      <a href="/tcg-klub/pravidla">Pravidla</a>
+    </nav>
+    <div class="ha">
+      <a href="https://www.hrananetu.cz/customer/registration/" class="bo">Registrace</a>
+      <a href="#" class="bp">Přihlásit</a>
+    </div>
+  </div>
+</header>
+
+<main class="con" style="padding-top:44px;padding-bottom:80px">
+
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase">TCG Klub</div>
+  <div style="font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;color:var(--text);margin-bottom:8px">HRÁČI & ŽEBŘÍČKY</div>
+  <div style="font-size:13px;color:var(--text3);font-style:italic;margin-bottom:32px">Celkové žebříčky hráčů napříč všemi ligami.</div>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;text-align:center;margin-top:32px">
+    <div style="font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px">Připravujeme</div>
+    <div style="font-size:14px;color:var(--text3)">Žebříčky hráčů budou dostupné v příštím vydání.</div>
+  </div>
+</main>
+
+<footer>
+  <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
+  <div style="margin-top:6px">Data načítána z Google Sheets a Google Kalendáře · <a href="mailto:info@hrananetu.cz">info@hrananetu.cz</a></div>
+</footer>
+
+<script>
+
+</script>
+</body>
+</html>
