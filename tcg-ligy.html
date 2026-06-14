@@ -234,6 +234,7 @@ footer a{color:var(--pl);text-decoration:none}
       <img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz" style="height:36px;width:auto;display:block">
     </a>
     <nav>
+      <a href="/hrananetu-tcg/tcg-uvod.html">Úvod</a>
       <a href="/hrananetu-tcg/tcg-kalendar.html">Kalendář</a>
       <a href="/hrananetu-tcg/tcg-ligy.html" class="act">Ligy</a>
       <a href="/hrananetu-tcg/tcg-ceny.html">Ceny</a>
@@ -353,3 +354,108 @@ footer a{color:var(--pl);text-decoration:none}
   </a>
   </div>
 </main>
+
+<footer>
+  <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz" style="color:#c51df5;text-decoration:none">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
+</footer>
+
+<script>
+const LEAGUES_CFG = {
+  fab:  {sheet:'FaB liga'},
+  gd:   {sheet:'Gundam liga'},
+  mtgd: {sheet:'MTG Draft liga'},
+  mtgm: {sheet:'MTG Modern liga'},
+  mtgp: {sheet:'MTG Premodern liga'},
+  op:   {sheet:'One Piece liga'},
+  pk:   {sheet:'Pokemon liga'},
+  rb:   {sheet:'Riftbound liga'},
+  so:   {sheet:'Sorcery liga'},
+};
+
+const SEASON = "Jaro 2026";
+
+function getSheetsId(leagueId) {
+  try {
+    const saved = localStorage.getItem('hrana_sheets_' + leagueId);
+    if (saved) return JSON.parse(saved).sheetId || null;
+  } catch(e) {}
+  return null;
+}
+
+function parseCzechDate(str) {
+  str = str.trim().replace(/\s+/g,'');
+  const yr = new Date().getFullYear();
+  const m = str.match(/^(\d{1,2})\.(\d{1,2})\.?(\d{4})?$/);
+  if (m) {
+    const d = new Date(m[3]?parseInt(m[3]):yr, parseInt(m[2])-1, parseInt(m[1]));
+    return isNaN(d)?null:d;
+  }
+  return null;
+}
+
+function formatCzechDate(date) {
+  if (!date) return null;
+  const MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+  return `${date.getDate()}. ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function parseCSVLine(line) {
+  const cells=[]; let cur='', inQ=false;
+  for (let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){cells.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+
+async function loadNextDate(leagueId) {
+  const sheetId = getSheetsId(leagueId);
+  if (!sheetId) { setNext(leagueId, null, false); return; }
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SEASON)}`;
+    const res = await fetch(url);
+    if (!res.ok) { setNext(leagueId, null, false); return; }
+    const text = await res.text();
+    const lines = text.split('\n').filter(l=>l.trim());
+    if (!lines.length) { setNext(leagueId, null, false); return; }
+    const headers = parseCSVLine(lines[0]);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const roundCols = [];
+    for (let i=2; i<headers.length-1; i++) {
+      if (!headers[i]) continue;
+      const d = parseCzechDate(headers[i]);
+      if (d) roundCols.push({date:d});
+    }
+    const future = roundCols.filter(r=>r.date>=today).sort((a,b)=>a.date-b.date);
+    if (future.length) {
+      setNext(leagueId, future[0].date, false);
+    } else {
+      setNext(leagueId, null, false);
+    }
+  } catch(e) {
+    setNext(leagueId, null, false);
+  }
+}
+
+function setNext(leagueId, date, isFinale) {
+  const el = document.getElementById('nextval-' + leagueId);
+  if (!el) return;
+  if (isFinale && date) {
+    el.textContent = 'Finále ' + formatCzechDate(date);
+    el.className = 'liga-next-val finale';
+  } else if (date) {
+    el.textContent = formatCzechDate(date);
+    el.className = 'liga-next-val';
+  } else {
+    el.textContent = 'datum není k dispozici';
+    el.className = 'liga-next-val none';
+  }
+}
+
+Object.keys(LEAGUES_CFG).forEach(id => loadNextDate(id));
+</script>
+</body>
+</html>
