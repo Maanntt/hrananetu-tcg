@@ -154,12 +154,12 @@ footer a{color:var(--pl);text-decoration:none}
       <img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz" style="height:36px;width:auto;display:block">
     </a>
     <nav>
-      <a href="/tcg-klub/kalendar">Kalendář</a>
-      <a href="/tcg-klub/ligy" class="act">Ligy</a>
-      <a href="/tcg-klub/ceny">Ceny</a>
-      <a href="/tcg-klub/hraci">Hráči</a>
-      <a href="/tcg-klub/archiv">Archiv</a>
-      <a href="/tcg-klub/pravidla">Pravidla</a>
+      <a href="/hrananetu-tcg/tcg-kalendar.html">Kalendář</a>
+      <a href="/hrananetu-tcg/tcg-ligy.html" class="act">Ligy</a>
+      <a href="/hrananetu-tcg/tcg-ceny.html">Ceny</a>
+      <a href="/hrananetu-tcg/tcg-hraci.html">Hráči</a>
+      <a href="/hrananetu-tcg/tcg-archiv.html">Archiv</a>
+      <a href="/hrananetu-tcg/tcg-pravidla.html">Pravidla</a>
     </nav>
     <div class="ha">
       <a href="https://www.hrananetu.cz/customer/registration/" class="bo">Registrace</a>
@@ -170,7 +170,7 @@ footer a{color:var(--pl);text-decoration:none}
 
 <div class="con">
   <div class="breadcrumb">
-    <a href="/tcg-klub/ligy">Liga na Hraně</a>
+    <a href="/hrananetu-tcg/tcg-ligy.html">Liga na Hraně</a>
     <span class="breadcrumb-sep">›</span>
     <span id="bc-name">—</span>
   </div>
@@ -516,7 +516,7 @@ function renderRoundDetail(r, ri, players) {
             <td style="font-size:12px;font-weight:600;color:var(--text3)">${i+1}.</td>
             <td><div class="rrt-name">
               <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
-              <a href="/tcg-klub/hraci/${slugify(p.name)}" class="rrt-link">${p.name}</a>
+              <a href="/hrananetu-tcg/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
             </div></td>
             <td class="tr"><span class="rrt-pts pos">+${p.rounds[ri]}</span></td>
             <td class="tr"><span class="rrt-pts">${p.total}</span></td>
@@ -546,7 +546,7 @@ function renderFinaleDetail(players, topN) {
             <td style="font-size:12px;font-weight:600;color:var(--text3)">${p.rank}.</td>
             <td><div class="rrt-name">
               <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
-              <a href="/tcg-klub/hraci/${slugify(p.name)}" class="rrt-link">${p.name}</a>
+              <a href="/hrananetu-tcg/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
             </div></td>
             <td class="tr"><span class="rrt-pts">${p.total}</span></td>
           </tr>`).join('')}
@@ -586,7 +586,7 @@ function renderPodium(players) {
     return `<div class="podium-card ${classes[vi]}">
       <div class="pod-rank">${p.rank}.</div>
       <div class="pod-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
-      <a href="/tcg-klub/hraci/${slugify(p.name)}" class="pod-name">${p.name}</a>
+      <a href="/hrananetu-tcg/tcg-hraci.html?hrac=${slugify(p.name)}" class="pod-name">${p.name}</a>
       <div class="pod-pts">${p.total} b.</div>
     </div>`;
   }).join('');
@@ -614,7 +614,7 @@ function renderStandingsRows(players, topN, showAll) {
       <td><span class="st-rank ${rCls}">${p.rank}.</span></td>
       <td><div class="st-player">
         <div class="st-av" style="background:${p.color}20;color:${p.color};border:1px solid ${p.color}40">${initials(p.name)}</div>
-        <a href="/tcg-klub/hraci/${slugify(p.name)}" class="st-name">${p.name}</a>
+        <a href="/hrananetu-tcg/tcg-hraci.html?hrac=${slugify(p.name)}" class="st-name">${p.name}</a>
         ${badge}
       </div></td>
       <td style="text-align:right"><span class="st-pts">${p.total}</span></td>
