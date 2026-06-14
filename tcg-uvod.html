@@ -108,6 +108,28 @@ nav a.act{color:var(--pl);background:var(--bg3)}
 
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:64px;text-align:center;font-size:12px;color:var(--text3)}
 footer a{color:var(--pl);text-decoration:none}
+
+/* MINI TÝDENNÍ KALENDÁŘ */
+.week-section{padding:32px 0 0}
+.week-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.week-nav{display:flex;align-items:center;gap:8px}
+.week-arrow{background:transparent;border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:'Inter',sans-serif;line-height:1}
+.week-arrow:hover{border-color:var(--purple);color:var(--pl)}
+.week-label{font-size:13px;font-weight:600;color:var(--text2);min-width:120px;text-align:center}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.week-col{background:var(--bg2);min-height:80px;padding:8px 6px;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--border)}
+.week-col:last-child{border-right:none}
+.week-day-hdr{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.week-day-num{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--text3);line-height:1;margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.week-col.today .week-day-num{background:var(--purple);color:#fff;border-radius:50%}
+.week-col.out{opacity:.4}
+.week-pill{border-radius:3px;padding:2px 5px;font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5;transition:opacity .12s}
+.week-pill:hover{opacity:.75}
+.week-empty{font-size:10px;color:var(--text3);padding:2px 0;font-style:italic}
+.week-more{text-align:center;padding:4px 0}
+.week-more a{font-size:11px;color:var(--pl);text-decoration:none}
+@media(max-width:768px){.week-grid{grid-template-columns:repeat(4,1fr)}.week-col:nth-child(n+5){display:none}}
+@media(max-width:480px){.week-grid{grid-template-columns:repeat(3,1fr)}.week-col:nth-child(n+4){display:none}}
 </style>
 </head>
 <body>
@@ -177,11 +199,27 @@ footer a{color:var(--pl);text-decoration:none}
     </div>
   </div>
 
+
+  <!-- MINI TÝDENNÍ KALENDÁŘ -->
+  <div class="week-section">
+    <div class="week-header">
+      <div class="eyebrow" style="margin-bottom:0">Tento týden</div>
+      <div class="week-nav">
+        <button class="week-arrow" onclick="weekShift(-1)">‹</button>
+        <div class="week-label" id="week-label">—</div>
+        <button class="week-arrow" onclick="weekShift(1)">›</button>
+        <a href="/hrananetu-tcg/tcg-kalendar.html" class="section-link" style="margin-left:8px">Celý kalendář →</a>
+      </div>
+    </div>
+    <div class="week-grid" id="week-grid">
+      <div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--text3);font-size:13px">Načítám z kalendáře…</div>
+    </div>
+  </div>
+
   <!-- TOP HRÁČI -->
   <div class="section">
-    <div class="eyebrow">Top hráči</div>
-    <div class="section-title">
-      LETNÍ LIGA 2026
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
+      <div class="eyebrow" style="margin-bottom:0">Top hráči</div>
       <a href="/hrananetu-tcg/tcg-ligy.html" class="section-link">Všechny žebříčky →</a>
     </div>
     <div class="th-grid">
@@ -383,9 +421,135 @@ async function loadLeagueTop3(l, season) {
   }
 }
 
-// ── Start ──
+
+/* ── MINI TÝDENNÍ KALENDÁŘ ── */
+const WEEK_LEAGUES = {
+  mtgp:{color:'#c51df5',bg:'rgba(197,29,245,.2)'},
+  mtgd:{color:'#b39ddb',bg:'rgba(179,157,219,.2)'},
+  mtgm:{color:'#9b4dff',bg:'rgba(155,77,255,.2)'},
+  rb:  {color:'#7fb3f5',bg:'rgba(127,179,245,.2)'},
+  pk:  {color:'#ffcb05',bg:'rgba(255,203,5,.2)'},
+  op:  {color:'#f87171',bg:'rgba(248,113,113,.2)'},
+  fab: {color:'#4ade80',bg:'rgba(74,222,128,.2)'},
+  gd:  {color:'#fcd34d',bg:'rgba(252,211,77,.2)'},
+  so:  {color:'#c084fc',bg:'rgba(192,132,252,.2)'},
+};
+const WEEK_DAYS = ['Po','Út','St','Čt','Pá','So','Ne'];
+const WEEK_MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+
+let weekOffset = 0;
+let weekEvents = [];
+
+function weekShift(dir) {
+  weekOffset += dir;
+  renderWeek();
+}
+
+function getMondayOf(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function detectLeagueFromTitle(title) {
+  const t = title.toLowerCase();
+  if (t.includes('premodern')) return 'mtgp';
+  if (t.includes('draft'))     return 'mtgd';
+  if (t.includes('modern'))    return 'mtgm';
+  if (t.includes('riftbound') || t.includes('rift')) return 'rb';
+  if (t.includes('pokémon') || t.includes('pokemon')) return 'pk';
+  if (t.includes('one piece')) return 'op';
+  if (t.includes('flesh') || t.includes('blood') || t.includes('fab')) return 'fab';
+  if (t.includes('gundam'))    return 'gd';
+  if (t.includes('sorcery'))   return 'so';
+  return null;
+}
+
+function renderWeek() {
+  const grid = document.getElementById('week-grid');
+  const label = document.getElementById('week-label');
+  if (!grid) return;
+
+  const monday = getMondayOf(new Date());
+  monday.setDate(monday.getDate() + weekOffset * 7);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+
+  // Label
+  const mLabel = `${monday.getDate()}. ${WEEK_MONTHS[monday.getMonth()]}`;
+  const sLabel = `${sunday.getDate()}. ${WEEK_MONTHS[sunday.getMonth()]}`;
+  if (label) label.textContent = `${mLabel} – ${sLabel}`;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  grid.innerHTML = WEEK_DAYS.map((day, di) => {
+    const date = new Date(monday); date.setDate(monday.getDate() + di);
+    const isToday = date.getTime() === today.getTime();
+
+    // Najdi eventy pro tento den
+    const dayEvents = weekEvents.filter(e => {
+      const ed = new Date(e.startDate); ed.setHours(0,0,0,0);
+      return ed.getTime() === date.getTime();
+    });
+
+    const pills = dayEvents.map(e => {
+      const lid = detectLeagueFromTitle(e.title);
+      const lc = lid ? WEEK_LEAGUES[lid] : {color:'var(--text2)',bg:'rgba(255,255,255,.08)'};
+      const time = e.startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${e.title}">${time} ${e.title.split(/[-–]/)[0].trim()}</div>`;
+    }).join('');
+
+    return `<div class="week-col${isToday?' today':''}">
+      <div class="week-day-hdr">${day}</div>
+      <div class="week-day-num">${date.getDate()}</div>
+      ${pills || '<div class="week-empty">—</div>'}
+    </div>`;
+  }).join('');
+}
+
+async function loadWeekFromCalendar() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}');
+    if (!cfg.apiKey || !cfg.calId) {
+      renderWeekNoData();
+      return;
+    }
+
+    const now = new Date();
+    const monday = getMondayOf(now);
+    const timeMin = new Date(monday); timeMin.setDate(timeMin.getDate() - 7);
+    const timeMax = new Date(monday); timeMax.setDate(timeMax.getDate() + 21);
+
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cfg.calId)}/events?key=${cfg.apiKey}&timeMin=${timeMin.toISOString()}&timeMax=${timeMax.toISOString()}&singleEvents=true&orderBy=startTime&maxResults=50`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    weekEvents = (data.items || []).map(item => ({
+      title: item.summary || '—',
+      startDate: new Date(item.start?.dateTime || item.start?.date),
+    })).filter(e => !isNaN(e.startDate));
+
+    renderWeek();
+  } catch(e) {
+    renderWeekNoData();
+  }
+}
+
+function renderWeekNoData() {
+  const grid = document.getElementById('week-grid');
+  if (grid) grid.innerHTML = `<div style="grid-column:1/-1;padding:16px 20px;color:var(--text3);font-size:13px">
+    Nastav Google Calendar API v <a href="/hrananetu-tcg/tcg-kalendar.html" style="color:var(--pl)">Kalendáři</a> pro zobrazení událostí.
+  </div>`;
+  renderWeek();
+}
+
+// ── START ──
 loadSaved();
 loadAllTopPlayers();
+loadWeekFromCalendar();
 </script>
 </body>
 </html>
