@@ -398,6 +398,56 @@ footer a{color:var(--pl);text-decoration:none}
 /* ══════════════════════════════════════════════════════
    KONFIGURACE LIG
    ══════════════════════════════════════════════════════ */
+/* ── SEZÓNY ──
+   Jarní:   Únor–Květen    (finále Květen)
+   Letní:   Červen–Srpen   (finále Srpen)
+   Podzimní: Září–Listopad (finále Listopad)
+   Zimní:   Prosinec–Únor  (finále Únor)
+*/
+const SEASON_DEFS = [
+  { id:'jaro',   label:'Jarní sezóna',    sheetName:'Jaro',    months:[1,2,3,4],   finaleMonth:4,  finaleLabel:'Květen'   },
+  { id:'leto',   label:'Letní sezóna',    sheetName:'Léto',    months:[5,6,7],     finaleMonth:7,  finaleLabel:'Srpen'    },
+  { id:'podzim', label:'Podzimní sezóna', sheetName:'Podzim',  months:[8,9,10],    finaleMonth:10, finaleLabel:'Listopad' },
+  { id:'zima',   label:'Zimní sezóna',    sheetName:'Zima',    months:[11,0],      finaleMonth:1,  finaleLabel:'Únor'     },
+];
+
+function getCurrentSeason() {
+  const m = new Date().getMonth(); // 0=Jan
+  return SEASON_DEFS.find(s => s.months.includes(m)) || SEASON_DEFS[0];
+}
+
+function getSeasonBySheet(sheetName) {
+  // sheetName = "Jaro 2026", "Léto 2026" atd.
+  if (!sheetName) return null;
+  const lower = sheetName.toLowerCase();
+  if (lower.includes('jaro'))   return SEASON_DEFS[0];
+  if (lower.includes('léto') || lower.includes('leto')) return SEASON_DEFS[1];
+  if (lower.includes('podzim')) return SEASON_DEFS[2];
+  if (lower.includes('zima'))   return SEASON_DEFS[3];
+  return null;
+}
+
+function getSeasonLabel(year) {
+  const s = getCurrentSeason();
+  return s.label + ' ' + year;
+}
+
+// Detekce sezóny z dat turnajů (headers Sheets)
+function detectSeasonFromDates(roundDates) {
+  if (!roundDates || !roundDates.length) return getCurrentSeason();
+  // Najdi nejbližší budoucí datum
+  const today = new Date(); today.setHours(0,0,0,0);
+  const future = roundDates.filter(d => d >= today).sort((a,b) => a-b);
+  const refDate = future.length ? future[0] : roundDates[roundDates.length-1];
+  const m = refDate.getMonth();
+  return SEASON_DEFS.find(s => s.months.includes(m)) || getCurrentSeason();
+}
+
+// Vrátí plný název listu pro Sheets (např. "Jaro 2026")
+function getSheetTabName(season, year) {
+  return season.sheetName + ' ' + year;
+}
+
 const LEAGUES = [
   { id:'mtgp', label:'MTG Premodern',   abbr:'PM', color:'#c51df5', bg:'rgba(197,29,245,.15)',  tagCls:'mtgp' },
   { id:'mtgd', label:'MTG Draft',       abbr:'MD', color:'#b39ddb', bg:'rgba(99,77,200,.18)',   tagCls:'mtgd' },

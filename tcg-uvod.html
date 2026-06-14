@@ -322,7 +322,7 @@ footer a{color:var(--pl);text-decoration:none}
 </header>
 
 <section class="hero">
-  <div class="hero-label" id="hero-label">Jarní sezóna 2026</div>
+  <div class="hero-label" id="hero-label">—</div>
   <h1>TCG <b>Ligy</b> & Turnaje</h1>
   <p>Průběžné výsledky lig, žebříčky hráčů a termíny turnajů pro všechny TCG hry v Hrana Store (Brno).</p>
   <div class="hero-stats">
@@ -344,47 +344,8 @@ footer a{color:var(--pl);text-decoration:none}
 
 <main class="con">
 
-  <!-- SEZÓNY -->
-  <section class="sz-section">
-    <div class="sz-grid">
-      <div class="sz-card ">
-        <div class="sz-eyebrow">Q1</div>
-        <div class="sz-name">Jarní sezóna</div>
-        <div class="sz-months">
-          <div class="sz-month">Březen</div>
-          <div class="sz-month">Duben</div>
-          <div class="sz-month">Květen</div>
-        </div>
-      </div>
-      <div class="sz-card active">
-        <div class="sz-eyebrow">Q2</div>
-        <div class="sz-name">Letní sezóna</div>
-        <div class="sz-months">
-          <div class="sz-month">Červen</div>
-          <div class="sz-month">Červenec</div>
-          <div class="sz-month">Srpen</div>
-        </div>
-      </div>
-      <div class="sz-card ">
-        <div class="sz-eyebrow">Q3</div>
-        <div class="sz-name">Podzimní sezóna</div>
-        <div class="sz-months">
-          <div class="sz-month">Září</div>
-          <div class="sz-month">Říjen</div>
-          <div class="sz-month">Listopad</div>
-        </div>
-      </div>
-      <div class="sz-card ">
-        <div class="sz-eyebrow">Q4</div>
-        <div class="sz-name">Zimní sezóna</div>
-        <div class="sz-months">
-          <div class="sz-month">Prosinec</div>
-          <div class="sz-month">Leden</div>
-          <div class="sz-month">Únor</div>
-        </div>
-      </div>
-    </div>
-  </section>
+
+  <div id="sz-container" style="padding:48px 0 0"></div>
 
 <!-- TOP HRÁČI -->
   <section class="th-section" id="top-hraci">
@@ -463,6 +424,56 @@ footer a{color:var(--pl);text-decoration:none}
 /* ══════════════════════════════════════════════════════
    KONFIGURACE LIG
    ══════════════════════════════════════════════════════ */
+/* ── SEZÓNY ──
+   Jarní:   Únor–Květen    (finále Květen)
+   Letní:   Červen–Srpen   (finále Srpen)
+   Podzimní: Září–Listopad (finále Listopad)
+   Zimní:   Prosinec–Únor  (finále Únor)
+*/
+const SEASON_DEFS = [
+  { id:'jaro',   label:'Jarní sezóna',    sheetName:'Jaro',    months:[1,2,3,4],   finaleMonth:4,  finaleLabel:'Květen'   },
+  { id:'leto',   label:'Letní sezóna',    sheetName:'Léto',    months:[5,6,7],     finaleMonth:7,  finaleLabel:'Srpen'    },
+  { id:'podzim', label:'Podzimní sezóna', sheetName:'Podzim',  months:[8,9,10],    finaleMonth:10, finaleLabel:'Listopad' },
+  { id:'zima',   label:'Zimní sezóna',    sheetName:'Zima',    months:[11,0],      finaleMonth:1,  finaleLabel:'Únor'     },
+];
+
+function getCurrentSeason() {
+  const m = new Date().getMonth(); // 0=Jan
+  return SEASON_DEFS.find(s => s.months.includes(m)) || SEASON_DEFS[0];
+}
+
+function getSeasonBySheet(sheetName) {
+  // sheetName = "Jaro 2026", "Léto 2026" atd.
+  if (!sheetName) return null;
+  const lower = sheetName.toLowerCase();
+  if (lower.includes('jaro'))   return SEASON_DEFS[0];
+  if (lower.includes('léto') || lower.includes('leto')) return SEASON_DEFS[1];
+  if (lower.includes('podzim')) return SEASON_DEFS[2];
+  if (lower.includes('zima'))   return SEASON_DEFS[3];
+  return null;
+}
+
+function getSeasonLabel(year) {
+  const s = getCurrentSeason();
+  return s.label + ' ' + year;
+}
+
+// Detekce sezóny z dat turnajů (headers Sheets)
+function detectSeasonFromDates(roundDates) {
+  if (!roundDates || !roundDates.length) return getCurrentSeason();
+  // Najdi nejbližší budoucí datum
+  const today = new Date(); today.setHours(0,0,0,0);
+  const future = roundDates.filter(d => d >= today).sort((a,b) => a-b);
+  const refDate = future.length ? future[0] : roundDates[roundDates.length-1];
+  const m = refDate.getMonth();
+  return SEASON_DEFS.find(s => s.months.includes(m)) || getCurrentSeason();
+}
+
+// Vrátí plný název listu pro Sheets (např. "Jaro 2026")
+function getSheetTabName(season, year) {
+  return season.sheetName + ' ' + year;
+}
+
 const LEAGUES = [
   { id:'mtgp', label:'MTG Premodern',   abbr:'PM', color:'#c51df5', bg:'rgba(197,29,245,.15)',  tagCls:'mtgp' },
   { id:'mtgd', label:'MTG Draft',       abbr:'MD', color:'#b39ddb', bg:'rgba(99,77,200,.18)',   tagCls:'mtgd' },
@@ -1255,6 +1266,113 @@ async function loadTopPlayers() {
 
 // Spusť po načtení stránky
 document.addEventListener('DOMContentLoaded', loadTopPlayers);
+
+
+/* ── Render sezón ── */
+const SEASON_MONTHS = [
+  { id:'jaro',   name:'Jarní sezóna',    q:'Q1', months:['Únor','Březen','Duben','Květen'],         finale:'Finále: poslední týden Května',    active:[1,2,3,4]  },
+  { id:'leto',   name:'Letní sezóna',    q:'Q2', months:['Červen','Červenec','Srpen'],               finale:'Finále: poslední týden Srpna',     active:[5,6,7]    },
+  { id:'podzim', name:'Podzimní sezóna', q:'Q3', months:['Září','Říjen','Listopad'],                 finale:'Finále: poslední týden Listopadu', active:[8,9,10]   },
+  { id:'zima',   name:'Zimní sezóna',    q:'Q4', months:['Prosinec','Leden','Únor'],                 finale:'Finále: poslední týden Února',     active:[11,0]     },
+];
+
+function renderSeasons(activeSznId) {
+  const container = document.getElementById('sz-container');
+  if (!container) return;
+  const curr = activeSznId || getCurrentSeason().id;
+  container.innerHTML = `<div class="sz-grid">
+    ${SEASON_MONTHS.map(s => `
+      <div class="sz-card ${s.id === curr ? 'active' : ''}">
+        <div class="sz-eyebrow">${s.q}</div>
+        <div class="sz-name">${s.name}</div>
+        <div class="sz-months">
+          ${s.months.map(m => `<div class="sz-month">${m}</div>`).join('')}
+        </div>
+        <div class="sz-finale">${s.finale}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function updateHeroLabel(season, year) {
+  const el = document.getElementById('hero-label');
+  if (el) el.textContent = (season.label || season.name || '') + ' ' + year;
+}
+
+/* ── Detekuj sezónu ze Sheets dat ── */
+async function detectAndRenderSeason() {
+  const yr = new Date().getFullYear();
+  let detectedSeason = getCurrentSeason();
+  let detectedYear = yr;
+
+  // Zkus načíst datum z libovolného nastaveného Sheets
+  const leagueIds = ['pk','mtgp','rb','op','fab','gd','so','mtgd','mtgm'];
+  for (const lid of leagueIds) {
+    try {
+      const saved = localStorage.getItem('hrana_sheets_' + lid);
+      if (!saved) continue;
+      const {sheetId, tab} = JSON.parse(saved);
+      if (!sheetId) continue;
+
+      // Detekuj sezónu z názvu listu
+      if (tab) {
+        const s = getSeasonBySheet(tab);
+        if (s) {
+          detectedSeason = s;
+          const yrMatch = tab.match(/\d{4}/);
+          if (yrMatch) detectedYear = parseInt(yrMatch[0]);
+        }
+      }
+
+      // Načti CSV pro detekci nejbližšího turnaje
+      const sheetTab = tab || (detectedSeason.sheetName + ' ' + yr);
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetTab)}`;
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const text = await res.text();
+      const lines = text.split('\n').filter(l => l.trim());
+      if (!lines.length) continue;
+
+      // Parsuj datumy z headeru
+      const headerCells = [];
+      let cur='', inQ=false;
+      for (const c of lines[0]) {
+        if (c==='"'){inQ=!inQ;}
+        else if(c===','&&!inQ){headerCells.push(cur.trim());cur='';}
+        else cur+=c;
+      }
+      headerCells.push(cur.trim());
+
+      const today = new Date(); today.setHours(0,0,0,0);
+      const dates = [];
+      for (let i=2; i<headerCells.length-1; i++) {
+        const d = parseCzechDate(headerCells[i]);
+        if (d) dates.push(d);
+      }
+
+      if (dates.length) {
+        const s = detectSeasonFromDates(dates);
+        if (s) detectedSeason = s;
+        // Rok z prvního data
+        const firstDate = dates[0];
+        if (firstDate) detectedYear = firstDate.getFullYear();
+      }
+      break; // Stačí první fungující
+    } catch(e) { continue; }
+  }
+
+  renderSeasons(detectedSeason.id);
+  updateHeroLabel(detectedSeason, detectedYear);
+
+  // Aktualizuj také Top hráči nadpis
+  const thTitle = document.querySelector('.th-title');
+  if (thTitle) {
+    const link = thTitle.querySelector('a');
+    thTitle.innerHTML = (detectedSeason.name.toUpperCase()) + ' ' + detectedYear;
+    if (link) thTitle.appendChild(link);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', detectAndRenderSeason);
 
 </script>
 </body>
