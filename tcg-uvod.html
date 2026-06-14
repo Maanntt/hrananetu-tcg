@@ -279,6 +279,23 @@ footer a{color:var(--pl);text-decoration:none}
 .th-loading{font-size:12px;color:var(--text3);padding:8px 0;font-style:italic}
 @media(max-width:900px){.th-grid{grid-template-columns:repeat(2,1fr)}.th-card:nth-child(3n){border-right:1px solid var(--border)}.th-card:nth-child(2n){border-right:none}}
 @media(max-width:560px){.th-grid{grid-template-columns:1fr}.th-card{border-right:none!important}}
+
+/* SEZÓNY */
+.sz-section{padding:48px 0}
+.sz-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.sz-card{background:var(--bg2);padding:22px 20px;border-right:1px solid var(--border);transition:background .15s}
+.sz-card:last-child{border-right:none}
+.sz-card:hover{background:var(--bg3)}
+.sz-card.active{background:rgba(197,29,245,.07);border-right-color:var(--border)}
+.sz-card.active .sz-name{color:var(--purple)}
+.sz-eyebrow{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.sz-name{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1;margin-bottom:10px}
+.sz-months{display:flex;flex-direction:column;gap:4px}
+.sz-month{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.sz-month::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--text3);flex-shrink:0}
+.sz-card.active .sz-month::before{background:var(--purple)}
+@media(max-width:768px){.sz-grid{grid-template-columns:repeat(2,1fr)}.sz-card:nth-child(2){border-right:none}.sz-card:nth-child(n+3){border-top:1px solid var(--border)}}
+@media(max-width:480px){.sz-grid{grid-template-columns:1fr}.sz-card{border-right:none!important;border-bottom:1px solid var(--border)}.sz-card:last-child{border-bottom:none}}
 </style>
 </head>
 <body>
