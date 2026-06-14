@@ -757,24 +757,21 @@ function initUI() {
    SAVE & LOAD ALL
    ══════════════════════════════════════════════════════ */
 async function saveConfigAndLoad() {
-  const apiKey = document.getElementById('cfg-api-key').value.trim();
-  const calId  = document.getElementById('cfg-cal-id').value.trim();
-  const status = document.getElementById('cfg-status');
-
-  if (!apiKey || !calId) {
-    status.textContent = '⚠ Vlož API Key a Calendar ID';
-    return;
-  }
-
-  // Ulož do localStorage
+  const apiKeyEl = document.getElementById('cfg-api-key');
+  const calIdEl  = document.getElementById('cfg-cal-id');
+  const status   = document.getElementById('cfg-status');
+  const setS = t => { if (status) status.textContent = t; };
+  if (!apiKeyEl || !calIdEl) return;
+  const apiKey = apiKeyEl.value.trim();
+  const calId  = calIdEl.value.trim();
+  if (!apiKey || !calId) { setS('⚠ Vlož API Key a Calendar ID'); return; }
   localStorage.setItem('hrananetu_cfg', JSON.stringify({apiKey, calId}));
-
-  status.textContent = 'Načítám…';
+  setS('Načítám…');
   try {
     await loadGoogleCalendar(apiKey, calId);
-    status.textContent = `✓ Načteno ${allEvents.length} událostí`;
+    setS(`✓ Načteno ${allEvents.length} událostí`);
   } catch(e) {
-    status.textContent = '⚠ ' + e.message;
+    setS('⚠ ' + e.message);
   }
 }
 
@@ -1162,6 +1159,7 @@ function parseCSV(text) {
    LEAGUE CARD & STANDINGS RENDER
    ══════════════════════════════════════════════════════ */
 function selectLeague(l) {
+  if (!document.getElementById('t-body')) return;
   activeLeague = l;
   document.querySelectorAll('.ltab').forEach(b => b.classList.remove('active'));
   const tab = document.getElementById('ltab-' + l.id);
@@ -1189,10 +1187,11 @@ function selectLeague(l) {
 }
 
 function renderLeagueCardEmpty() {
+  if (!document.getElementById('lc-name')) return;
   const l = activeLeague;
   const logo = document.getElementById('lc-logo');
-  logo.textContent = l.abbr;
-  logo.style.cssText = `background:${l.bg};color:${l.color};border:1px solid ${l.color}44`;
+  if (logo) logo.textContent = l.abbr;
+  if (logo) logo.style.cssText = `background:${l.bg};color:${l.color};border:1px solid ${l.color}44`;
   document.getElementById('lc-name').textContent = l.label + ' Liga';
   document.getElementById('lc-season').textContent = activeSeason;
   document.getElementById('lc-players').textContent = '—';
@@ -1206,10 +1205,11 @@ function renderLeagueCardEmpty() {
 }
 
 function renderLeagueCard(data) {
+  if (!document.getElementById('lc-name')) return;
   const l = activeLeague;
   const logo = document.getElementById('lc-logo');
-  logo.textContent = l.abbr;
-  logo.style.cssText = `background:${l.bg};color:${l.color};border:1px solid ${l.color}44`;
+  if (logo) logo.textContent = l.abbr;
+  if (logo) logo.style.cssText = `background:${l.bg};color:${l.color};border:1px solid ${l.color}44`;
   document.getElementById('lc-name').textContent = l.label + ' Liga';
   document.getElementById('lc-season').textContent = activeSeason;
   document.getElementById('lc-players').textContent = data.players.length;
@@ -1227,6 +1227,7 @@ function renderLeagueCard(data) {
 }
 
 function renderStandings(data) {
+  if (!document.getElementById('t-head')) return;
   const { players, roundCols } = data;
 
   document.getElementById('t-head').innerHTML = `<tr>
