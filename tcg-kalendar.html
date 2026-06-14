@@ -492,69 +492,43 @@ function populateConfigUI() {
    INIT UI
    ══════════════════════════════════════════════════════ */
 function initUI() {
-  // Sheets config inputs
+  // Sheets config grid (pouze pokud existuje)
   const grid = document.getElementById('sheets-cfg-grid');
-  grid.innerHTML = LEAGUES.map(l => `
-    <div class="cfg-row">
-      <div class="cfg-label" style="display:flex;align-items:center;gap:6px">
-        <span style="width:8px;height:8px;border-radius:50%;background:${l.color};display:inline-block"></span>
-        ${l.label} — Sheets ID
-      </div>
-      <input class="cfg-input" id="sheet-${l.id}" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"/>
-    </div>`).join('');
+  if (grid) {
+    grid.innerHTML = LEAGUES.map(l => `
+      <div class="cfg-row">
+        <div class="cfg-label" style="display:flex;align-items:center;gap:6px">
+          <span style="width:8px;height:8px;border-radius:50%;background:${l.color};display:inline-block"></span>
+          ${l.label} — Sheets ID
+        </div>
+        <input class="cfg-input" id="sheet-${l.id}" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"/>
+      </div>`).join('');
+  }
 
   populateConfigUI();
 
-  // Season tabs
-  const stabs = document.getElementById('season-tabs');
-  SEASONS.forEach(s => {
-    const btn = document.createElement('button');
-    btn.className = 'stab' + (s === activeSeason ? ' active' : '');
-    btn.textContent = s;
-    btn.onclick = () => {
-      activeSeason = s;
-      document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('hero-label').textContent = s;
-      // Reload current league standings for new season
-      const cfg = loadConfig();
-      const sid = cfg.sheets && cfg.sheets[activeLeague.id];
-      if (sid) loadLeagueStandings(sid, activeLeague);
-    };
-    stabs.appendChild(btn);
-  });
-
-  // League tabs
-  const ltabs = document.getElementById('league-tabs');
-  LEAGUES.forEach(l => {
-    const btn = document.createElement('button');
-    btn.className = 'ltab' + (l.id === activeLeague.id ? ' active' : '');
-    btn.id = 'ltab-' + l.id;
-    btn.innerHTML = `<span class="ltab-dot" style="background:${l.color}"></span>${l.label}`;
-    btn.onclick = () => selectLeague(l);
-    ltabs.appendChild(btn);
-  });
-
-  // Calendar filters
+  // Filtry kalendáře
   const cf = document.getElementById('cal-filters');
-  LEAGUES.forEach(l => {
-    const btn = document.createElement('button');
-    btn.className = 'cal-filter';
-    btn.dataset.league = l.id;
-    btn.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${l.color};display:inline-block;margin-right:5px;flex-shrink:0"></span>${l.label}`;
-    btn.onclick = () => filterCalendar(l.id, btn);
-    cf.appendChild(btn);
-  });
-  const btnOther = document.createElement('button');
-  btnOther.className = 'cal-filter';
-  btnOther.dataset.league = 'other';
-  btnOther.textContent = 'Ostatní akce';
-  btnOther.onclick = () => filterCalendar('other', btnOther);
-  cf.appendChild(btnOther);
+  if (cf) {
+    LEAGUES.forEach(l => {
+      const btn = document.createElement('button');
+      btn.className = 'cal-filter';
+      btn.dataset.league = l.id;
+      btn.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${l.color};display:inline-block;margin-right:5px;flex-shrink:0"></span>${l.label}`;
+      btn.onclick = () => filterCalendar(l.id, btn);
+      cf.appendChild(btn);
+    });
+    const btnOther = document.createElement('button');
+    btnOther.className = 'cal-filter';
+    btnOther.dataset.league = 'other';
+    btnOther.textContent = 'Ostatní akce';
+    btnOther.onclick = () => filterCalendar('other', btnOther);
+    cf.appendChild(btnOther);
+  }
 
-  // Populate kal-select dropdown
+  // Dropdown filtr
   const kalSel = document.getElementById('kal-select');
-  if (kalSel) {
+  if (kalSel && kalSel.options.length <= 1) {
     LEAGUES.forEach(l => {
       const opt = document.createElement('option');
       opt.value = l.id;
@@ -566,28 +540,9 @@ function initUI() {
     optOther.textContent = 'Ostatní akce';
     kalSel.appendChild(optOther);
   }
-
-  // Populate kal-select dropdown
-  const kalSel = document.getElementById('kal-select');
-  if (kalSel) {
-    LEAGUES.forEach(l => {
-      const opt = document.createElement('option');
-      opt.value = l.id; opt.textContent = l.label;
-      kalSel.appendChild(opt);
-    });
-    const optOther = document.createElement('option');
-    optOther.value = 'other'; optOther.textContent = 'Ostatní akce';
-    kalSel.appendChild(optOther);
-  }
-
-  document.getElementById('hero-label').textContent = activeSeason;
-  renderLeagueCardEmpty();
-  renderPrizes(0);
 }
 
-/* ══════════════════════════════════════════════════════
-   SAVE & LOAD ALL
-   ══════════════════════════════════════════════════════ */
+
 async function saveConfigAndLoad() {
   const apiKey = document.getElementById('cfg-api-key').value.trim();
   const calId  = document.getElementById('cfg-cal-id').value.trim();
