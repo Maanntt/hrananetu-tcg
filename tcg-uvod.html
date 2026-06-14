@@ -296,6 +296,27 @@ footer a{color:var(--pl);text-decoration:none}
 .sz-card.active .sz-month::before{background:var(--purple)}
 @media(max-width:768px){.sz-grid{grid-template-columns:repeat(2,1fr)}.sz-card:nth-child(2){border-right:none}.sz-card:nth-child(n+3){border-top:1px solid var(--border)}}
 @media(max-width:480px){.sz-grid{grid-template-columns:1fr}.sz-card{border-right:none!important;border-bottom:1px solid var(--border)}.sz-card:last-child{border-bottom:none}}
+
+.setup-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:"Inter",sans-serif;transition:all .15s;margin-bottom:20px}
+.setup-btn:hover{border-color:var(--purple);color:var(--pl)}
+.setup-panel{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:32px}
+.setup-panel.open{display:block}
+.setup-panel-title{font-family:"Rajdhani",sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
+.setup-panel-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.setup-row{display:flex;flex-direction:column;gap:4px}
+.setup-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px}
+.setup-lbl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.setup-inp{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:"Inter",sans-serif;outline:none;width:100%}
+.setup-inp:focus{border-color:var(--purple)}
+.setup-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+.setup-save{background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;border:none;font-family:"Inter",sans-serif}
+.setup-save:hover{background:var(--pl)}
+.setup-status{font-size:12px;color:var(--text3)}
+.setup-season{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.setup-season label{font-size:12px;color:var(--text3);font-weight:500}
+.setup-season select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--text);font-family:"Inter",sans-serif;outline:none}
+@media(max-width:600px){.setup-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -344,6 +365,35 @@ footer a{color:var(--pl);text-decoration:none}
 
 <main class="con">
 
+
+  <!-- SETUP PANEL -->
+  <div style="padding:48px 0 0">
+    <button class="setup-btn" onclick="document.getElementById('setup-panel').classList.toggle('open')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Nastavení zdrojů dat
+    </button>
+    <div class="setup-panel" id="setup-panel">
+      <div class="setup-panel-title">Google Sheets — Ligy</div>
+      <div class="setup-panel-sub">Vlož Sheets ID pro každou ligu. Najdeš ho v URL tabulky: /spreadsheets/d/<strong>ID</strong>/</div>
+      <div class="setup-season">
+        <label>Sezóna:</label>
+        <select id="setup-season-sel">
+          <option value="Léto 2026">Letní sezóna 2026</option>
+          <option value="Jaro 2026">Jarní sezóna 2026</option>
+          <option value="Podzim 2026">Podzimní sezóna 2026</option>
+          <option value="Zima 2026">Zimní sezóna 2026</option>
+          <option value="Léto 2025">Letní sezóna 2025</option>
+        </select>
+      </div>
+      <div class="setup-grid" id="setup-grid">
+        <!-- Filled by JS -->
+      </div>
+      <div class="setup-actions">
+        <button class="setup-save" onclick="saveSetup()">Uložit a načíst data</button>
+        <span class="setup-status" id="setup-status"></span>
+      </div>
+    </div>
+  </div>
 
 <!-- TOP HRÁČI -->
   <section class="th-section" id="top-hraci">
@@ -412,7 +462,49 @@ footer a{color:var(--pl);text-decoration:none}
     </div>
   </section>
 
-  <div id="sz-container" style="padding:32px 0 48px"></div>
+  <div id="sz-container" style="padding:32px 0 48px">
+    <div class="sz-grid">
+      <div class="sz-card" id="sz-jaro">
+        <div class="sz-eyebrow">Q1</div>
+        <div class="sz-name">Jarní sezóna</div>
+        <div class="sz-months">
+          <div class="sz-month">Březen</div>
+          <div class="sz-month">Duben</div>
+          <div class="sz-month">Květen</div>
+        </div>
+      </div>
+      <div class="sz-card active" id="sz-leto">
+        <div class="sz-eyebrow">Q2</div>
+        <div class="sz-name">Letní sezóna</div>
+        <div class="sz-months">
+          <div class="sz-month">Červen</div>
+          <div class="sz-month">Červenec</div>
+          <div class="sz-month">Srpen</div>
+        </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(197,29,245,.2)">
+          <span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--purple);color:#fff;padding:3px 10px;border-radius:20px">Aktuální sezóna</span>
+        </div>
+      </div>
+      <div class="sz-card" id="sz-podzim">
+        <div class="sz-eyebrow">Q3</div>
+        <div class="sz-name">Podzimní sezóna</div>
+        <div class="sz-months">
+          <div class="sz-month">Září</div>
+          <div class="sz-month">Říjen</div>
+          <div class="sz-month">Listopad</div>
+        </div>
+      </div>
+      <div class="sz-card" id="sz-zima">
+        <div class="sz-eyebrow">Q4</div>
+        <div class="sz-name">Zimní sezóna</div>
+        <div class="sz-months">
+          <div class="sz-month">Prosinec</div>
+          <div class="sz-month">Leden</div>
+          <div class="sz-month">Únor</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <footer>
@@ -1277,20 +1369,30 @@ const SEASON_MONTHS = [
 ];
 
 function renderSeasons(activeSznId) {
-  const container = document.getElementById('sz-container');
-  if (!container) return;
   const curr = activeSznId || getCurrentSeason().id;
-  container.innerHTML = `<div class="sz-grid">
-    ${SEASON_MONTHS.map(s => `
-      <div class="sz-card ${s.id === curr ? 'active' : ''}">
-        <div class="sz-eyebrow">${s.q}</div>
-        <div class="sz-name">${s.name}</div>
-        <div class="sz-months">
-          ${s.months.map(m => `<div class="sz-month">${m}</div>`).join('')}
-        </div>
-        <div class="sz-finale">${s.finale}</div>
-      </div>`).join('')}
-  </div>`;
+  ['jaro','leto','podzim','zima'].forEach(id => {
+    const el = document.getElementById('sz-' + id);
+    if (!el) return;
+    el.classList.toggle('active', id === curr);
+    // Přidej/odeber badge
+    const existing = el.querySelector('.sz-badge');
+    if (id === curr && !existing) {
+      const eyebrow = el.querySelector('.sz-eyebrow');
+      if (eyebrow) {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px';
+        eyebrow.parentNode.insertBefore(wrap, eyebrow);
+        wrap.appendChild(eyebrow);
+        const badge = document.createElement('div');
+        badge.className = 'sz-badge';
+        badge.style.cssText = 'margin-top:12px;padding-top:10px;border-top:1px solid rgba(197,29,245,.2)';
+        badge.innerHTML = '<span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--purple);color:#fff;padding:3px 10px;border-radius:20px">Aktuální sezóna</span>';
+        el.appendChild(badge);
+      }
+    } else if (id !== curr && existing) {
+      existing.remove();
+    }
+  });
 }
 
 function updateHeroLabel(season, year) {
@@ -1373,6 +1475,66 @@ async function detectAndRenderSeason() {
 }
 
 document.addEventListener('DOMContentLoaded', detectAndRenderSeason);
+
+
+/* ── SETUP PANEL ── */
+const SETUP_LEAGUES = [
+  {id:'mtgp', label:'MTG Premodern',  color:'#c51df5'},
+  {id:'mtgd', label:'MTG Draft',      color:'#b39ddb'},
+  {id:'mtgm', label:'MTG Modern',     color:'#9b4dff'},
+  {id:'rb',   label:'Riftbound',      color:'#7fb3f5'},
+  {id:'pk',   label:'Pokémon',        color:'#ffcb05'},
+  {id:'op',   label:'One Piece',      color:'#f87171'},
+  {id:'fab',  label:'Flesh & Blood',  color:'#4ade80'},
+  {id:'gd',   label:'Gundam',         color:'#fcd34d'},
+  {id:'so',   label:'Sorcery',        color:'#c084fc'},
+];
+
+function initSetupPanel() {
+  const grid = document.getElementById('setup-grid');
+  if (!grid) return;
+  grid.innerHTML = SETUP_LEAGUES.map(l => {
+    let saved = '';
+    try {
+      const s = localStorage.getItem('hrana_sheets_' + l.id);
+      if (s) saved = JSON.parse(s).sheetId || '';
+    } catch(e) {}
+    return `<div class="setup-row">
+      <div class="setup-lbl">
+        <span class="setup-lbl-dot" style="background:${l.color}"></span>
+        ${l.label}
+      </div>
+      <input class="setup-inp" id="setup-${l.id}" placeholder="Sheets ID..." value="${saved}"/>
+    </div>`;
+  }).join('');
+}
+
+function saveSetup() {
+  const season = document.getElementById('setup-season-sel').value;
+  const status = document.getElementById('setup-status');
+  let saved = 0;
+  SETUP_LEAGUES.forEach(l => {
+    const el = document.getElementById('setup-' + l.id);
+    if (!el) return;
+    const raw = el.value.trim();
+    // Extrahuj ID z URL nebo použij přímo
+    const sheetId = raw.replace(/.*\/d\/([^\/]+).*/, '$1');
+    if (sheetId) {
+      localStorage.setItem('hrana_sheets_' + l.id, JSON.stringify({sheetId, tab: season}));
+      saved++;
+    }
+  });
+  status.textContent = `✓ Uloženo ${saved} lig · Načítám hráče…`;
+  // Znovu načti top hráče
+  loadTopPlayers().then(() => {
+    status.textContent = `✓ Hotovo — ${saved} lig načteno`;
+    detectAndRenderSeason();
+  }).catch(e => {
+    status.textContent = '⚠ ' + e.message;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initSetupPanel);
 
 </script>
 </body>
