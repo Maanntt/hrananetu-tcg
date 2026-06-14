@@ -136,8 +136,8 @@ footer a{color:var(--pl);text-decoration:none}
 <!-- HERO -->
 <section class="hero">
   <div class="hero-label" id="hero-label">Letní Sezóna 2026</div>
-  <h1>TCG <b>Ligy</b> & Turnaje</h1>
-  <p>Průběžné výsledky lig, žebříčky hráčů a termíny turnajů pro všechny TCG hry v Hrana Store (Brno).</p>
+  <h1>Liga na <b>Hraně</b></h1>
+  <p>Průběžné výsledky, žebříčky a termíny turnajů pro všechny TCG hry v Hrana Store (Brno).</p>
   <div class="hero-stats">
     <div><div class="hs-num">9</div><div class="hs-lbl">Aktivních lig</div></div>
     <div><div class="hs-num" id="stat-players">—</div><div class="hs-lbl">Hráčů v lize</div></div>
@@ -338,9 +338,12 @@ async function loadLeagueTop3(l, season) {
 
     const text = await res.text();
 
-    // Detekuj jestli to je CSV nebo JS error
-    if (text.trim().startsWith('google') || text.trim().startsWith('/*') || text.includes('google.visualization')) {
-      el.innerHTML = '<div class="th-msg">Špatný název listu</div>';
+    // Detekuj jestli to je CSV nebo JS/chybová odpověď
+    const trimmed = text.trim();
+    if (trimmed.startsWith('google') || trimmed.startsWith('/*') || 
+        trimmed.includes('google.visualization') || trimmed.startsWith('function') ||
+        !trimmed.includes(',')) {
+      el.innerHTML = '<div class="th-msg">Zkontroluj název listu: ' + tab + '</div>';
       return;
     }
 
@@ -350,8 +353,12 @@ async function loadLeagueTop3(l, season) {
     // Header řádek = rows[0], data od rows[1]
     // Sloupec 0 = Jméno, sloupec 1 = Body Celkově
     const players = rows.slice(1)
-      .map(r => ({name: (r[0]||'').replace(/^"+|"+$/g,'').trim(), pts: parseFloat((r[1]||'').replace(/^"+|"+$/g,'')) || 0}))
-      .filter(p => p.name && p.name.length > 0 && !p.name.toLowerCase().includes('jméno'))
+      .map(r => {
+        const name = (r[0]||'').replace(/^\"*|\"*$/g,'').trim();
+        const pts  = parseFloat((r[1]||'').replace(/^\"*|\"*$/g,'').replace(/[^0-9.]/g,'')) || 0;
+        return {name, pts};
+      })
+      .filter(p => p.name && p.name.length > 1 && isNaN(Number(p.name)))
       .sort((a,b) => b.pts - a.pts)
       .slice(0, 3);
 
