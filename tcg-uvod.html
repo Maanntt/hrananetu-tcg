@@ -288,7 +288,9 @@ async function saveAndLoad() {
     if (!el || !el.value.trim()) return;
     const raw = el.value.trim();
     // Extrahuj jen ID z URL
-    const sheetId = raw.replace(/.*\/d\/([^\/\?]+).*/, '$1');
+    // Extrahuj jen čisté Sheet ID (bez /edit, ?gid atd.)
+    const match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const sheetId = match ? match[1] : raw.replace(/[^a-zA-Z0-9_-]/g,'').substring(0,44);
     localStorage.setItem('hn_' + l.id, JSON.stringify({sheetId, tab: season}));
   });
   localStorage.setItem('hn_cfg', JSON.stringify({season}));
@@ -330,7 +332,8 @@ async function loadLeagueTop3(l, season) {
     if (!saved || !saved.sheetId) { el.innerHTML = '<div class="th-msg">—</div>'; return; }
 
     // Použij export CSV místo gviz - spolehlivější
-    const sheetId = saved.sheetId;
+    // Zajisti čisté ID bez URL části
+    const sheetId = (saved.sheetId||'').replace(/[^a-zA-Z0-9_-]/g,'').substring(0,44);
     const tab = saved.tab || season;
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
     const res = await fetch(url);
