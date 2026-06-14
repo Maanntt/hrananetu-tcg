@@ -170,6 +170,7 @@ tbody td.cn{text-align:left;padding-left:20px}
 .kp{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6;transition:opacity .12s}
 .kp:hover{opacity:.78}
 .kp-mtgp{background:#3d2275;color:#e0ccff}
+.kp-mtgm{background:#2a1860;color:#c4b8ff}
 .kp-mtgd{background:#2e1a60;color:#c9b8f0}
 .kp-rb{background:#0f2d5a;color:#a8caff}
 .kp-pk{background:#c87f00;color:#fff3cc}
@@ -396,14 +397,15 @@ footer a{color:var(--pl);text-decoration:none}
    KONFIGURACE LIG
    ══════════════════════════════════════════════════════ */
 const LEAGUES = [
-  { id:'mtgp', label:'MTG Premodern', abbr:'PM', color:'#9c6fff', bg:'rgba(124,77,255,.18)', tagCls:'mtgp' },
-  { id:'mtgd', label:'MTG Draft',     abbr:'MD', color:'#b39ddb', bg:'rgba(99,77,200,.18)',  tagCls:'mtgd' },
-  { id:'rb',   label:'Riftbound',     abbr:'RB', color:'#7fb3f5', bg:'rgba(59,130,246,.18)', tagCls:'rb'   },
-  { id:'pk',   label:'Pokémon',       abbr:'PK', color:'#ffcb05', bg:'rgba(59,100,164,.25)', tagCls:'pk'   },
-  { id:'op',   label:'One Piece',     abbr:'OP', color:'#f87171', bg:'rgba(239,68,68,.18)',  tagCls:'op'   },
-  { id:'fab',  label:'Flesh & Blood', abbr:'FB', color:'#4ade80', bg:'rgba(34,197,94,.12)',  tagCls:'fab'  },
-  { id:'gd',   label:'Gundam',        abbr:'GD', color:'#fcd34d', bg:'rgba(245,158,11,.18)', tagCls:'gd'   },
-  { id:'so',   label:'Sorcery',       abbr:'SO', color:'#c084fc', bg:'rgba(168,85,247,.18)', tagCls:'so'   },
+  { id:'mtgp', label:'MTG Premodern',   abbr:'PM', color:'#c51df5', bg:'rgba(197,29,245,.15)',  tagCls:'mtgp' },
+  { id:'mtgd', label:'MTG Draft',       abbr:'MD', color:'#b39ddb', bg:'rgba(99,77,200,.18)',   tagCls:'mtgd' },
+  { id:'mtgm', label:'MTG Modern',      abbr:'MM', color:'#9b4dff', bg:'rgba(124,77,255,.18)',  tagCls:'mtgm' },
+  { id:'rb',   label:'Riftbound',       abbr:'RB', color:'#7fb3f5', bg:'rgba(59,130,246,.18)',  tagCls:'rb'   },
+  { id:'pk',   label:'Pokémon',         abbr:'PK', color:'#ffcb05', bg:'rgba(59,100,164,.25)',  tagCls:'pk'   },
+  { id:'op',   label:'One Piece',       abbr:'OP', color:'#f87171', bg:'rgba(239,68,68,.18)',   tagCls:'op'   },
+  { id:'fab',  label:'Flesh & Blood',   abbr:'FB', color:'#4ade80', bg:'rgba(34,197,94,.12)',   tagCls:'fab'  },
+  { id:'gd',   label:'Gundam',          abbr:'GD', color:'#fcd34d', bg:'rgba(245,158,11,.18)',  tagCls:'gd'   },
+  { id:'so',   label:'Sorcery',         abbr:'SO', color:'#c084fc', bg:'rgba(168,85,247,.18)',  tagCls:'so'   },
 ];
 
 // Sezóny — název listu v Google Sheets
@@ -541,17 +543,31 @@ function initUI() {
     const btn = document.createElement('button');
     btn.className = 'cal-filter';
     btn.dataset.league = l.id;
-    btn.textContent = l.label;
+    btn.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${l.color};display:inline-block;margin-right:5px;flex-shrink:0"></span>${l.label}`;
     btn.onclick = () => filterCalendar(l.id, btn);
     cf.appendChild(btn);
   });
-  // Ostatní akce
   const btnOther = document.createElement('button');
   btnOther.className = 'cal-filter';
   btnOther.dataset.league = 'other';
   btnOther.textContent = 'Ostatní akce';
   btnOther.onclick = () => filterCalendar('other', btnOther);
   cf.appendChild(btnOther);
+
+  // Populate kal-select dropdown
+  const kalSel = document.getElementById('kal-select');
+  if (kalSel) {
+    LEAGUES.forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = l.id;
+      opt.textContent = l.label;
+      kalSel.appendChild(opt);
+    });
+    const optOther = document.createElement('option');
+    optOther.value = 'other';
+    optOther.textContent = 'Ostatní akce';
+    kalSel.appendChild(optOther);
+  }
 
   // Populate kal-select dropdown
   const kalSel = document.getElementById('kal-select');
