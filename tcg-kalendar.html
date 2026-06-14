@@ -335,7 +335,7 @@ footer a{color:var(--pl);text-decoration:none}
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <select id="cfg-season" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none">
             <option>Jaro 2026</option>
-            <option>Léto 2026</option>
+            <option selected>Léto 2026</option>
             <option>Podzim 2026</option>
             <option>Zima 2026</option>
           </select>
@@ -597,21 +597,21 @@ async function saveConfigAndLoad() {
   const apiKey = document.getElementById('cfg-api-key').value.trim();
   const calId  = document.getElementById('cfg-cal-id').value.trim();
   const status = document.getElementById('cfg-status');
+  const setStatus = t => { if (status) status.textContent = t; };
 
   if (!apiKey || !calId) {
-    status.textContent = '⚠ Vlož API Key a Calendar ID';
+    setStatus('⚠ Vlož API Key a Calendar ID');
     return;
   }
 
-  // Ulož do localStorage
   localStorage.setItem('hrananetu_cfg', JSON.stringify({apiKey, calId}));
 
-  status.textContent = 'Načítám…';
+  setStatus('Načítám…');
   try {
     await loadGoogleCalendar(apiKey, calId);
-    status.textContent = `✓ Načteno ${allEvents.length} událostí`;
+    setStatus(`✓ Načteno ${allEvents.length} událostí`);
   } catch(e) {
-    status.textContent = '⚠ ' + e.message;
+    setStatus('⚠ ' + e.message);
   }
 }
 

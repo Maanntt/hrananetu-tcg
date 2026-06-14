@@ -378,7 +378,7 @@ footer a{color:var(--pl);text-decoration:none}
       <div class="setup-season">
         <label>Sezóna:</label>
         <select id="setup-season-sel">
-          <option value="Léto 2026">Letní sezóna 2026</option>
+          <option value="Léto 2026" selected>Letní sezóna 2026</option>
           <option value="Jaro 2026">Jarní sezóna 2026</option>
           <option value="Podzim 2026">Podzimní sezóna 2026</option>
           <option value="Zima 2026">Zimní sezóna 2026</option>
@@ -1524,13 +1524,13 @@ function saveSetup() {
       saved++;
     }
   });
-  status.textContent = `✓ Uloženo ${saved} lig · Načítám hráče…`;
-  // Znovu načti top hráče
+  const setStatus = t => { if (status) status.textContent = t; };
+  setStatus(`✓ Uloženo ${saved} lig · Načítám hráče…`);
   loadTopPlayers().then(() => {
-    status.textContent = `✓ Hotovo — ${saved} lig načteno`;
+    setStatus(`✓ Hotovo — ${saved} lig načteno`);
     detectAndRenderSeason();
   }).catch(e => {
-    status.textContent = '⚠ ' + e.message;
+    setStatus('⚠ ' + e.message);
   });
 }
 
