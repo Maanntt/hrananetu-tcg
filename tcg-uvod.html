@@ -15,21 +15,8 @@
   --gold:#f0a500;--text:#eeeaf8;--text2:#9490b0;--text3:#504c6a;
   --green:#22c55e;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;font-size:15px}
 
-/* HEADER */
-header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.hi{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:24px}
-.logo{text-decoration:none;flex-shrink:0}
-nav{display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto}
-nav a{text-decoration:none;font-size:12px;font-weight:500;color:var(--text2);padding:5px 10px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap}
-nav a:hover{color:var(--text);background:var(--bg3)}
-nav a.act{color:var(--pl);background:var(--bg3)}
-.ha{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.bo{border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center}
-.bo:hover{border-color:var(--purple);color:var(--pl)}
-.bp{background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:6px 16px;border-radius:6px;border:none;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;cursor:pointer}
-.bp:hover{background:var(--pl)}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,#09090f 0%,#1a0a2e 50%,#09090f 100%);border-bottom:1px solid var(--border);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden}
@@ -42,7 +29,7 @@ nav a.act{color:var(--pl);background:var(--bg3)}
 .hs-num{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:700;color:var(--text);line-height:1}
 .hs-lbl{font-size:11px;color:var(--text3);font-weight:500;margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
 
-.con{max-width:1280px;margin:0 auto;padding:0 24px}
+.con{max-width:1280px;margin:0 auto;padding:0 28px}
 
 /* NASTAVENÍ */
 .setup-toggle{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;margin:32px 0 0}
@@ -130,14 +117,52 @@ footer a{color:var(--pl);text-decoration:none}
 .week-more a{font-size:11px;color:var(--pl);text-decoration:none}
 @media(max-width:768px){.week-grid{grid-template-columns:repeat(4,1fr)}.week-col:nth-child(n+5){display:none}}
 @media(max-width:480px){.week-grid{grid-template-columns:repeat(3,1fr)}.week-col:nth-child(n+4){display:none}}
+
+/* HEADER */
+header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
+.hi{max-width:1280px;margin:0 auto;padding:0 28px;height:72px;display:flex;align-items:center;gap:28px}
+.logo{text-decoration:none;flex-shrink:0}
+.logo img{height:44px;width:auto;display:block}
+nav{display:flex;align-items:center;gap:3px;flex:1;overflow-x:auto}
+nav a{text-decoration:none;font-size:13px;font-weight:500;color:var(--text2);padding:6px 12px;border-radius:7px;transition:color .15s,background .15s;white-space:nowrap}
+nav a:hover{color:var(--text);background:var(--bg3)}
+nav a.act{color:var(--pl);background:var(--bg3)}
+.ha{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.bo{border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:13px;font-weight:500;padding:7px 16px;border-radius:7px;text-decoration:none;display:inline-flex;align-items:center;transition:all .15s}
+.bo:hover{border-color:var(--purple);color:var(--pl)}
+.bp{background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:7px 18px;border-radius:7px;border:none;font-family:"Inter",sans-serif;text-decoration:none;display:inline-flex;align-items:center;cursor:pointer;transition:background .15s}
+.bp:hover{background:var(--pl)}
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:1px solid var(--border2);border-radius:7px;background:transparent;flex-shrink:0}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+/* Mobile nav overlay */
+.mobile-nav{display:none;position:fixed;inset:0;top:72px;background:var(--bg2);z-index:199;padding:20px 28px;flex-direction:column;gap:4px;border-top:1px solid var(--border);overflow-y:auto}
+.mobile-nav.open{display:flex}
+.mobile-nav a{text-decoration:none;font-size:16px;font-weight:500;color:var(--text2);padding:14px 16px;border-radius:10px;transition:all .15s;border:1px solid transparent}
+.mobile-nav a:hover{color:var(--text);background:var(--bg3);border-color:var(--border)}
+.mobile-nav a.act{color:var(--pl);background:var(--pd);border-color:rgba(197,29,245,.25)}
+.mobile-nav-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+@media(max-width:860px){
+  nav{display:none}
+  .ha{display:none}
+  .hamburger{display:flex}
+}
+@media(max-width:480px){
+  .hi{padding:0 16px;height:64px}
+  .logo img{height:38px}
+  .mobile-nav{top:64px;padding:16px}
+}
 </style>
 </head>
 <body>
 
 <header>
   <div class="hi">
-    <a href="https://www.hrananetu.cz" class="logo">
-      <img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz" style="height:36px;width:auto;display:block">
+    <a href="/hrananetu-tcg/tcg-uvod.html" class="logo">
+      <img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz">
     </a>
     <nav>
       <a href="/hrananetu-tcg/tcg-uvod.html" class="act">Úvod</a>
@@ -152,8 +177,24 @@ footer a{color:var(--pl);text-decoration:none}
       <a href="https://www.hrananetu.cz/customer/registration/" class="bo">Registrace</a>
       <a href="https://www.hrananetu.cz" class="bp">E-shop ↗</a>
     </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+<nav class="mobile-nav" id="mobile-nav">
+    <a href="/hrananetu-tcg/tcg-uvod.html" class="act">Úvod</a>
+    <a href="/hrananetu-tcg/tcg-kalendar.html">Kalendář</a>
+    <a href="/hrananetu-tcg/tcg-ligy.html">Ligy</a>
+    <a href="/hrananetu-tcg/tcg-ceny.html">Ceny</a>
+    <a href="/hrananetu-tcg/tcg-hraci.html">Hráči</a>
+    <a href="/hrananetu-tcg/tcg-archiv.html">Archiv</a>
+    <a href="/hrananetu-tcg/tcg-pravidla.html">Pravidla</a>
+  <div class="mobile-nav-btns">
+    <a href="https://www.hrananetu.cz/customer/registration/" class="bo" style="justify-content:center">Registrace</a>
+    <a href="https://www.hrananetu.cz" class="bp" style="justify-content:center">E-shop ↗</a>
+  </div>
+</nav>
 
 <!-- HERO -->
 <section class="hero">
