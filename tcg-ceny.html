@@ -178,26 +178,26 @@ const FORMATS = [
   {
     type:'ŽEBŘÍČEK', thresh:'průměr < 8 hráčů',
     prizes:[
-      {place:'1.',  gold:true,  main:'Booster Box',  detail:'+20 ligových bodů'},
-      {place:'2.',  gold:false, main:'4× Booster',   detail:'+15 ligových bodů'},
-      {place:'3.',  gold:false, main:'2× Booster',   detail:'+10 ligových bodů'},
+      {place:'1.',  gold:true,  main:'Booster Box',  detail:''},
+      {place:'2.',  gold:false, main:'4× Booster',   detail:''},
+      {place:'3.',  gold:false, main:'2× Booster',   detail:''},
     ]
   },
   {
     type:'TOP 4', thresh:'průměr 8–12 hráčů',
     prizes:[
-      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom · +20 bodů'},
-      {place:'2.',    gold:false, main:'Booster Display',  detail:'+15 ligových bodů'},
-      {place:'3.–4.', gold:false, main:'4× Booster',      detail:'+10 ligových bodů'},
+      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom'},
+      {place:'2.',    gold:false, main:'Booster Display',  detail:''},
+      {place:'3.–4.', gold:false, main:'4× Booster',      detail:''},
     ]
   },
   {
     type:'TOP 8', thresh:'průměr 13+ hráčů',
     prizes:[
-      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom · +30 bodů'},
-      {place:'2.',    gold:false, main:'Booster Display',  detail:'+20 ligových bodů'},
-      {place:'3.–4.', gold:false, main:'6× Booster',      detail:'+15 ligových bodů'},
-      {place:'5.–8.', gold:false, main:'2× Booster',      detail:'+8 ligových bodů'},
+      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom'},
+      {place:'2.',    gold:false, main:'Booster Display',  detail:''},
+      {place:'3.–4.', gold:false, main:'6× Booster',      detail:''},
+      {place:'5.–8.', gold:false, main:'2× Booster',      detail:''},
     ]
   },
 ];
@@ -371,10 +371,10 @@ function renderFormatCardWithConfig(fmt, activeType, id, configData) {
 
   // Použij data z config sheetu nebo výchozí
   const prizes = cenyData ? [
-    {place:'1.',    gold:true,  main: cenyData.p1  || fmt.prizes[0]?.main || '—', detail: cenyData.b1  ? '+' + cenyData.b1 + ' bodů' : fmt.prizes[0]?.detail || ''},
-    {place:'2.',    gold:false, main: cenyData.p2  || fmt.prizes[1]?.main || '—', detail: cenyData.b2  ? '+' + cenyData.b2 + ' bodů' : fmt.prizes[1]?.detail || ''},
-    {place:'3.–4.', gold:false, main: cenyData.p34 || fmt.prizes[2]?.main || '—', detail: cenyData.b34 ? '+' + cenyData.b34 + ' bodů' : fmt.prizes[2]?.detail || ''},
-    ...(fmt.prizes[3] ? [{place:'5.–8.', gold:false, main: cenyData.p58 || fmt.prizes[3]?.main || '—', detail: cenyData.b58 ? '+' + cenyData.b58 + ' bodů' : fmt.prizes[3]?.detail || ''}] : []),
+    {place:'1.',    gold:true,  main: cenyData.p1  || fmt.prizes[0]?.main || '—', detail: fmt.prizes[0]?.detail || ''},
+    {place:'2.',    gold:false, main: cenyData.p2  || fmt.prizes[1]?.main || '—', detail: fmt.prizes[1]?.detail || ''},
+    {place:'3.–4.', gold:false, main: cenyData.p34 || fmt.prizes[2]?.main || '—', detail: fmt.prizes[2]?.detail || ''},
+    ...(fmt.prizes[3] ? [{place:'5.–8.', gold:false, main: cenyData.p58 || fmt.prizes[3]?.main || '—', detail: fmt.prizes[3]?.detail || ''}] : []),
   ].filter(p => p.main && p.main !== '—') : fmt.prizes;
 
   return `<div class="fmt-card${isActive ? ' active' : ''}">
