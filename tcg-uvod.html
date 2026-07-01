@@ -491,37 +491,33 @@ function renderWeek() {
   const monday = getMondayOf(new Date());
   monday.setDate(monday.getDate() + weekOffset * 7);
   const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
-
-  // Label
-  const mLabel = `${monday.getDate()}. ${WEEK_MONTHS[monday.getMonth()]}`;
-  const sLabel = `${sunday.getDate()}. ${WEEK_MONTHS[sunday.getMonth()]}`;
-  if (label) label.textContent = `${mLabel} – ${sLabel}`;
-
   const today = new Date(); today.setHours(0,0,0,0);
+
+  const mL = `${monday.getDate()}. ${WEEK_MONTHS[monday.getMonth()]}`;
+  const sL = `${sunday.getDate()}. ${WEEK_MONTHS[sunday.getMonth()]}`;
+  if (label) label.textContent = `${mL} – ${sL}`;
 
   grid.innerHTML = WEEK_DAYS.map((day, di) => {
     const date = new Date(monday); date.setDate(monday.getDate() + di);
     const isToday = date.getTime() === today.getTime();
 
-    // Najdi eventy pro tento den
     const dayEvents = weekEvents.filter(e => {
-      const ed = new Date(e.startDate); ed.setHours(0,0,0,0);
-      return ed.getTime() === date.getTime();
+      const d = new Date(e.startDate); d.setHours(0,0,0,0);
+      return d.getTime() === date.getTime();
     });
 
     const pills = dayEvents.map(e => {
       const lid = detectLeagueFromTitle(e.title);
-      const lc = lid ? WEEK_LEAGUES[lid] : {color:'var(--text2)',bg:'rgba(255,255,255,.08)'};
+      const lc  = lid ? WEEK_LEAGUES[lid] : {color:'var(--text2)', bg:'rgba(255,255,255,.07)'};
       const time = e.startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
-      const gameName = e.title.split(/[-–]/)[0].trim();
-      const formatStr = e.format ? ` · ${e.format}` : '';
-      const tooltip = e.title + (e.format ? ` — ${e.format}` : '');
-      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${tooltip}">
-        <span style="opacity:.7">${time}</span> ${gameName}<span style="opacity:.6;font-size:9px">${formatStr}</span>
+      const name = e.title.split(/[-–]/)[0].trim();
+      const fmt  = e.format ? `<span style="font-size:9px;opacity:.65;margin-left:2px">· ${e.format}</span>` : '';
+      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${e.title}${e.format ? ' · ' + e.format : ''}">
+        <span style="opacity:.65;font-size:9px">${time}</span> <span style="font-weight:600">${name}</span>${fmt}
       </div>`;
     }).join('');
 
-    return `<div class="week-col${isToday?' today':''}">
+    return `<div class="week-col${isToday ? ' today' : ''}">
       <div class="week-day-hdr">${day}</div>
       <div class="week-day-num">${date.getDate()}</div>
       ${pills || '<div class="week-empty">—</div>'}
@@ -532,13 +528,9 @@ function renderWeek() {
 async function loadWeekFromCalendar() {
   try {
     const cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}');
-    if (!cfg.apiKey || !cfg.calId) {
-      renderWeekNoData();
-      return;
-    }
+    if (!cfg.apiKey || !cfg.calId) { renderWeekNoData(); return; }
 
-    const now = new Date();
-    const monday = getMondayOf(now);
+    const monday = getMondayOf(new Date());
     const timeMin = new Date(monday); timeMin.setDate(timeMin.getDate() - 7);
     const timeMax = new Date(monday); timeMax.setDate(timeMax.getDate() + 21);
 
@@ -548,18 +540,22 @@ async function loadWeekFromCalendar() {
     const data = await res.json();
 
     weekEvents = (data.items || []).map(item => {
+      // Parsuj popis - odstraň HTML
       const desc = (item.description || '')
-        .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ');
-      
-      // Parsuj formát z popisu
+        .replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
+        .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&');
+
+      // Extrahuj formát ze všech řádků
       let format = '';
       for (const line of desc.split('\n')) {
-        const clean = line.replace(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\s]+/u,'').trim();
-        if (/^formát\s+/i.test(clean)) { format = clean.replace(/^formát\s+/i,'').trim(); break; }
-        const cm = clean.match(/^formát:\s*(.+)$/i);
-        if (cm) { format = cm[1].trim(); break; }
+        // Odstraň emoji (Unicode ranges)
+        const clean = line.replace(/[\u{1F300}-\u{1FFFF}\u{2600}-\u{27BF}]/gu,'').trim();
+        // Formát: Standard nebo Formát Standard
+        const m1 = clean.match(/^[Ff]orm[aá]t[:\s]+(.+)$/);
+        if (m1) { format = m1[1].trim(); break; }
+        if (/^[Ff]orm[aá]t$/i.test(clean)) continue;
       }
-      
+
       return {
         title: item.summary || '—',
         format,
