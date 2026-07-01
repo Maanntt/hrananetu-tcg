@@ -500,51 +500,87 @@ function parseCSVLine(line) {
   return cells;
 }
 
-async function loadNextDate(leagueId) {
-  const sheetId = getSheetsId(leagueId);
-  if (!sheetId) { setNext(leagueId, null, false); return; }
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SEASON)}`;
-    const res = await fetch(url);
-    if (!res.ok) { setNext(leagueId, null, false); return; }
-    const text = await res.text();
-    const lines = text.split('\n').filter(l=>l.trim());
-    if (!lines.length) { setNext(leagueId, null, false); return; }
-    const headers = parseCSVLine(lines[0]);
-    const today = new Date(); today.setHours(0,0,0,0);
-    const roundCols = [];
-    for (let i=2; i<headers.length-1; i++) {
-      if (!headers[i]) continue;
-      const d = parseCzechDate(headers[i]);
-      if (d) roundCols.push({date:d});
-    }
-    const future = roundCols.filter(r=>r.date>=today).sort((a,b)=>a.date-b.date);
-    if (future.length) {
-      setNext(leagueId, future[0].date, false);
-    } else {
-      setNext(leagueId, null, false);
-    }
-  } catch(e) {
-    setNext(leagueId, null, false);
-  }
+const MONTHS_CS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+
+function formatDate(d) {
+  return d.getDate() + '. ' + MONTHS_CS[d.getMonth()];
 }
 
-function setNext(leagueId, date, isFinale) {
-  const el = document.getElementById('nextval-' + leagueId);
+function setNext(id, date, isFinale) {
+  const el = document.getElementById('nextval-' + id);
   if (!el) return;
-  if (isFinale && date) {
-    el.textContent = 'Finále ' + formatCzechDate(date);
-    el.className = 'liga-next-val finale';
-  } else if (date) {
-    el.textContent = formatCzechDate(date);
-    el.className = 'liga-next-val';
-  } else {
-    el.textContent = 'datum není k dispozici';
+  if (!date) {
+    el.textContent = 'nastav Google Calendar';
     el.className = 'liga-next-val none';
+    return;
+  }
+  if (isFinale) {
+    el.innerHTML = '<span style="color:var(--gold)">🏆 Finále · ' + formatDate(date) + '</span>';
+    el.className = 'liga-next-val finale';
+  } else {
+    el.textContent = formatDate(date);
+    el.className = 'liga-next-val';
   }
 }
 
-Object.keys(LEAGUES_CFG).forEach(id => loadNextDate(id));
+async function loadAllNextDates() {
+  // Zkus Google Calendar
+  let cfg = {};
+  try { cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
+
+  if (!cfg.apiKey || !cfg.calId) {
+    Object.keys(LEAGUES_CFG).forEach(id => setNext(id, null, false));
+    return;
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const timeMax = new Date(today); timeMax.setMonth(timeMax.getMonth() + 5);
+
+  let events = [];
+  try {
+    const url = 'https://www.googleapis.com/calendar/v3/calendars/'
+      + encodeURIComponent(cfg.calId)
+      + '/events?key=' + cfg.apiKey
+      + '&timeMin=' + today.toISOString()
+      + '&timeMax=' + timeMax.toISOString()
+      + '&singleEvents=true&orderBy=startTime&maxResults=200';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API ' + res.status);
+    const data = await res.json();
+    events = (data.items || []).map(item => {
+      const raw = item.summary || '';
+      // Odstraň emoji ze začátku
+      const clean = raw.replace(/^[^\wÀ-ɏ(]+/u, '').trim();
+      const parts = clean.split(/\s*[-–]\s*/);
+      return {
+        raw: raw.toLowerCase(),
+        name: (parts[0] || '').trim(),
+        isLeague: /liga/i.test(raw),
+        isFinale: /fin[aá]le/i.test(raw),
+        date: new Date(item.start && (item.start.dateTime || item.start.date)),
+      };
+    }).filter(e => !isNaN(e.date));
+  } catch(err) {
+    Object.keys(LEAGUES_CFG).forEach(id => setNext(id, null, false));
+    return;
+  }
+
+  // Pro každou ligu najdi nejbližší ligový event
+  Object.keys(LEAGUES_CFG).forEach(id => {
+    const kws = LEAGUES_CFG[id].keywords || [id];
+    const matches = events.filter(e =>
+      e.isLeague && kws.some(kw => e.raw.includes(kw.toLowerCase()))
+    ).sort((a,b) => a.date - b.date);
+
+    if (matches.length) {
+      setNext(id, matches[0].date, matches[0].isFinale);
+    } else {
+      setNext(id, null, false);
+    }
+  });
+}
+
+loadAllNextDates();
 
 // Aktualizuj sezónu label
 document.addEventListener('DOMContentLoaded', () => {
@@ -552,7 +588,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const s = getCurrentSeason();
   const lbl = document.getElementById('ligy-season-label');
   if (lbl) lbl.textContent = s.label + ' ' + yr;
-  // Aktualizuj karty
   document.querySelectorAll('.liga-card-season').forEach(el => {
     el.textContent = s.label + ' ' + yr;
   });
