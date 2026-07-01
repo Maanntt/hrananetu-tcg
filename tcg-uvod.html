@@ -176,7 +176,7 @@ footer a{color:var(--pl);text-decoration:none}
   <h1>Liga na <b>Hraně</b></h1>
   <p>Průběžné výsledky, žebříčky a termíny turnajů pro všechny karetní hry v Hrana Store (Brno).</p>
   <div class="hero-stats">
-    <div><div class="hs-num">9</div><div class="hs-lbl">Aktivních lig</div></div>
+    <div><div class="hs-num" id="stat-leagues">—</div><div class="hs-lbl">Aktivních lig</div></div>
     <div><div class="hs-num" id="stat-players">—</div><div class="hs-lbl">Hráčů v lize</div></div>
     <div><div class="hs-num" id="stat-events">—</div><div class="hs-lbl">Turnajů v sezóně</div></div>
   </div>
@@ -642,6 +642,7 @@ async function loadStats(season) {
 }
 
 // ── START ──
+document.getElementById("stat-leagues").textContent = LEAGUES.length;
 loadSaved();
 loadAllTopPlayers();
 loadWeekFromCalendar();
