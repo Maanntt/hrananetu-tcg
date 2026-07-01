@@ -349,12 +349,104 @@ async function loadLeagueAvg(l) {
 }
 
 // ── Start ──
+function getPrizesForLeague(id, format, configData) {
+  if (!configData || !configData.prizes || !configData.prizes.length) return null;
+  // Nejdřív hledej ceny specifické pro ligu
+  const specific = configData.prizes.find(p =>
+    p.liga.toLowerCase() === id.toLowerCase() &&
+    p.format.toUpperCase().includes(format.replace(' ',''))
+  );
+  if (specific) return specific;
+  // Fallback na "Všechny"
+  return configData.prizes.find(p =>
+    (p.liga === 'Všechny' || p.liga === '') &&
+    p.format.toUpperCase().includes(format.replace(' ',''))
+  ) || null;
+}
+
+function renderFormatCardWithConfig(fmt, activeType, id, configData) {
+  const isActive = fmt.type === activeType;
+  const fmtKey = fmt.type.replace(' ','');
+  const cenyData = getPrizesForLeague(id, fmt.type, configData);
+
+  // Použij data z config sheetu nebo výchozí
+  const prizes = cenyData ? [
+    {place:'1.',    gold:true,  main: cenyData.p1  || fmt.prizes[0]?.main || '—', detail: cenyData.b1  ? '+' + cenyData.b1 + ' bodů' : fmt.prizes[0]?.detail || ''},
+    {place:'2.',    gold:false, main: cenyData.p2  || fmt.prizes[1]?.main || '—', detail: cenyData.b2  ? '+' + cenyData.b2 + ' bodů' : fmt.prizes[1]?.detail || ''},
+    {place:'3.–4.', gold:false, main: cenyData.p34 || fmt.prizes[2]?.main || '—', detail: cenyData.b34 ? '+' + cenyData.b34 + ' bodů' : fmt.prizes[2]?.detail || ''},
+    ...(fmt.prizes[3] ? [{place:'5.–8.', gold:false, main: cenyData.p58 || fmt.prizes[3]?.main || '—', detail: cenyData.b58 ? '+' + cenyData.b58 + ' bodů' : fmt.prizes[3]?.detail || ''}] : []),
+  ].filter(p => p.main && p.main !== '—') : fmt.prizes;
+
+  return `<div class="fmt-card${isActive ? ' active' : ''}">
+    <div class="fmt-head">
+      <div class="fmt-type"${isActive ? ' style="color:var(--pl)"' : ''}>${fmt.type}</div>
+      <div class="fmt-thresh">${fmt.thresh}</div>
+      ${isActive ? '<div class="fmt-badge">✦ Aktuální formát</div>' : ''}
+    </div>
+    <div class="fmt-body">
+      ${prizes.map(p => `<div class="prize-row">
+        <div class="prize-place${p.gold ? ' gold' : ''}">${p.place}</div>
+        <div>
+          <div class="prize-main">${p.main}</div>
+          ${p.detail ? `<div class="prize-detail">${p.detail}</div>` : ''}
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
 async function init() {
   renderTabs();
   renderDetails();
+
+  // Načti config sheet data
+  let configData = null;
+  try {
+    const stored = localStorage.getItem('hn_config_data');
+    if (stored) configData = JSON.parse(stored);
+  } catch(e) {}
+
+  // Načti průměry ze Sheets
   await Promise.all(LEAGUES.map(l => loadLeagueAvg(l)));
+
+  // Přerenderuj s daty
+  document.getElementById('liga-details').innerHTML = LEAGUES.map(l => {
+    const avg = leagueAvgs[l.id] || 0;
+    const activeType = activeFormat(avg);
+    const avgDisplay = avg > 0
+      ? `<strong style="color:var(--text)">${avg.toFixed(1)}</strong> hráčů průměr/kolo`
+      : '<span style="color:var(--text3)">— data nejsou k dispozici</span>';
+
+    const fmtCards = FORMATS.map(f =>
+      renderFormatCardWithConfig(f, activeType, l.id, configData)
+    ).join('');
+
+    return `<div class="liga-detail" id="detail-${l.id}">
+      <div class="liga-hero">
+        <div class="liga-hero-top">
+          <div>
+            <div class="liga-code" style="color:${l.color}">${l.code}</div>
+            <div class="liga-name" style="color:${l.color}">${l.name}</div>
+          </div>
+          <a href="/hrananetu-tcg/tcg-liga-detail.html?liga=${l.id}" class="liga-link">Žebříček ligy →</a>
+        </div>
+        <div class="liga-stats">
+          <div class="lstat">
+            <div class="lstat-val" style="color:${avg > 0 ? 'var(--pl)' : 'var(--text)'}">${activeType}</div>
+            <div class="lstat-lbl">Formát finále</div>
+          </div>
+          <div class="lstat">
+            <div class="lstat-val" style="font-size:16px">${avgDisplay}</div>
+            <div class="lstat-lbl">Průměrná účast</div>
+          </div>
+        </div>
+      </div>
+      <div class="formats-grid">${fmtCards}</div>
+    </div>`;
+  }).join('');
+
   renderTabs();
-  renderDetails();
+  showLeague(activeLeague);
 }
 
 init();
