@@ -513,7 +513,12 @@ function renderWeek() {
       const lid = detectLeagueFromTitle(e.title);
       const lc = lid ? WEEK_LEAGUES[lid] : {color:'var(--text2)',bg:'rgba(255,255,255,.08)'};
       const time = e.startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
-      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${e.title}">${time} ${e.title.split(/[-–]/)[0].trim()}</div>`;
+      const gameName = e.title.split(/[-–]/)[0].trim();
+      const formatStr = e.format ? ` · ${e.format}` : '';
+      const tooltip = e.title + (e.format ? ` — ${e.format}` : '');
+      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${tooltip}">
+        <span style="opacity:.7">${time}</span> ${gameName}<span style="opacity:.6;font-size:9px">${formatStr}</span>
+      </div>`;
     }).join('');
 
     return `<div class="week-col${isToday?' today':''}">
@@ -542,10 +547,25 @@ async function loadWeekFromCalendar() {
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
 
-    weekEvents = (data.items || []).map(item => ({
-      title: item.summary || '—',
-      startDate: new Date(item.start?.dateTime || item.start?.date),
-    })).filter(e => !isNaN(e.startDate));
+    weekEvents = (data.items || []).map(item => {
+      const desc = (item.description || '')
+        .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ');
+      
+      // Parsuj formát z popisu
+      let format = '';
+      for (const line of desc.split('\n')) {
+        const clean = line.replace(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\s]+/u,'').trim();
+        if (/^formát\s+/i.test(clean)) { format = clean.replace(/^formát\s+/i,'').trim(); break; }
+        const cm = clean.match(/^formát:\s*(.+)$/i);
+        if (cm) { format = cm[1].trim(); break; }
+      }
+      
+      return {
+        title: item.summary || '—',
+        format,
+        startDate: new Date(item.start?.dateTime || item.start?.date),
+      };
+    }).filter(e => !isNaN(e.startDate));
 
     renderWeek();
   } catch(e) {
