@@ -368,6 +368,24 @@ footer a{color:var(--pl);text-decoration:none}
       <span class="liga-next-val" id="nextval-so">načítám…</span>
     </div>
   </a>
+  <a href="/hrananetu-tcg/tcg-liga-detail.html?liga=ygo" class="liga-card" style="--c:#fb923c" id="card-ygo">
+    <div class="liga-card-code" style="color:#fb923c">YGO</div>
+    <div class="liga-card-name">YU-GI-OH!</div>
+    <div class="liga-card-season" id="card-season-ygo">Letní sezóna 2026</div>
+    <div class="liga-card-next" id="next-ygo">
+      <span class="liga-next-lbl">Další ligový turnaj:</span>
+      <span class="liga-next-val" id="nextval-ygo">načítám…</span>
+    </div>
+  </a>
+  <a href="/hrananetu-tcg/tcg-liga-detail.html?liga=mtgpa" class="liga-card" style="--c:#a78bfa" id="card-mtgpa">
+    <div class="liga-card-code" style="color:#a78bfa">MTG</div>
+    <div class="liga-card-name">MTG PAUPER</div>
+    <div class="liga-card-season" id="card-season-mtgpa">Letní sezóna 2026</div>
+    <div class="liga-card-next" id="next-mtgpa">
+      <span class="liga-next-lbl">Další ligový turnaj:</span>
+      <span class="liga-next-val" id="nextval-mtgpa">načítám…</span>
+    </div>
+  </a>
   </div>
 </main>
 
@@ -436,6 +454,8 @@ const LEAGUES_CFG = {
   pk:   {sheet:'Pokemon liga'},
   rb:   {sheet:'Riftbound liga'},
   so:   {sheet:'Sorcery liga'},
+  ygo:  {sheet:'Yu-Gi-Oh liga'},
+  mtgpa:{sheet:'MTG Pauper liga'},
 };
 
 // Sezóna se detekuje dynamicky

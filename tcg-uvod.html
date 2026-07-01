@@ -80,7 +80,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .section-title{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--text);display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
 .section-link{font-size:12px;font-weight:600;color:var(--gold);letter-spacing:1px;text-transform:uppercase;text-decoration:none;opacity:.7;transition:opacity .15s}
 .section-link:hover{opacity:1}
-.th-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.th-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .th-card{background:var(--bg2);padding:20px 18px 22px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background .15s}
 .th-card:hover{background:var(--bg3)}
 .th-card:nth-child(3n){border-right:none}
@@ -200,6 +200,8 @@ footer a{color:var(--pl);text-decoration:none}
       <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#4ade80"></span>Flesh & Blood</div><input class="setup-inp" id="sid-fab" placeholder="Sheets ID..."/></div>
       <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fcd34d"></span>Gundam</div><input class="setup-inp" id="sid-gd" placeholder="Sheets ID..."/></div>
       <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c084fc"></span>Sorcery</div><input class="setup-inp" id="sid-so" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fb923c"></span>Yu-Gi-Oh!</div><input class="setup-inp" id="sid-ygo" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#a78bfa"></span>MTG Pauper</div><input class="setup-inp" id="sid-mtgpa" placeholder="Sheets ID..."/></div>
     </div>
     <div class="setup-bottom">
       <select class="setup-sel" id="setup-season">
@@ -247,6 +249,8 @@ footer a{color:var(--pl);text-decoration:none}
       <div class="th-card"><div class="th-card-name" style="color:#4ade80"><a href="/hrananetu-tcg/tcg-liga-detail.html?liga=fab">FLESH AND BLOOD →</a></div><div id="top-fab"><div class="th-msg">Načítám…</div></div></div>
       <div class="th-card"><div class="th-card-name" style="color:#fcd34d"><a href="/hrananetu-tcg/tcg-liga-detail.html?liga=gd">GUNDAM →</a></div><div id="top-gd"><div class="th-msg">Načítám…</div></div></div>
       <div class="th-card"><div class="th-card-name" style="color:#c084fc"><a href="/hrananetu-tcg/tcg-liga-detail.html?liga=so">SORCERY →</a></div><div id="top-so"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#fb923c"><a href="/hrananetu-tcg/tcg-liga-detail.html?liga=ygo">YU-GI-OH! →</a></div><div id="top-ygo"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#a78bfa"><a href="/hrananetu-tcg/tcg-liga-detail.html?liga=mtgpa">MTG PAUPER →</a></div><div id="top-mtgpa"><div class="th-msg">Načítám…</div></div></div>
     </div>
   </div>
 
@@ -311,6 +315,8 @@ const LEAGUES = [
   {id:'fab', color:'#4ade80',sheet:'FaB liga'},
   {id:'gd',  color:'#fcd34d',sheet:'Gundam liga'},
   {id:'so',  color:'#c084fc',sheet:'Sorcery liga'},
+  {id:'ygo', color:'#fb923c',sheet:'Yu-Gi-Oh liga'},
+  {id:'mtgpa',color:'#a78bfa',sheet:'MTG Pauper liga'},
 ];
 
 // ── Načti uložené hodnoty do inputů ──
@@ -448,6 +454,8 @@ const WEEK_LEAGUES = {
   fab: {color:'#4ade80',bg:'rgba(74,222,128,.2)'},
   gd:  {color:'#fcd34d',bg:'rgba(252,211,77,.2)'},
   so:  {color:'#c084fc',bg:'rgba(192,132,252,.2)'},
+  ygo: {color:'#fb923c',bg:'rgba(251,146,60,.2)'},
+  mtgpa:{color:'#a78bfa',bg:'rgba(167,139,250,.2)'},
 };
 const WEEK_DAYS = ['Po','Út','St','Čt','Pá','So','Ne'];
 const WEEK_MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
@@ -480,6 +488,8 @@ function detectLeagueFromTitle(title) {
   if (t.includes('flesh') || t.includes('blood') || t.includes('fab')) return 'fab';
   if (t.includes('gundam'))                           return 'gd';
   if (t.includes('sorcery'))                          return 'so';
+  if (t.includes('yu-gi') || t.includes('yugi'))      return 'ygo';
+  if (t.includes('pauper'))                           return 'mtgpa';
   if (t.includes('mtg') || t.includes('magic'))       return 'mtgp'; // fallback MTG
   return null;
 }
