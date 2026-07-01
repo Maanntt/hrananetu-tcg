@@ -174,7 +174,7 @@ footer a{color:var(--pl);text-decoration:none}
 <section class="hero">
   <div class="hero-label" id="hero-label">Letní Sezóna 2026</div>
   <h1>Liga na <b>Hraně</b></h1>
-  <p>Průběžné výsledky, žebříčky a termíny turnajů pro všechny TCG hry v Hrana Store (Brno).</p>
+  <p>Průběžné výsledky, žebříčky a termíny turnajů pro všechny karetní hry v Hrana Store (Brno).</p>
   <div class="hero-stats">
     <div><div class="hs-num">9</div><div class="hs-lbl">Aktivních lig</div></div>
     <div><div class="hs-num" id="stat-players">—</div><div class="hs-lbl">Hráčů v lize</div></div>
@@ -561,10 +561,62 @@ function renderWeekNoData() {
   renderWeek();
 }
 
+// ── STATISTIKY ──
+async function loadStats(season) {
+  if (!season) {
+    try { season = JSON.parse(localStorage.getItem('hn_cfg') || '{}').season || 'Léto 2026'; } catch(e) { season = 'Léto 2026'; }
+  }
+
+  let totalPlayers = new Set(); // unikátní hráči napříč ligami
+  let totalRounds  = 0;         // celkem kol ve všech ligách
+
+  await Promise.all(LEAGUES.map(async l => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('hn_' + l.id) || 'null');
+      if (!saved || !saved.sheetId) return;
+
+      const url = `https://docs.google.com/spreadsheets/d/${saved.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(season)}`;
+      const res = await fetch(url);
+      if (!res.ok) return;
+      const text = await res.text();
+      if (text.trim().startsWith('google') || text.trim().startsWith('/*') || text.includes('google.visualization')) return;
+
+      const rows = parseCSV(text);
+      if (rows.length < 2) return;
+
+      // Hráči = řádky od indexu 1 kde je neprázdné jméno
+      rows.slice(1).forEach(r => {
+        const name = (r[0]||'').replace(/^"+|"+$/g,'').trim();
+        if (name) totalPlayers.add(name.toLowerCase());
+      });
+
+      // Turnaje = počet datumových sloupců (index 2 až předposlední) + případně FINÁLE sloupec
+      const header = rows[0];
+      let rounds = 0;
+      for (let i = 2; i < header.length - 1; i++) {
+        const h = (header[i]||'').trim();
+        if (h) rounds++;
+      }
+      // Finále sloupec (poslední) - přidej pokud je neprázdný
+      const lastHeader = (header[header.length-1]||'').trim().toUpperCase();
+      if (lastHeader === 'FINÁLE' || lastHeader === 'FINALE') rounds++;
+
+      totalRounds += rounds;
+    } catch(e) {}
+  }));
+
+  // Aktualizuj UI
+  const elPlayers = document.getElementById('stat-players');
+  const elEvents  = document.getElementById('stat-events');
+  if (elPlayers) elPlayers.textContent = totalPlayers.size > 0 ? totalPlayers.size : '—';
+  if (elEvents)  elEvents.textContent  = totalRounds > 0 ? totalRounds : '—';
+}
+
 // ── START ──
 loadSaved();
 loadAllTopPlayers();
 loadWeekFromCalendar();
+loadStats();
 </script>
 
 
