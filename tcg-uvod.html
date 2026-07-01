@@ -470,16 +470,17 @@ function getMondayOf(date) {
 }
 
 function detectLeagueFromTitle(title) {
-  const t = title.toLowerCase();
-  if (t.includes('premodern')) return 'mtgp';
-  if (t.includes('draft'))     return 'mtgd';
-  if (t.includes('modern'))    return 'mtgm';
+  const t = (title || '').toLowerCase();
+  if (t.includes('premodern'))                        return 'mtgp';
+  if (t.includes('draft'))                            return 'mtgd';
+  if (t.includes('modern'))                           return 'mtgm';
   if (t.includes('riftbound') || t.includes('rift')) return 'rb';
-  if (t.includes('pokémon') || t.includes('pokemon')) return 'pk';
-  if (t.includes('one piece')) return 'op';
+  if (t.includes('pokémon') || t.includes('pokemon'))return 'pk';
+  if (t.includes('one piece'))                        return 'op';
   if (t.includes('flesh') || t.includes('blood') || t.includes('fab')) return 'fab';
-  if (t.includes('gundam'))    return 'gd';
-  if (t.includes('sorcery'))   return 'so';
+  if (t.includes('gundam'))                           return 'gd';
+  if (t.includes('sorcery'))                          return 'so';
+  if (t.includes('mtg') || t.includes('magic'))       return 'mtgp'; // fallback MTG
   return null;
 }
 
@@ -507,13 +508,22 @@ function renderWeek() {
     });
 
     const pills = dayEvents.map(e => {
-      const lid = detectLeagueFromTitle(e.title);
+      const lid = detectLeagueFromTitle(e.rawTitle || e.title);
       const lc  = lid ? WEEK_LEAGUES[lid] : {color:'var(--text2)', bg:'rgba(255,255,255,.07)'};
       const time = e.startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
-      const name = e.title.split(/[-–]/)[0].trim();
-      const fmt  = e.format ? `<span style="font-size:9px;opacity:.65;margin-left:2px">· ${e.format}</span>` : '';
-      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${e.title}${e.format ? ' · ' + e.format : ''}">
-        <span style="opacity:.65;font-size:9px">${time}</span> <span style="font-weight:600">${name}</span>${fmt}
+      
+      // Sestavení textu pilulky
+      const fmtStr = e.gameFormat ? ` · ${e.gameFormat}` : '';
+      const leagueBadge = e.isLeague
+        ? `<span style="font-size:8px;font-weight:700;letter-spacing:.5px;opacity:.8;margin-left:3px;background:${lc.color}22;padding:1px 4px;border-radius:3px">LIGA</span>`
+        : '';
+      const tooltip = [e.title, e.gameFormat, e.tourneyType].filter(Boolean).join(' · ');
+      
+      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${tooltip}">
+        <span style="opacity:.6;font-size:9px">${time}</span>
+        <span style="font-weight:600;margin-left:3px">${e.title}</span>
+        <span style="font-size:9px;opacity:.7">${fmtStr}</span>
+        ${leagueBadge}
       </div>`;
     }).join('');
 
@@ -540,25 +550,26 @@ async function loadWeekFromCalendar() {
     const data = await res.json();
 
     weekEvents = (data.items || []).map(item => {
-      // Parsuj popis - odstraň HTML
-      const desc = (item.description || '')
-        .replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
-        .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&');
+      // Titulek formát: "🎮 Název hry - Formát hry - Liga" nebo "🎮 Název hry - Formát turnaje"
+      const raw = item.summary || '—';
 
-      // Extrahuj formát ze všech řádků
-      let format = '';
-      for (const line of desc.split('\n')) {
-        // Odstraň emoji (Unicode ranges)
-        const clean = line.replace(/[\u{1F300}-\u{1FFFF}\u{2600}-\u{27BF}]/gu,'').trim();
-        // Formát: Standard nebo Formát Standard
-        const m1 = clean.match(/^[Ff]orm[aá]t[:\s]+(.+)$/);
-        if (m1) { format = m1[1].trim(); break; }
-        if (/^[Ff]orm[aá]t$/i.test(clean)) continue;
-      }
+      // Odstraň emoji ze začátku
+      const noEmoji = raw.replace(/^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Presentation}\s]+/u, '').trim();
+
+      // Rozděl podle " - " nebo " – "
+      const parts = noEmoji.split(/\s*[-–]\s*/);
+      const gameName  = parts[0]?.trim() || raw;
+      const gameFormat = parts[1]?.trim() || '';  // Constructed, Draft, Standard...
+      const tourneyType = parts[2]?.trim() || ''; // Liga, Turnaj, FNM...
+
+      const isLeague = /liga/i.test(tourneyType) || /liga/i.test(gameFormat);
 
       return {
-        title: item.summary || '—',
-        format,
+        title: gameName,
+        gameFormat,
+        tourneyType,
+        isLeague,
+        rawTitle: raw,
         startDate: new Date(item.start?.dateTime || item.start?.date),
       };
     }).filter(e => !isNaN(e.startDate));

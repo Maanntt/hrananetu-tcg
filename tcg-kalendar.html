@@ -674,7 +674,14 @@ function stripEmoji(s) {
 }
 
 function parseGCalEvent(item) {
-  const title = item.summary || 'Turnaj';
+  // Titulek: "🎮 Název hry - Formát hry - Liga/Turnaj"
+  const rawTitle = item.summary || 'Turnaj';
+  const noEmoji  = rawTitle.replace(/^[^a-zA-ZÀ-ž0-9\s(]+/, '').trim();
+  const titleParts  = noEmoji.split(/\s*[-–]\s*/);
+  const title       = titleParts[0]?.trim() || rawTitle;
+  const titleFormat = titleParts[1]?.trim() || '';   // Formát hry (Constructed, Draft...)
+  const titleType   = titleParts[2]?.trim() || '';   // Liga / Turnaj / FNM
+  const isLeague    = /liga/i.test(titleType) || /liga/i.test(titleFormat);
   const start = item.start?.dateTime || item.start?.date;
   const end   = item.end?.dateTime   || item.end?.date;
   if (!start) return null;
@@ -744,6 +751,8 @@ function parseGCalEvent(item) {
     endDate: end ? new Date(end) : null,
     league, isFinale,
     format:   fields['formát']    || '—',
+    isLeague,
+    tourneyType: titleType,
     place:    fields['místo']     || '—',
     regTime,  startTime,
     rounds:   fields['počet kol'] || '—',
@@ -866,7 +875,8 @@ function kalOpenModal(idx) {
   const tag     = e.isFinale ? 'Finálový turnaj' : (e.league ? e.league.label : 'Akce');
 
   document.getElementById('modal-banner').style.background = color;
-  document.getElementById('modal-tag').textContent  = tag;
+  const leagueLabel = e.isLeague ? ' · LIGA' : (e.tourneyType ? ' · ' + e.tourneyType : '');
+  document.getElementById('modal-tag').textContent  = tag + leagueLabel;
   document.getElementById('modal-tag').style.color  = color;
   document.getElementById('modal-title').textContent = e.title;
   document.getElementById('modal-date').textContent  = dateStr;
