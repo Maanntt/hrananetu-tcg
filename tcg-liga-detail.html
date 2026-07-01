@@ -62,15 +62,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .lstat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px}
 
 /* SHEETS CONFIG */
-.cfg-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin-bottom:28px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cfg-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap}
-.cfg-inp{flex:1;min-width:160px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--text);font-family:'Inter',sans-serif;outline:none}
 .cfg-inp:focus{border-color:var(--purple)}
-.cfg-sel{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--text);font-family:'Inter',sans-serif;outline:none;flex-shrink:0}
-.cfg-btn{background:var(--purple);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;cursor:pointer;border:none;font-family:'Inter',sans-serif;white-space:nowrap}
-.cfg-btn:hover{background:var(--pl)}
-.cfg-status{font-size:11px;color:var(--text3);white-space:nowrap}
-
 /* TURNAJE — SEZNAM KOLE */
 .rounds-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
 .rounds-list{display:flex;flex-direction:column;gap:6px;margin-bottom:32px}
@@ -211,16 +203,7 @@ footer a{color:var(--pl);text-decoration:none}
   </div>
 
   <!-- SHEETS CONFIG -->
-  <div class="cfg-bar">
-    <span class="cfg-lbl">Sheets ID</span>
-    <input class="cfg-inp" id="cfg-sid" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" value="1ZstlA6EWEM2UyO6Flm7tfdXbz-FjSC5nnUzRzZjAcUY"/>
-    <select class="cfg-sel" id="cfg-tab" id="cfg-tab">
-    </select>
-    <button class="cfg-btn" onclick="loadData()">Načíst</button>
-    <span class="cfg-status" id="cfg-status"></span>
-  </div>
-
-  <div class="page">
+<div class="page">
     <!-- LEVÝ PANEL — KOLA -->
     <div class="left-panel">
       <div class="rounds-title">Turnaje sezóny</div>
@@ -413,43 +396,37 @@ function init() {
     tabSel.value = currName;
   }
 
-  // Načti uložené Sheets ID - zkus nový klíč (hn_) i starý (hrana_sheets_)
-  try {
-    let sheetId = '', tab = '';
-    // Nový klíč z úvodní stránky
-    const hnSaved = localStorage.getItem('hn_' + leagueId);
-    if (hnSaved) {
-      const d = JSON.parse(hnSaved);
-      sheetId = d.sheetId || '';
-      tab     = d.tab || '';
-    }
-    // Fallback na starý klíč
-    if (!sheetId) {
-      const oldSaved = localStorage.getItem('hrana_sheets_' + leagueId);
-      if (oldSaved) {
-        const d = JSON.parse(oldSaved);
-        sheetId = d.sheetId || '';
-        tab     = d.tab || '';
-      }
-    }
-    if (sheetId) {
-      const sidEl = document.getElementById('cfg-sid');
-      const tabEl = document.getElementById('cfg-tab');
-      if (sidEl) sidEl.value = sheetId;
-      if (tabEl && tab) tabEl.value = tab;
-      loadData();
-    }
-  } catch(e) {}
+  // Automaticky načti ze Sheets ID uloženého na úvodní stránce
+  autoLoad();
+}
+
+function getSavedSheets(id) {
+  // Zkus nový klíč (hn_) pak starý (hrana_sheets_)
+  for (const key of ['hn_' + id, 'hrana_sheets_' + id]) {
+    try {
+      const s = localStorage.getItem(key);
+      if (s) { const d = JSON.parse(s); if (d.sheetId) return d; }
+    } catch(e) {}
+  }
+  return null;
+}
+
+function autoLoad() {
+  const saved = getSavedSheets(leagueId);
+  if (saved) {
+    loadData(saved.sheetId, saved.tab);
+  } else {
+    document.getElementById('cfg-status-msg').textContent = 'Nastav Sheets ID na úvodní stránce.';
+  }
 }
 
 /* ── Sheets Loader ── */
-async function loadData() {
-  const rawId = document.getElementById('cfg-sid').value.trim();
-  const sheetId = rawId.replace(/.*\/d\/([^/]+).*/, '$1');
-  const tab = document.getElementById('cfg-tab').value;
-  const status = document.getElementById('cfg-status');
-  if (!sheetId) { status.textContent = '⚠ Vlož Sheets ID'; return; }
-  status.textContent = 'Načítám…';
+async function loadData(sheetIdArg, tabArg) {
+  const sheetId = (sheetIdArg || '').replace(/.*\/d\/([^/]+).*/, '$1').replace(/[^a-zA-Z0-9_-]/g,'');
+  const tab = tabArg || (getCurrentSeason().sheetName + ' ' + new Date().getFullYear());
+  const statusEl = document.getElementById('cfg-status-msg');
+  if (!sheetId) { if (statusEl) statusEl.textContent = 'Nastav Sheets ID na úvodní stránce.'; return; }
+  if (statusEl) statusEl.textContent = 'Načítám…';
   try {
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
     const res = await fetch(url);
@@ -457,11 +434,9 @@ async function loadData() {
     const text = await res.text();
     currentData = parseSheets(text);
     renderAll(currentData);
-    localStorage.setItem('hrana_sheets_' + leagueId, JSON.stringify({sheetId, tab}));
-    localStorage.setItem('hn_' + leagueId, JSON.stringify({sheetId, tab}));
-    status.textContent = `✓ ${currentData.players.length} hráčů, ${currentData.roundCols.length} kol`;
+    if (statusEl) statusEl.textContent = '✓ ' + currentData.players.length + ' hráčů, ' + currentData.roundCols.length + ' kol';
   } catch(e) {
-    status.textContent = '⚠ ' + e.message;
+    if (statusEl) statusEl.textContent = '⚠ ' + e.message;
   }
 }
 
