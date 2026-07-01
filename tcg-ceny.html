@@ -13,11 +13,8 @@
   --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);
   --purple:#c51df5;--pl:#d44fff;--pd:rgba(197,29,245,0.15);
   --gold:#f0a500;--text:#f0ecff;--text2:#b8b4d0;--text3:#7a768f;
-  --green:#22c55e;
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;font-size:15px}
-
-/* HEADER */
 header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
 .hi{max-width:1280px;margin:0 auto;padding:0 28px;height:72px;display:flex;align-items:center;gap:28px}
 .logo{text-decoration:none;flex-shrink:0}.logo img{height:46px;width:auto;display:block}
@@ -42,49 +39,60 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 
 .con{max-width:1280px;margin:0 auto;padding:0 28px}
 
-/* PAGE HEADER */
-.page-header{padding:48px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px}
+/* PAGE */
+.page-top{padding:48px 0 32px}
 .eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px}
-.page-title{font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:700;color:var(--text);line-height:1;margin-bottom:10px}
-.page-sub{font-size:14px;color:var(--text3)}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:700;line-height:1;margin-bottom:10px}
+.page-sub{font-size:14px;color:var(--text3);margin-bottom:32px}
 
-/* LIGA SEKCE */
-.liga-section{margin-bottom:64px}
-.liga-header{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--border)}
+/* LIGA TABS */
+.liga-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.ltab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:7px;transition:all .15s;white-space:nowrap}
+.ltab:hover{border-color:var(--border2);color:var(--text)}
+.ltab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
+.ltab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ltab-avg{font-size:10px;opacity:.6;margin-left:2px}
+
+/* LIGA DETAIL */
+.liga-detail{display:none}.liga-detail.visible{display:block}
+.liga-hero{margin-bottom:28px}
+.liga-hero-top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px}
 .liga-code{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
-.liga-name{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;line-height:1}
-.liga-avg{font-size:13px;color:var(--text3);margin-left:auto;flex-shrink:0}
-.liga-avg strong{color:var(--text2)}
+.liga-name{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;line-height:1}
+.liga-link{font-size:13px;font-weight:600;color:var(--text3);text-decoration:none;transition:color .15s}
+.liga-link:hover{color:var(--pl)}
+.liga-stats{display:flex;gap:24px;flex-wrap:wrap}
+.lstat{display:flex;flex-direction:column;gap:2px}
+.lstat-val{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.lstat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px}
 
-/* FORMÁTY */
-.formats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.fmt-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .15s;position:relative}
-.fmt-card.active{border-color:var(--purple);background:rgba(197,29,245,.04)}
+/* FORMATS */
+.formats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px}
+.fmt-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:relative;transition:border-color .15s}
+.fmt-card.active{border-color:var(--purple)}
 .fmt-card.active::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--purple)}
-.fmt-head{padding:16px 18px 12px;border-bottom:1px solid var(--border)}
-.fmt-type{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1;margin-bottom:4px}
-.fmt-desc{font-size:12px;color:var(--text3)}
-.fmt-active-badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;background:var(--purple);color:#fff;padding:2px 8px;border-radius:20px}
-.fmt-body{padding:14px 18px}
-.prize-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.fmt-head{padding:18px 20px 14px;border-bottom:1px solid var(--border)}
+.fmt-type{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
+.fmt-thresh{font-size:12px;color:var(--text3)}
+.fmt-badge{display:inline-block;margin-top:10px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;background:var(--purple);color:#fff;padding:3px 10px;border-radius:20px}
+.fmt-body{padding:16px 20px}
+.prize-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
 .prize-row:last-child{border-bottom:none}
-.prize-place{font-size:12px;font-weight:700;color:var(--text3);min-width:40px;flex-shrink:0}
-.prize-place.top{color:var(--gold)}
-.prize-items{font-size:13px;color:var(--text2);line-height:1.5}
-.prize-main{font-weight:600;color:var(--text)}
+.prize-place{font-size:12px;font-weight:700;color:var(--text3);min-width:44px;flex-shrink:0;padding-top:2px}
+.prize-place.gold{color:var(--gold)}
+.prize-main{font-size:14px;font-weight:600;color:var(--text)}
+.prize-detail{font-size:12px;color:var(--text3);margin-top:2px}
 
-/* PODMÍNKY */
-.conditions{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;margin-top:48px;margin-bottom:64px}
+/* CONDITIONS */
+.conditions{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:64px}
 .conditions-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;margin-bottom:16px}
 .conditions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.cond{display:flex;flex-direction:column;gap:4px}
-.cond-label{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+.cond-label{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
 .cond-val{font-size:13px;color:var(--text2)}
 
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;text-align:center;font-size:12px;color:var(--text3)}
 footer a{color:var(--pl);text-decoration:none}
-@media(max-width:900px){.formats-grid{grid-template-columns:1fr}.conditions-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.conditions-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.formats-grid{grid-template-columns:1fr}.conditions-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -119,30 +127,29 @@ footer a{color:var(--pl);text-decoration:none}
 </nav>
 
 <div class="con">
-  <div class="page-header">
+  <div class="page-top">
     <div class="eyebrow">TCG Klub</div>
     <div class="page-title">CENY & ODMĚNY</div>
-    <div class="page-sub">Přehled odměn pro finálové turnaje všech lig. Aktivní formát finále je označen fialově.</div>
+    <div class="page-sub">Přehled odměn pro finálové turnaje. Aktivní formát se určuje z průměrné účasti v dané lize.</div>
   </div>
 
-  <!-- Ligy se vyplní JS -->
-  <div id="ceny-content"></div>
+  <div class="liga-tabs" id="liga-tabs"></div>
+  <div id="liga-details"></div>
 
-  <!-- Podmínky -->
   <div class="conditions">
     <div class="conditions-title">Jak se určuje formát finále?</div>
     <div class="conditions-grid">
-      <div class="cond">
+      <div>
         <div class="cond-label">Žebříček (bez finále)</div>
-        <div class="cond-val">Průměrná účast pod 8 hráčů/kolo. Ceny dle pořadí v žebříčku.</div>
+        <div class="cond-val">Průměr pod 8 hráčů/kolo. Ceny dle pořadí v žebříčku na konci sezóny.</div>
       </div>
-      <div class="cond">
+      <div>
         <div class="cond-label">TOP4 finálový turnaj</div>
-        <div class="cond-val">Průměrná účast 8–12 hráčů/kolo. 4 nejlepší z žebříčku postoupí.</div>
+        <div class="cond-val">Průměr 8–12 hráčů/kolo. 4 nejlepší z žebříčku postoupí do finále.</div>
       </div>
-      <div class="cond">
+      <div>
         <div class="cond-label">TOP8 finálový turnaj</div>
-        <div class="cond-val">Průměrná účast 13+ hráčů/kolo. 8 nejlepších z žebříčku postoupí.</div>
+        <div class="cond-val">Průměr 13+ hráčů/kolo. 8 nejlepších z žebříčku postoupí do finále.</div>
       </div>
     </div>
   </div>
@@ -154,101 +161,142 @@ footer a{color:var(--pl);text-decoration:none}
 
 <script>
 const LEAGUES = [
-  {id:'fab',  code:'FAB',      name:'Flesh and Blood', color:'#4ade80'},
-  {id:'gd',   code:'GUNDAM',   name:'Gundam',          color:'#fcd34d'},
-  {id:'mtgd', code:'MTG',      name:'MTG Draft',       color:'#b39ddb'},
-  {id:'mtgm', code:'MTG',      name:'MTG Modern',      color:'#9b4dff'},
-  {id:'mtgpa',code:'MTG',      name:'MTG Pauper',      color:'#a78bfa'},
-  {id:'mtgp', code:'MTG',      name:'MTG Premodern',   color:'#c51df5'},
-  {id:'op',   code:'ONE PIECE',name:'One Piece',       color:'#f87171'},
-  {id:'pk',   code:'POKÉMON',  name:'Pokémon',         color:'#ffcb05'},
-  {id:'rb',   code:'RIFTBOUND',name:'Riftbound',       color:'#7fb3f5'},
-  {id:'so',   code:'SORCERY',  name:'Sorcery',         color:'#c084fc'},
-  {id:'ygo',  code:'YGO',      name:'Yu-Gi-Oh!',       color:'#fb923c'},
+  {id:'fab',  code:'FAB',       name:'Flesh and Blood', color:'#4ade80'},
+  {id:'gd',   code:'GUNDAM',    name:'Gundam',          color:'#fcd34d'},
+  {id:'mtgd', code:'MTG',       name:'MTG Draft',       color:'#b39ddb'},
+  {id:'mtgm', code:'MTG',       name:'MTG Modern',      color:'#9b4dff'},
+  {id:'mtgpa',code:'MTG',       name:'MTG Pauper',      color:'#a78bfa'},
+  {id:'mtgp', code:'MTG',       name:'MTG Premodern',   color:'#c51df5'},
+  {id:'op',   code:'ONE PIECE', name:'One Piece',       color:'#f87171'},
+  {id:'pk',   code:'POKÉMON',   name:'Pokémon',         color:'#ffcb05'},
+  {id:'rb',   code:'RIFTBOUND', name:'Riftbound',       color:'#7fb3f5'},
+  {id:'so',   code:'SORCERY',   name:'Sorcery',         color:'#c084fc'},
+  {id:'ygo',  code:'YGO',       name:'Yu-Gi-Oh!',       color:'#fb923c'},
 ];
 
 const FORMATS = [
   {
-    type:'ŽEBŘÍČEK',
-    thresh:'< 8 hráčů/kolo',
+    type:'ŽEBŘÍČEK', thresh:'průměr < 8 hráčů',
     prizes:[
-      {place:'1.',  top:true,  main:'Booster Box',     detail:'+20 ligových bodů'},
-      {place:'2.',  top:false, main:'4× Booster',      detail:'+15 ligových bodů'},
-      {place:'3.',  top:false, main:'2× Booster',      detail:'+10 ligových bodů'},
+      {place:'1.',  gold:true,  main:'Booster Box',  detail:'+20 ligových bodů'},
+      {place:'2.',  gold:false, main:'4× Booster',   detail:'+15 ligových bodů'},
+      {place:'3.',  gold:false, main:'2× Booster',   detail:'+10 ligových bodů'},
     ]
   },
   {
-    type:'TOP4',
-    thresh:'8–12 hráčů/kolo',
+    type:'TOP 4', thresh:'průměr 8–12 hráčů',
     prizes:[
-      {place:'1.',    top:true,  main:'Booster Box',     detail:'Trofej & diplom · +20 bodů'},
-      {place:'2.',    top:false, main:'Booster Display', detail:'+15 ligových bodů'},
-      {place:'3.–4.', top:false, main:'4× Booster',     detail:'+10 ligových bodů'},
+      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom · +20 bodů'},
+      {place:'2.',    gold:false, main:'Booster Display',  detail:'+15 ligových bodů'},
+      {place:'3.–4.', gold:false, main:'4× Booster',      detail:'+10 ligových bodů'},
     ]
   },
   {
-    type:'TOP8',
-    thresh:'13+ hráčů/kolo',
+    type:'TOP 8', thresh:'průměr 13+ hráčů',
     prizes:[
-      {place:'1.',    top:true,  main:'Booster Box',     detail:'Trofej & diplom · +30 bodů'},
-      {place:'2.',    top:false, main:'Booster Display', detail:'+20 ligových bodů'},
-      {place:'3.–4.', top:false, main:'6× Booster',     detail:'+15 ligových bodů'},
-      {place:'5.–8.', top:false, main:'2× Booster',     detail:'+8 ligových bodů'},
+      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom · +30 bodů'},
+      {place:'2.',    gold:false, main:'Booster Display',  detail:'+20 ligových bodů'},
+      {place:'3.–4.', gold:false, main:'6× Booster',      detail:'+15 ligových bodů'},
+      {place:'5.–8.', gold:false, main:'2× Booster',      detail:'+8 ligových bodů'},
     ]
   },
 ];
 
-function finaleType(avg) {
-  if (avg >= 13) return 'TOP8';
-  if (avg >= 8)  return 'TOP4';
+// avg → aktivní formát typ
+function activeFormat(avg) {
+  if (avg >= 13) return 'TOP 8';
+  if (avg >= 8)  return 'TOP 4';
   return 'ŽEBŘÍČEK';
 }
 
-function renderFmtCard(fmt, activeType) {
-  const isActive = fmt.type === activeType;
-  return `<div class="fmt-card ${isActive ? 'active' : ''}">
-    <div class="fmt-head">
-      <div class="fmt-type" style="${isActive ? 'color:var(--pl)' : ''}">${fmt.type}</div>
-      <div class="fmt-desc">${fmt.thresh}</div>
-      ${isActive ? '<div class="fmt-active-badge">✦ Aktuální formát</div>' : ''}
-    </div>
-    <div class="fmt-body">
-      ${fmt.prizes.map(p => `<div class="prize-row">
-        <div class="prize-place ${p.top ? 'top' : ''}">${p.place}</div>
-        <div class="prize-items">
-          <div class="prize-main">${p.main}</div>
-          <div style="font-size:12px;color:var(--text3)">${p.detail}</div>
+// State
+const leagueAvgs = {}; // id → avg
+let activeLeague = LEAGUES[0].id;
+
+// ── Render tabs ──
+function renderTabs() {
+  document.getElementById('liga-tabs').innerHTML = LEAGUES.map(l => {
+    const avg = leagueAvgs[l.id] || 0;
+    const avgStr = avg > 0 ? `<span class="ltab-avg">${avg.toFixed(1)}⌀</span>` : '';
+    return `<button class="ltab${l.id === activeLeague ? ' active' : ''}" id="tab-${l.id}" onclick="selectLeague('${l.id}')">
+      <span class="ltab-dot" style="background:${l.color}"></span>${l.name}${avgStr}
+    </button>`;
+  }).join('');
+}
+
+// ── Render detail jedné ligy ──
+function renderDetail(l) {
+  const avg = leagueAvgs[l.id] || 0;
+  const active = activeFormat(avg);
+  const avgDisplay = avg > 0
+    ? `<strong style="color:var(--text)">${avg.toFixed(1)}</strong> hráčů průměr/kolo`
+    : '— data nejsou k dispozici';
+
+  const fmtCards = FORMATS.map(f => {
+    const isActive = f.type === active;
+    return `<div class="fmt-card${isActive ? ' active' : ''}">
+      <div class="fmt-head">
+        <div class="fmt-type"${isActive ? ' style="color:var(--pl)"' : ''}>${f.type}</div>
+        <div class="fmt-thresh">${f.thresh}</div>
+        ${isActive ? '<div class="fmt-badge">✦ Aktuální formát</div>' : ''}
+      </div>
+      <div class="fmt-body">
+        ${f.prizes.map(p => `<div class="prize-row">
+          <div class="prize-place${p.gold ? ' gold' : ''}">${p.place}</div>
+          <div>
+            <div class="prize-main">${p.main}</div>
+            <div class="prize-detail">${p.detail}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="liga-detail visible" id="detail-${l.id}">
+    <div class="liga-hero">
+      <div class="liga-hero-top">
+        <div>
+          <div class="liga-code" style="color:${l.color}">${l.code}</div>
+          <div class="liga-name" style="color:${l.color}">${l.name}</div>
         </div>
-      </div>`).join('')}
+        <a href="/hrananetu-tcg/tcg-liga-detail.html?liga=${l.id}" class="liga-link">Žebříček ligy →</a>
+      </div>
+      <div class="liga-stats">
+        <div class="lstat">
+          <div class="lstat-val" style="color:${isActive(l.id) ? 'var(--pl)' : 'var(--text)'}">${active}</div>
+          <div class="lstat-lbl">Formát finále</div>
+        </div>
+        <div class="lstat">
+          <div class="lstat-val">${avgDisplay}</div>
+          <div class="lstat-lbl">Průměrná účast</div>
+        </div>
+      </div>
     </div>
+    <div class="formats-grid">${fmtCards}</div>
   </div>`;
 }
 
-function renderLeague(l, avg) {
-  const activeType = finaleType(avg);
-  const avgStr = avg > 0
-    ? `Průměr: <strong>${avg.toFixed(1)} hráčů/kolo</strong>`
-    : `<span style="color:var(--text3)">Načítám data…</span>`;
+function isActive(id) { return leagueAvgs[id] > 0; }
 
-  return `<div class="liga-section" id="liga-sec-${l.id}">
-    <div class="liga-header">
-      <div class="liga-code" style="color:${l.color}">${l.code}</div>
-      <div class="liga-name" style="color:${l.color}">${l.name}</div>
-      <div class="liga-avg">${avgStr}</div>
-    </div>
-    <div class="formats-grid">
-      ${FORMATS.map(f => renderFmtCard(f, activeType)).join('')}
-    </div>
-  </div>`;
+function renderDetails() {
+  document.getElementById('liga-details').innerHTML =
+    LEAGUES.map(l => renderDetail(l)).join('');
+  showLeague(activeLeague);
 }
 
-// Počáteční render bez dat (avg=0)
-function initialRender() {
-  document.getElementById('ceny-content').innerHTML =
-    LEAGUES.map(l => renderLeague(l, 0)).join('');
+function showLeague(id) {
+  document.querySelectorAll('.liga-detail').forEach(d => d.classList.remove('visible'));
+  const el = document.getElementById('detail-' + id);
+  if (el) el.classList.add('visible');
 }
 
-// Načti průměr ze Sheets pro každou ligu
+function selectLeague(id) {
+  activeLeague = id;
+  renderTabs();
+  showLeague(id);
+}
+
+// ── Parsuj CSV ──
 function parseCSV(text) {
   const rows = [];
   for (const line of text.trim().split('\n')) {
@@ -265,15 +313,15 @@ function parseCSV(text) {
   return rows;
 }
 
+// ── Načti průměr ze Sheets ──
 async function loadLeagueAvg(l) {
   try {
-    // Načti Sheets ID z localStorage
     let sheetId = '', tab = '';
     for (const key of ['hn_' + l.id, 'hrana_sheets_' + l.id]) {
       const s = localStorage.getItem(key);
       if (s) { const d = JSON.parse(s); if (d.sheetId) { sheetId = d.sheetId; tab = d.tab || ''; break; } }
     }
-    if (!sheetId) return; // Není nastaveno
+    if (!sheetId) return;
 
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
     const res = await fetch(url);
@@ -285,37 +333,31 @@ async function loadLeagueAvg(l) {
     if (rows.length < 2) return;
 
     const header = rows[0];
-    const today = new Date(); today.setHours(0,0,0,0);
     const finaleIdx = header.length - 1;
-
-    // Sloupce kol (2 až předposlední)
     const roundIdxs = [];
-    for (let i = 2; i < finaleIdx; i++) {
-      if (header[i]) roundIdxs.push(i);
-    }
+    for (let i = 2; i < finaleIdx; i++) { if (header[i]) roundIdxs.push(i); }
 
-    // Spočítej průměr z odehraných kol
     let sum = 0, count = 0;
     roundIdxs.forEach(ri => {
       const played = rows.slice(1).filter(r => parseFloat(r[ri]) > 0).length;
       if (played > 0) { sum += played; count++; }
     });
-
     if (count === 0) return;
-    const avg = sum / count;
 
-    // Aktualizuj sekci
-    const sec = document.getElementById('liga-sec-' + l.id);
-    if (sec) sec.outerHTML = renderLeague(l, avg);
+    leagueAvgs[l.id] = sum / count;
   } catch(e) {}
 }
 
-async function loadAll() {
-  initialRender();
+// ── Start ──
+async function init() {
+  renderTabs();
+  renderDetails();
   await Promise.all(LEAGUES.map(l => loadLeagueAvg(l)));
+  renderTabs();
+  renderDetails();
 }
 
-loadAll();
+init();
 </script>
 
 <script>

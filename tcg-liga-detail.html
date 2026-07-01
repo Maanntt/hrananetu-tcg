@@ -199,6 +199,9 @@ footer a{color:var(--pl);text-decoration:none}
       <div class="lstat"><div class="lstat-val" id="stat-rounds">—</div><div class="lstat-lbl">Odehráno kol</div></div>
       <div class="lstat"><div class="lstat-val" id="stat-next">—</div><div class="lstat-lbl">Příští turnaj</div></div>
       <div class="lstat"><div class="lstat-val" id="stat-finale">—</div><div class="lstat-lbl">Formát finále</div></div>
+      <div class="lstat" style="margin-left:auto;flex-shrink:0">
+        <a id="ceny-link" href="/hrananetu-tcg/tcg-ceny.html" style="font-size:13px;font-weight:600;color:var(--gold);text-decoration:none;opacity:.8;white-space:nowrap">🏆 Ceny & Odměny →</a>
+      </div>
     </div>
   </div>
 
@@ -376,6 +379,8 @@ function init() {
   document.getElementById('hero-name').textContent    = cfg.name.toUpperCase();
   document.getElementById('hero-name').style.color    = cfg.color;
   document.title = cfg.name + ' – HranaNetu.cz TCG Klub';
+  const cenyLink = document.getElementById('ceny-link');
+  if (cenyLink) cenyLink.href = `/hrananetu-tcg/tcg-ceny.html?liga=${leagueId}`;
 
   // Naplň select sezón dynamicky
   const tabSel = document.getElementById('cfg-tab');
