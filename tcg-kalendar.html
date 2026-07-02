@@ -156,18 +156,18 @@ footer a{color:var(--pl);text-decoration:none}
     <div class="filter-wrap">
       <select id="kal-filter" onchange="setFilter(this.value)">
         <option value="all">Všechny hry</option>
-        <option value="mtgp">MTG Premodern</option>
-        <option value="mtgpa">MTG Pauper</option>
-        <option value="mtgm">MTG Modern</option>
-        <option value="mtgd">MTG Draft</option>
-        <option value="mtgstd">MTG Standard</option>
-        <option value="mtgcmd">MTG Commander</option>
-        <option value="mtgpre">MTG Prerelease</option>
-        <option value="rb">Riftbound</option>
-        <option value="pk">Pokémon</option>
-        <option value="op">One Piece</option>
         <option value="fab">Flesh and Blood</option>
         <option value="gd">Gundam</option>
+        <option value="mtgcmd">MTG Commander</option>
+        <option value="mtgd">MTG Draft</option>
+        <option value="mtgm">MTG Modern</option>
+        <option value="mtgpa">MTG Pauper</option>
+        <option value="mtgpre">MTG Prerelease</option>
+        <option value="mtgp">MTG Premodern</option>
+        <option value="mtgstd">MTG Standard</option>
+        <option value="op">One Piece</option>
+        <option value="pk">Pokémon</option>
+        <option value="rb">Riftbound</option>
         <option value="so">Sorcery</option>
         <option value="ygo">Yu-Gi-Oh!</option>
         <option value="other">Ostatní akce</option>
@@ -233,36 +233,36 @@ const LIGA_CFG = {
 // Detekce ligy z titulku Google Calendar
 // Titulek (bez emoji): "MTG - Premodern - Liga" nebo "Riftbound - Skirmish - Liga"
 function detectLiga(raw) {
-  // Odstraň emoji ze začátku
-  const clean = (raw||'').replace(/^[\s\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F9FF}\u{2300}-\u{23FF}]+/gu,'').trim();
+  // Odstraň vše před prvním ASCII písmenem (emoji, mezery)
+  const clean = (raw||'').replace(/^[^A-Za-zÀ-ɏ]+/, '').trim();
   const t = clean.toLowerCase();
 
-  // Yu-Gi-Oh! musí být před splitem - obsahuje pomlčky v názvu!
+  // Yu-Gi-Oh! musí být před splitem!
   if (t.startsWith('yu-gi-oh') || t.startsWith('yugioh')) return 'ygo';
 
-  // Split přesně na " - " (mezera pomlčka mezera)
+  // Split na " - "
   const parts = clean.split(' - ');
   const game   = (parts[0]||'').toLowerCase().trim();
   const format = (parts[1]||'').toLowerCase().trim();
 
-  // Non-MTG hry
-  if (game.startsWith('riftbound'))               return 'rb';
-  if (game.startsWith('pokémon')||game.startsWith('pokemon')) return 'pk';
-  if (game.startsWith('one piece'))               return 'op';
-  if (game.startsWith('flesh'))                   return 'fab';
-  if (game.startsWith('gundam'))                  return 'gd';
-  if (game.startsWith('sorcery'))                 return 'so';
+  // Non-MTG
+  if (game.startsWith('riftbound'))                              return 'rb';
+  if (game.startsWith('pokémon') || game.startsWith('pokemon')) return 'pk';
+  if (game.startsWith('one piece'))                              return 'op';
+  if (game.startsWith('flesh'))                                  return 'fab';
+  if (game.startsWith('gundam'))                                 return 'gd';
+  if (game.startsWith('sorcery'))                                return 'so';
 
-  // MTG - rozliš dle formátu
+  // MTG
   if (game === 'mtg' || game === 'magic') {
-    if (format.includes('premodern'))              return 'mtgp';
-    if (format.includes('pauper'))                 return 'mtgpa';
-    if (format.includes('prerelease'))             return 'mtgpre';
-    if (format.includes('commander')||format.includes('edh')) return 'mtgcmd';
-    if (format.includes('modern'))                 return 'mtgm';
-    if (format.includes('standard')||format.includes('pioneer')) return 'mtgstd';
-    if (format.includes('draft')||format.includes('sealed'))  return 'mtgd';
-    if (format.includes('legacy')||format.includes('vintage')) return 'mtgp';
+    if (format.includes('premodern'))                            return 'mtgp';
+    if (format.includes('pauper'))                               return 'mtgpa';
+    if (format.includes('prerelease'))                           return 'mtgpre';
+    if (format.includes('commander') || format.includes('edh')) return 'mtgcmd';
+    if (format.includes('modern'))                               return 'mtgm';
+    if (format.includes('standard') || format.includes('pioneer')) return 'mtgstd';
+    if (format.includes('draft') || format.includes('sealed'))  return 'mtgd';
+    if (format.includes('legacy') || format.includes('vintage')) return 'mtgp';
     return null;
   }
   return null;
@@ -270,7 +270,7 @@ function detectLiga(raw) {
 
 // Pomocné funkce
 function stripEmoji(s) {
-  return (s||'').replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F9FF}\u{2300}-\u{23FF}\u{FE00}-\u{FEFF}]+/gu,'').trim();
+  return (s||'').replace(/^[^A-Za-zÀ-ɏ\d(]+/, '').replace(/[^\x20-\x7EÀ-ɏĀ-ž]/g,'').trim();
 }
 
 function parseDesc(desc) {
