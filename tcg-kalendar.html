@@ -327,32 +327,7 @@ footer a{color:var(--pl);text-decoration:none}
     <div class="kal-title">KALENDÁŘ TURNAJŮ</div>
     <div class="kal-sub">Pravidelné herní večery a jednorázové akce v Hrana Store Brno.</div>
 
-    <div style="margin-bottom:20px">
-      <button onclick="document.getElementById('admin-panel').style.display=document.getElementById('admin-panel').style.display==='none'?'block':'none'" style="background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;transition:all .15s" onmouseover="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-        Nastavení
-      </button>
-
-      <div id="admin-panel" style="display:none;margin-top:12px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px">
-        <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px">Google Calendar</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-          <div>
-            <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px">API Key</div>
-            <input id="cfg-api-key" placeholder="AIzaSy..." type="password" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none"/>
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px">Calendar ID</div>
-            <input id="cfg-cal-id" placeholder="abc123@group.calendar.google.com" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none"/>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <button onclick="saveConfigAndLoad()" style="background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;border:none;font-family:'Inter',sans-serif">Načíst kalendář</button>
-          <span id="cfg-status" style="font-size:12px;color:var(--text3)"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="kal-bar">
+    <div style="margin-bottom:20px"><div class="kal-bar">
       <div class="kal-bar-left">
         <span class="kal-filter-label">Filtr:</span>
         <div class="kal-select-wrap">
@@ -520,10 +495,14 @@ const AV_COLORS = ['#f97316','#a259ff','#22c55e','#3b82f6','#ec4899','#06b6d4','
    LOCAL STORAGE CONFIG
    ══════════════════════════════════════════════════════ */
 function saveConfig() {
+  // Načti existující config a updatuj jen dostupné elementy
+  const existing = loadConfig();
+  const apiKeyEl = document.getElementById('cfg-api-key');
+  const calIdEl  = document.getElementById('cfg-cal-id');
   const cfg = {
-    apiKey: document.getElementById('cfg-api-key').value.trim(),
-    calId:  document.getElementById('cfg-cal-id').value.trim(),
-    sheets: {}
+    apiKey: apiKeyEl ? apiKeyEl.value.trim() : existing.apiKey || '',
+    calId:  calIdEl  ? calIdEl.value.trim()  : existing.calId  || '',
+    sheets: existing.sheets || {}
   };
   LEAGUES.forEach(l => {
     const el = document.getElementById('sheet-' + l.id);
@@ -1034,7 +1013,7 @@ function selectLeague(l) {
       });
     } else {
       document.getElementById('t-body').innerHTML =
-        `<tr class="empty-row"><td colspan="5">Nastav Sheets ID pro ${l.label} v sekci Nastavení.</td></tr>`;
+        `<tr class="empty-row"><td colspan="5">Nastav Sheets ID na úvodní stránce.</td></tr>`;
     }
   }
 }
@@ -1208,7 +1187,24 @@ async function loadTopPlayers() {
 }
 
 // Spusť po načtení stránky
-document.addEventListener('DOMContentLoaded', loadTopPlayers);
+document.addEventListener('DOMContentLoaded', async function() {
+  initUI();
+  renderCalendar();
+
+  // Načti API config z localStorage (nastaveno na úvodní stránce)
+  const cfg = loadConfig();
+  if (cfg.apiKey && cfg.calId) {
+    try {
+      await loadGoogleCalendar(cfg.apiKey, cfg.calId);
+    } catch(e) {
+      console.log('Calendar load error:', e);
+    }
+  } else {
+    // Zobraz prázdný kalendář s textem
+    const grid = document.getElementById('kal-grid');
+    if (grid) grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">Nastav Google Calendar API na úvodní stránce.</div>';
+  }
+});
 
 </script>
 
