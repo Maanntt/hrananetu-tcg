@@ -533,24 +533,49 @@ function loadSaved() {
 async function saveAndLoad() {
   const season = document.getElementById('setup-season').value;
   const status = document.getElementById('setup-status');
-  status.textContent = 'Ukládám…';
+  if (status) status.textContent = 'Ukládám…';
 
-  // Ulož každou ligu
+  // Ulož Google Calendar API
+  const apiKeyEl = document.getElementById('cfg-api-key');
+  const calIdEl  = document.getElementById('cfg-cal-id');
+  if (apiKeyEl && calIdEl) {
+    const apiKey = apiKeyEl.value.trim();
+    const calId  = calIdEl.value.trim();
+    if (apiKey || calId) {
+      // Načti existující a updatuj
+      let existing = {};
+      try { existing = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
+      localStorage.setItem('hrananetu_cfg', JSON.stringify({
+        apiKey: apiKey || existing.apiKey || '',
+        calId:  calId  || existing.calId  || '',
+      }));
+    }
+  }
+
+  // Ulož Config Sheet ID
+  const configEl = document.getElementById('sid-config');
+  if (configEl && configEl.value.trim()) {
+    const raw = configEl.value.trim();
+    const match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const cid = match ? match[1] : raw.replace(/[^a-zA-Z0-9_-]/g,'');
+    saveConfigSheetId(cid);
+  }
+
+  // Ulož Sheets ID každé ligy
   LEAGUES.forEach(l => {
     const el = document.getElementById('sid-' + l.id);
     if (!el || !el.value.trim()) return;
     const raw = el.value.trim();
-    // Extrahuj jen ID z URL
-    // Extrahuj jen čisté Sheet ID (bez /edit, ?gid atd.)
     const match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
     const sheetId = match ? match[1] : raw.replace(/[^a-zA-Z0-9_-]/g,'').substring(0,44);
-    localStorage.setItem('hn_' + l.id, JSON.stringify({sheetId, tab: season}));
+    if (sheetId) localStorage.setItem('hn_' + l.id, JSON.stringify({sheetId, tab: season}));
   });
   localStorage.setItem('hn_cfg', JSON.stringify({season}));
 
-  status.textContent = 'Načítám hráče…';
+  if (status) status.textContent = 'Načítám data…';
   await loadAllTopPlayers(season);
-  status.textContent = '✓ Hotovo';
+  await loadStats();
+  if (status) status.textContent = '✓ Uloženo a načteno';
 }
 
 // ── Načti TOP3 pro všechny ligy ──
