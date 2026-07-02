@@ -88,6 +88,8 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 .kp-ygo{background:rgba(251,146,60,.2);color:#fb923c}
 .kp-other{background:rgba(255,255,255,.07);color:var(--text2)}
 .kp-finale{background:rgba(240,165,0,.2);color:var(--gold)}
+.kp-mtgcmd{background:rgba(99,102,241,.2);color:#818cf8}
+.kp-mtgstd{background:rgba(6,182,212,.2);color:#22d3ee}
 
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:center;justify-content:center;padding:20px}
@@ -167,6 +169,8 @@ footer a{color:var(--pl);text-decoration:none}
         <option value="mtgpa">MTG Pauper</option>
         <option value="mtgm">MTG Modern</option>
         <option value="mtgd">MTG Draft</option>
+        <option value="mtgcmd">MTG Commander</option>
+        <option value="mtgstd">MTG Standard</option>
         <option value="rb">Riftbound</option>
         <option value="pk">Pokémon</option>
         <option value="op">One Piece</option>
@@ -219,7 +223,9 @@ const LEAGUES = {
   mtgp:  {label:'MTG Premodern',  color:'#c51df5'},
   mtgpa: {label:'MTG Pauper',     color:'#a78bfa'},
   mtgm:  {label:'MTG Modern',     color:'#9b4dff'},
-  mtgd:  {label:'MTG Draft',      color:'#b39ddb'},
+  mtgd:   {label:'MTG Draft',      color:'#b39ddb'},
+  mtgcmd: {label:'MTG Commander',  color:'#6366f1'},
+  mtgstd: {label:'MTG Standard',   color:'#06b6d4'},
   rb:    {label:'Riftbound',      color:'#7fb3f5'},
   pk:    {label:'Pokémon',        color:'#ffcb05'},
   op:    {label:'One Piece',      color:'#f87171'},
@@ -387,7 +393,7 @@ async function loadCalendar() {
         id: item.id,
         rawTitle: item.summary || '—',
         title:    titleData.name,
-        eventName, // reálný název (druhá část titulku)
+        cleanTitle, // čistý název bez emoji
         format:   fields['formát'] || titleData.format || '—',
         type:     titleData.type,
         startDate,
@@ -428,8 +434,8 @@ function pillClass(ev) {
 
 function pillText(ev) {
   const time = ev.startTime && ev.startTime !== '—' ? ev.startTime : '';
-  // Zobraz reálný název eventu - druhá část titulku nebo celý název
-  const displayName = ev.eventName || ev.title;
+  // Zobraz čistý titulek bez emoji
+  const displayName = ev.cleanTitle || ev.title;
   return [time, displayName].filter(Boolean).join(' · ');
 }
 
