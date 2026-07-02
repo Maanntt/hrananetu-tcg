@@ -309,6 +309,45 @@ footer a{color:var(--pl);text-decoration:none}
         <option value="Zima 2026">Zimní sezóna 2026</option>
         <option value="Zima 2025">Zimní sezóna 2025</option>
       </select>
+
+    <div class="setup-label" style="margin-top:16px">Ceny & Odměny</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;grid-column:1/-1">Napiš ceny pro každý formát finále. Prázdná pole = cena se nezobrazí.</div>
+
+    <div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+
+      <!-- ŽEBŘÍČEK -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(průměr &lt;8)</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <input class="setup-inp" id="prize-zeb-1" placeholder="1. místo">
+          <input class="setup-inp" id="prize-zeb-2" placeholder="2. místo">
+          <input class="setup-inp" id="prize-zeb-3" placeholder="3. místo">
+        </div>
+      </div>
+
+      <!-- TOP4 -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(průměr 8–12)</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <input class="setup-inp" id="prize-top4-1" placeholder="1. místo">
+          <input class="setup-inp" id="prize-top4-2" placeholder="2. místo">
+          <input class="setup-inp" id="prize-top4-34" placeholder="3.–4. místo">
+        </div>
+      </div>
+
+      <!-- TOP8 -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(průměr 13+)</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <input class="setup-inp" id="prize-top8-1" placeholder="1. místo">
+          <input class="setup-inp" id="prize-top8-2" placeholder="2. místo">
+          <input class="setup-inp" id="prize-top8-34" placeholder="3.–4. místo">
+          <input class="setup-inp" id="prize-top8-58" placeholder="5.–8. místo">
+        </div>
+      </div>
+
+    </div>
+
       <button class="setup-btn" onclick="saveAndLoad()">Uložit a načíst data</button>
       <span class="setup-status" id="setup-status"></span>
     </div>
@@ -527,6 +566,15 @@ function loadSaved() {
       if (el) el.textContent = active.name;
     }
   } catch(e) {}
+
+  // Načti ceny
+  try {
+    const p = JSON.parse(localStorage.getItem('hn_prizes') || '{}');
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    set('prize-zeb-1',  p.zeb?.p1);  set('prize-zeb-2',  p.zeb?.p2);  set('prize-zeb-3',  p.zeb?.p3);
+    set('prize-top4-1', p.top4?.p1); set('prize-top4-2', p.top4?.p2); set('prize-top4-34',p.top4?.p34);
+    set('prize-top8-1', p.top8?.p1); set('prize-top8-2', p.top8?.p2); set('prize-top8-34',p.top8?.p34); set('prize-top8-58',p.top8?.p58);
+  } catch(e) {}
 }
 
 // ── Ulož a načti data ──
@@ -571,6 +619,21 @@ async function saveAndLoad() {
     if (sheetId) localStorage.setItem('hn_' + l.id, JSON.stringify({sheetId, tab: season}));
   });
   localStorage.setItem('hn_cfg', JSON.stringify({season}));
+
+  // Ulož ceny
+  const prizes = {
+    zeb:  { p1: document.getElementById('prize-zeb-1')?.value.trim()||'',
+             p2: document.getElementById('prize-zeb-2')?.value.trim()||'',
+             p3: document.getElementById('prize-zeb-3')?.value.trim()||'' },
+    top4: { p1: document.getElementById('prize-top4-1')?.value.trim()||'',
+             p2: document.getElementById('prize-top4-2')?.value.trim()||'',
+             p34:document.getElementById('prize-top4-34')?.value.trim()||'' },
+    top8: { p1: document.getElementById('prize-top8-1')?.value.trim()||'',
+             p2: document.getElementById('prize-top8-2')?.value.trim()||'',
+             p34:document.getElementById('prize-top8-34')?.value.trim()||'',
+             p58:document.getElementById('prize-top8-58')?.value.trim()||'' },
+  };
+  localStorage.setItem('hn_prizes', JSON.stringify(prizes));
 
   if (status) status.textContent = 'Načítám data…';
   await loadAllTopPlayers(season);
