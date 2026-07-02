@@ -434,9 +434,7 @@ function pillClass(ev) {
 
 function pillText(ev) {
   const time = ev.startTime && ev.startTime !== '—' ? ev.startTime : '';
-  // Zobraz čistý titulek bez emoji
-  const displayName = ev.cleanTitle || ev.title;
-  return [time, displayName].filter(Boolean).join(' · ');
+  return [time, ev.cleanTitle].filter(Boolean).join(' · ');
 }
 
 function renderCalendar() {
