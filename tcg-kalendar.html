@@ -387,6 +387,7 @@ async function loadCalendar() {
         id: item.id,
         rawTitle: item.summary || '—',
         title:    titleData.name,
+        eventName, // reálný název (druhá část titulku)
         format:   fields['formát'] || titleData.format || '—',
         type:     titleData.type,
         startDate,
@@ -427,9 +428,9 @@ function pillClass(ev) {
 
 function pillText(ev) {
   const time = ev.startTime && ev.startTime !== '—' ? ev.startTime : '';
-  const name = ev.league ? ev.league.label : ev.title;
-  const fmt  = ev.format && ev.format !== '—' ? ' · ' + ev.format : '';
-  return [time, name + fmt].filter(Boolean).join(' ');
+  // Zobraz reálný název eventu - druhá část titulku nebo celý název
+  const displayName = ev.eventName || ev.title;
+  return [time, displayName].filter(Boolean).join(' · ');
 }
 
 function renderCalendar() {
