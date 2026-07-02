@@ -3,10 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ligy & Turnaje – HranaNetu.cz</title>
+<title>Kalendář – HranaNetu.cz TCG Klub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap">
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f;--bg2:#0f0f1c;--bg3:#16162a;
+  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);
+  --purple:#c51df5;--pl:#d44fff;--pd:rgba(197,29,245,0.15);
+  --gold:#f0a500;--text:#f0ecff;--text2:#b8b4d0;--text3:#7a768f;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;font-size:15px}
+
 /* HEADER */
 header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
 .hi{max-width:1280px;margin:0 auto;padding:0 28px;height:72px;display:flex;align-items:center;gap:28px}
@@ -29,268 +38,91 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 .mob-nav a:hover{color:var(--text);background:var(--bg3)}.mob-nav a.act{color:var(--pl);background:var(--pd)}
 @media(max-width:900px){.main-nav,.hdr-btns{display:none}.hbg{display:flex}}
 @media(max-width:480px){.hi{padding:0 16px;height:64px}.logo img{height:40px}.mob-nav{top:64px}}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#09090f;--bg2:#0f0f1c;--bg3:#16162a;
-  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);
-  --purple:#c51df5;--pl:#d44fff;--pd:rgba(197,29,245,0.15);
-  --gold:#f0a500;
-  --text:#f0ecff;
-  --text2:#b8b4d0;
-  --text3:#7a768f;
-  --green:#22c55e;
-}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;font-size:16px}
 
-/* HERO */
-.hero{background:linear-gradient(135deg,#0f0f1a 0%,#1a1040 50%,#0f0f1a 100%);border-bottom:1px solid var(--border);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(124,77,255,.2) 0%,transparent 70%);pointer-events:none}
-.hero-label{display:inline-block;background:var(--pd);color:var(--pl);font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;padding:4px 14px;border-radius:20px;border:1px solid rgba(124,77,255,.3);margin-bottom:18px}
-.hero h1{font-family:'Rajdhani',sans-serif;font-size:50px;font-weight:700;line-height:1.1;margin-bottom:14px}
-.hero h1 b{color:var(--pl);font-weight:700}
-.hero p{font-size:15px;color:var(--text2);max-width:520px;margin:0 auto 28px}
-.hero-stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap}
-.hs-num{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:700;color:var(--text);line-height:1}
-.hs-lbl{font-size:11px;color:var(--text3);font-weight:500;margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
-
-/* LAYOUT */
 .con{max-width:1280px;margin:0 auto;padding:0 28px}
-.sec{padding:44px 0}
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.st{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700}
-.st b{color:var(--pl);font-weight:700}
-.sd{width:3px;height:24px;background:var(--purple);border-radius:2px;display:inline-block;margin-right:10px;vertical-align:middle}
 
-/* CONFIG PANEL */
-.config-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:24px;margin-bottom:32px}
-.config-panel h3{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text)}
-.config-panel h3 span{color:var(--pl)}
-.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.cfg-row{display:flex;flex-direction:column;gap:6px}
-.cfg-row.full{grid-column:1/-1}
-.cfg-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
-.cfg-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;outline:none;width:100%}
-.cfg-input:focus{border-color:var(--purple)}
-.cfg-actions{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+/* PAGE */
+.page-top{padding:40px 0 28px}
+.eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:46px;font-weight:700;line-height:1;margin-bottom:8px}
+.page-sub{font-size:14px;color:var(--text3);margin-bottom:0}
 
-.cfg-status{font-size:12px;color:var(--text3)}
-.cfg-hint{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
-.cfg-hint code{background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:monospace;color:var(--pl);font-size:11px}
-
-/* SEASON TABS */
-.season-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-.stab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 16px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);font-family:'Inter',sans-serif;transition:all .15s}
-.stab:hover{border-color:var(--border2);color:var(--text)}
-.stab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
-
-/* LEAGUE TABS */
-.ltabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
-.ltab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all .15s;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
-.ltab:hover{border-color:var(--border2);color:var(--text)}
-.ltab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
-.ltab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-/* LEAGUE CARD */
-.lcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:24px}
-.lcard-top{padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
-.lcard-info{display:flex;align-items:center;gap:14px}
-.lcard-logo{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;font-family:'Rajdhani',sans-serif}
-.lcard-name{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1.1}
-.lcard-season{font-size:13px;color:var(--text3);margin-top:2px}
-.lcard-metas{display:flex;gap:24px;flex-wrap:wrap}
-.lmeta{text-align:center}
-.lmeta-val{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;line-height:1}
-.lmeta-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-top:2px}
-
-/* FINALE BADGE */
-.finale-badge{padding:12px 24px;background:rgba(240,165,0,.05);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.fb-icon{width:32px;height:32px;background:rgba(240,165,0,.15);border:1px solid rgba(240,165,0,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.fb-title{font-weight:600;font-size:13px;color:var(--gold)}
-.fb-desc{font-size:12px;color:var(--text3);margin-top:1px}
-.fb-type{margin-left:auto;background:rgba(240,165,0,.15);color:var(--gold);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(240,165,0,.3);white-space:nowrap}
-
-/* STANDINGS */
-.shead{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--bg2)}
-.sbadge{background:var(--pd);color:var(--pl);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(124,77,255,.3)}
-.legend{display:flex;gap:14px;padding:8px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.li-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
-.ld{width:10px;height:10px;border-radius:2px}
-.ld.fin{background:rgba(34,197,94,.3);border:1px solid rgba(34,197,94,.4)}
-.ld.abs{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2)}
-.ld.pre{background:rgba(255,255,255,.06);border:1px solid var(--border2)}
-.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;min-width:600px}
-thead th{padding:8px 10px;text-align:center;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap}
-thead th.cn{text-align:left;padding-left:20px;min-width:150px}
-thead th.ct{color:var(--pl)}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:rgba(255,255,255,.025)}
-tbody td{padding:9px 10px;font-size:13px;vertical-align:middle;text-align:center}
-tbody td.cn{text-align:left;padding-left:20px}
-.rank{font-weight:700;font-size:13px;color:var(--text3);display:inline-block;text-align:center;min-width:20px}
-.r1{color:#f0a500}.r2{color:#c0c0c0}.r3{color:#cd7f32}
-.pcell{display:flex;align-items:center;gap:9px}
-.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.pname{font-weight:500;font-size:13px}
-.tot{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700}
-.rp{font-size:12px;font-weight:500}
-.rp.ab{color:rgba(239,68,68,.45)}
-.rp.pr{color:var(--text)}
-.rp.fi{color:#4ade80;font-weight:700}
-.tr1 td{background:rgba(240,165,0,.05)}
-.tr3 td{background:rgba(240,165,0,.02)}
-.trf td.cn{border-left:3px solid var(--green)}
-.empty-row td{text-align:center;padding:36px;color:var(--text3);font-size:13px}
-
-/* KALENDÁŘ */
-.kal-wrap{padding:48px 0}
-.kal-eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px}
-.kal-title{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;color:var(--text);line-height:1;margin-bottom:8px;letter-spacing:.5px}
-.kal-sub{font-size:13px;color:var(--text3);font-style:italic;margin-bottom:28px}
-.kal-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
-.kal-bar-left{display:flex;align-items:center;gap:8px}
-.kal-filter-label{font-size:12px;color:var(--text3);font-weight:500}
-.kal-select{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:7px 32px 7px 12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
-.kal-select:focus{border-color:var(--purple)}
-.kal-select-wrap{position:relative;display:inline-block}
-.kal-select-wrap::after{content:"▾";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);pointer-events:none}
-.kal-bar-right{display:flex;align-items:center;gap:8px}
-.kal-arrow{background:transparent;border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:'Inter',sans-serif;line-height:1}
+/* TOOLBAR */
+.kal-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid var(--border);margin-bottom:0}
+.kal-filter-wrap{position:relative}
+.kal-filter-wrap select{appearance:none;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:8px 32px 8px 12px;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;outline:none}
+.kal-filter-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:12px}
+.kal-nav{display:flex;align-items:center;gap:8px;margin-left:auto}
+.kal-arrow{background:var(--bg2);border:1px solid var(--border2);color:var(--text2);width:34px;height:34px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:'Inter',sans-serif}
 .kal-arrow:hover{border-color:var(--purple);color:var(--pl)}
-.kal-month{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:1.5px;text-transform:uppercase;min-width:160px;text-align:center}
-.kal-add{border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;padding:7px 14px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-decoration:none}
-.kal-add:hover{border-color:var(--purple);color:var(--pl)}
-/* Grid */
-.kal-grid{border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.kal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:var(--bg2);border-bottom:1px solid var(--border)}
-.kal-hdr{padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;border-right:1px solid var(--border)}
-.kal-hdr:last-child{border-right:none}
-.kal-body{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
-.kal-cell{background:var(--bg);min-height:100px;padding:8px 6px 6px;display:flex;flex-direction:column;gap:3px;position:relative;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
-.kal-cell.kc-out{background:#07070e;opacity:.55}
-.kal-cell.kc-today{background:var(--bg3)}
-.kal-cell.kc-today .kal-num{background:var(--purple);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px}
-.kal-num{font-size:12px;font-weight:600;color:var(--text);width:22px;height:22px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;flex-shrink:0}
-.kal-pills{display:flex;flex-direction:column;gap:2px;overflow:hidden}
-/* Pilly — barevné pozadí, zaoblené, jako na screenshotu */
-.kp{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6;transition:opacity .12s}
-.kp:hover{opacity:.78}
-.kp-mtgp{background:#3d2275;color:#e0ccff}
-.kp-mtgm{background:#2a1860;color:#c4b8ff}
-.kp-mtgd{background:#2e1a60;color:#c9b8f0}
-.kp-rb{background:#0f2d5a;color:#a8caff}
-.kp-pk{background:#c87f00;color:#fff3cc}
-.kp-op{background:#7a1f1f;color:#ffcece}
-.kp-fab{background:#0f3d20;color:#a8f0c0}
-.kp-gd{background:#4a3200;color:#ffe8a0}
-.kp-so{background:#2d0f5a;color:#d8b8ff}
-.kp-finale{background:#5a3800;color:#ffe0a0;font-weight:700}
-.kp-other{background:#1e1e34;color:#9090b8}
-@media(max-width:800px){.kal-cell{min-height:70px;padding:5px 4px 4px}.kp{font-size:9px;padding:1px 4px}}
-@media(max-width:560px){.kal-title{font-size:28px}.kal-hdr{font-size:9px;padding:7px 0}}
+.kal-month-label{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);min-width:160px;text-align:center}
+.kal-add-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:13px;font-weight:500;padding:8px 14px;border-radius:7px;text-decoration:none;transition:all .15s;white-space:nowrap}
+.kal-add-btn:hover{border-color:var(--purple);color:var(--pl)}
 
-/* PRIZES */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.pcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:22px;text-align:center;position:relative;overflow:hidden}
-.pcard.feat{border-color:var(--gold);background:rgba(240,165,0,.04)}
-.pcard.feat::before{content:'★ TOP CENA';position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:9px;font-weight:700;padding:3px 10px;border-radius:0 0 5px 5px;letter-spacing:.5px}
-.pplace{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;line-height:1;margin-bottom:2px}
-.pcard:nth-child(1) .pplace{color:var(--gold)}
-.pcard:nth-child(2) .pplace{color:#c0c0c0}
-.pcard:nth-child(3) .pplace{color:#cd7f32}
-.pcard:nth-child(n+4) .pplace{color:var(--text2)}
-.plbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
-.pval{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px}
-.pitems{display:flex;flex-direction:column;gap:5px}
-.pitem{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--text2)}
+/* CALENDAR GRID */
+.kal-grid{margin:0 0 48px}
+.kal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:var(--bg2);border:1px solid var(--border);border-bottom:none;border-radius:10px 10px 0 0;overflow:hidden}
+.kal-hdr{padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;border-right:1px solid var(--border)}
+.kal-hdr:last-child{border-right:none}
+.kal-body{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}
+.kal-cell{background:var(--bg);min-height:90px;padding:8px 6px;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.kal-cell:nth-child(7n){border-right:none}
+.kal-cell.kc-out{opacity:.35}
+.kal-cell.kc-today .kal-num{background:var(--purple);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.kal-num{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:3px;line-height:1}
+.kal-pills{display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.kp{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6;transition:opacity .12s}
+.kp:hover{opacity:.75}
+
+/* Liga barvy */
+.kp-mtgp{background:rgba(197,29,245,.2);color:#c51df5}
+.kp-mtgd{background:rgba(179,157,219,.2);color:#b39ddb}
+.kp-mtgm{background:rgba(124,77,255,.2);color:#9b4dff}
+.kp-mtgpa{background:rgba(167,139,250,.2);color:#a78bfa}
+.kp-rb{background:rgba(127,179,245,.2);color:#7fb3f5}
+.kp-pk{background:rgba(255,203,5,.2);color:#c8a000}
+.kp-op{background:rgba(248,113,113,.2);color:#f87171}
+.kp-fab{background:rgba(74,222,128,.2);color:#4ade80}
+.kp-gd{background:rgba(252,211,77,.2);color:#b8940a}
+.kp-so{background:rgba(192,132,252,.2);color:#c084fc}
+.kp-ygo{background:rgba(251,146,60,.2);color:#fb923c}
+.kp-other{background:rgba(255,255,255,.07);color:var(--text2)}
+.kp-finale{background:rgba(240,165,0,.2);color:var(--gold)}
 
 /* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-
-.modal-banner{height:6px;border-radius:16px 16px 0 0}
-.modal-header-inner{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.modal-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
-.modal-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1.2;color:var(--text)}
-.modal-date-str{font-size:12px;color:var(--text3);margin-top:4px}
-.modal-close{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;border-radius:6px;transition:background .15s,color .15s}
-.modal-close:hover{color:var(--text);background:var(--bg3)}
-.modal-body{padding:18px 22px;display:flex;flex-direction:column;gap:0}
-.modal-rows{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.modal-row{display:flex;flex-direction:column;gap:3px}
-.modal-row.full{grid-column:1/-1}
-.modal-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
-.modal-val{font-size:14px;color:var(--text);font-weight:500;line-height:1.4}
-.modal-prizes-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px}
-.modal-prizes-title{font-size:10px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
-.modal-prizes-list{display:flex;flex-direction:column;gap:6px}
-.modal-prize-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}
-.modal-prize-place{color:var(--text3);font-size:12px;min-width:32px}
-.modal-prize-val{color:var(--text2);font-weight:500}
-
-footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:40px;text-align:center;font-size:12px;color:var(--text3)}
-footer a{color:var(--pl);text-decoration:none}
-
-@media(max-width:768px){.hero h1{font-size:36px}.hero-stats{gap:20px}.cfg-grid{grid-template-columns:1fr}.ecard-details{grid-template-columns:1fr}}
-@media(max-width:500px){.pgrid{grid-template-columns:1fr 1fr}}
-
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto}
 .modal-banner{height:5px;border-radius:16px 16px 0 0}
 .modal-header-inner{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .modal-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
-.modal-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1.2;color:var(--text)}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
 .modal-date-str{font-size:12px;color:var(--text3);margin-top:3px}
-.modal-close{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;border-radius:6px;transition:all .15s}
+.modal-close{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;line-height:1;border-radius:6px}
 .modal-close:hover{color:var(--text);background:var(--bg3)}
 .modal-body{padding:18px 22px}
 .modal-rows{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .modal-row{display:flex;flex-direction:column;gap:3px}
 .modal-row.full{grid-column:1/-1}
 .modal-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
-.modal-val{font-size:14px;color:var(--text);font-weight:500;line-height:1.4}
+.modal-val{font-size:14px;color:var(--text);font-weight:500}
 .modal-prizes-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px}
 .modal-prizes-title{font-size:10px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
 .modal-prizes-list{display:flex;flex-direction:column;gap:6px}
-.modal-prize-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}
-.modal-prize-place{color:var(--text3);font-size:12px;min-width:32px}
+.modal-prize-row{display:flex;justify-content:space-between;font-size:13px}
+.modal-prize-place{color:var(--text3);font-size:12px}
 .modal-prize-val{color:var(--text2);font-weight:500}
 
-/* TOP HRÁČI */
-.th-section{padding:48px 0 0}
-.th-eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px}
-.th-title{font-family:'Rajdhani',sans-serif;font-size:40px;font-weight:700;color:var(--text);line-height:1;margin-bottom:32px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.th-title-link{font-size:12px;font-weight:600;color:var(--gold);letter-spacing:1px;text-transform:uppercase;text-decoration:none;opacity:.7;transition:opacity .15s}
-.th-title-link:hover{opacity:1}
-.th-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:48px}
-.th-card{background:var(--bg2);padding:22px 20px 26px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;overflow:hidden;transition:background .15s}
-.th-card:hover{background:var(--bg3)}
-.th-card:nth-child(3n){border-right:none}
-.th-card:nth-last-child(-n+3){border-bottom:none}
-.th-card-name{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.th-card-name a{color:inherit;text-decoration:none;transition:color .15s}
-.th-card-name a:hover{color:var(--gold)}
-.th-card-arrow{font-size:12px;opacity:.4}
-.th-player{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
-.th-player:last-child{border-bottom:none}
-.th-player-left{display:flex;align-items:center;gap:10px}
-.th-rank{font-size:12px;color:var(--text3);min-width:18px}
-.th-rank.r1{color:var(--gold)}
-.th-rank.r2{color:#c0c0c0}
-.th-rank.r3{color:#cd7f32}
-.th-name{font-size:13px;color:var(--text2)}
-.th-pts{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--text3)}
-.th-loading{font-size:12px;color:var(--text3);padding:8px 0;font-style:italic}
-@media(max-width:900px){.th-grid{grid-template-columns:repeat(2,1fr)}.th-card:nth-child(3n){border-right:1px solid var(--border)}.th-card:nth-child(2n){border-right:none}}
-@media(max-width:560px){.th-grid{grid-template-columns:1fr}.th-card{border-right:none!important}}
+/* LOADING / ERROR */
+.kal-status{padding:40px;text-align:center;color:var(--text3);font-size:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:48px}
 
-/* Hamburger */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--pl);text-decoration:none}
+@media(max-width:768px){.kal-cell{min-height:60px}.kp{font-size:9px}}
 </style>
 </head>
 <body>
+
 <header>
   <div class="hi">
     <a href="/tcg-uvod.html" class="logo"><img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz"></a>
@@ -320,51 +152,57 @@ footer a{color:var(--pl);text-decoration:none}
   <a href="/tcg-pravidla.html">Pravidla</a>
 </nav>
 
-<main class="con">
-<!-- ══ KALENDÁŘ ══ -->
-  <section class="sec" id="kalendar">
-    <div class="kal-eyebrow">Co se chystá</div>
-    <div class="kal-title">KALENDÁŘ TURNAJŮ</div>
-    <div class="kal-sub">Pravidelné herní večery a jednorázové akce v Hrana Store Brno.</div>
+<div class="con">
+  <div class="page-top">
+    <div class="eyebrow">Co se chystá</div>
+    <div class="page-title">KALENDÁŘ TURNAJŮ</div>
+    <div class="page-sub">Pravidelné herní večery a jednorázové akce v Hrana Store Brno.</div>
+  </div>
 
-    <div style="margin-bottom:20px"><div class="kal-bar">
-      <div class="kal-bar-left">
-        <span class="kal-filter-label">Filtr:</span>
-        <div class="kal-select-wrap">
-          <select class="kal-select" id="kal-select" onchange="kalFilter(this.value)">
-            <option value="all">Všechny hry</option>
-          </select>
-        </div>
-      </div>
-      <div class="kal-bar-right">
-        <button class="kal-arrow" onclick="kalShift(-1)">&#8249;</button>
-        <div class="kal-month" id="kal-month-label">—</div>
-        <button class="kal-arrow" onclick="kalShift(1)">&#8250;</button>
-        <a href="#" class="kal-add" id="kal-add-btn" target="_blank">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Přidat do kalendáře
-        </a>
-      </div>
+  <div class="kal-toolbar">
+    <div class="kal-filter-wrap">
+      <select id="kal-filter" onchange="setFilter(this.value)">
+        <option value="all">Všechny hry</option>
+        <option value="mtgp">MTG Premodern</option>
+        <option value="mtgpa">MTG Pauper</option>
+        <option value="mtgm">MTG Modern</option>
+        <option value="mtgd">MTG Draft</option>
+        <option value="rb">Riftbound</option>
+        <option value="pk">Pokémon</option>
+        <option value="op">One Piece</option>
+        <option value="fab">Flesh and Blood</option>
+        <option value="gd">Gundam</option>
+        <option value="so">Sorcery</option>
+        <option value="ygo">Yu-Gi-Oh!</option>
+        <option value="other">Ostatní akce</option>
+      </select>
     </div>
-    <div class="kal-grid" id="kal-grid">
-      <div style="padding:40px;text-align:center;color:var(--text3);font-size:13px">Načítám turnaje…</div>
+    <div class="kal-nav">
+      <button class="kal-arrow" onclick="shiftMonth(-1)">‹</button>
+      <div class="kal-month-label" id="kal-month-label">—</div>
+      <button class="kal-arrow" onclick="shiftMonth(1)">›</button>
+      <a class="kal-add-btn" id="kal-add-btn" href="#" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Přidat do kalendáře
+      </a>
     </div>
-  </section>
-</main>
+  </div>
 
-<!-- EVENT MODAL -->
+  <div id="kal-status" class="kal-status" style="display:none"></div>
+  <div id="kal-grid" class="kal-grid"></div>
+</div>
+
+<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-banner" id="modal-banner"></div>
-      <div class="modal-header-inner">
-        <div>
-          <div class="modal-tag" id="modal-tag"></div>
-          <div class="modal-title" id="modal-title">Turnaj</div>
-          <div class="modal-date-str" id="modal-date"></div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-banner" id="modal-banner"></div>
+    <div class="modal-header-inner">
+      <div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-date-str" id="modal-date"></div>
       </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
@@ -372,851 +210,306 @@ footer a{color:var(--pl);text-decoration:none}
 
 <footer>
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
-  <div style="margin-top:6px">Data načítána z Google Sheets a Google Kalendáře · <a href="mailto:info@hrananetu.cz">info@hrananetu.cz</a></div>
+  <div style="margin-top:4px">Data načítána z Google Sheets a Google Kalendáře · <a href="mailto:info@hrananetu.cz">info@hrananetu.cz</a></div>
 </footer>
 
 <script>
-/* ══════════════════════════════════════════════════════
-   KONFIGURACE LIG
-   ══════════════════════════════════════════════════════ */
-/* ── SEZÓNY ──
-   Jarní:   Únor–Květen    (finále Květen)
-   Letní:   Červen–Srpen   (finále Srpen)
-   Podzimní: Září–Listopad (finále Listopad)
-   Zimní:   Prosinec–Únor  (finále Únor)
-*/
-const SEASON_DEFS = [
-  { id:'jaro',   label:'Jarní sezóna',    sheetName:'Jaro',    months:[1,2,3,4],   finaleMonth:4,  finaleLabel:'Květen'   },
-  { id:'leto',   label:'Letní sezóna',    sheetName:'Léto',    months:[5,6,7],     finaleMonth:7,  finaleLabel:'Srpen'    },
-  { id:'podzim', label:'Podzimní sezóna', sheetName:'Podzim',  months:[8,9,10],    finaleMonth:10, finaleLabel:'Listopad' },
-  { id:'zima',   label:'Zimní sezóna',    sheetName:'Zima',    months:[11,0],      finaleMonth:1,  finaleLabel:'Únor'     },
-];
+// ── LIGY ──
+const LEAGUES = {
+  mtgp:  {label:'MTG Premodern',  color:'#c51df5'},
+  mtgpa: {label:'MTG Pauper',     color:'#a78bfa'},
+  mtgm:  {label:'MTG Modern',     color:'#9b4dff'},
+  mtgd:  {label:'MTG Draft',      color:'#b39ddb'},
+  rb:    {label:'Riftbound',      color:'#7fb3f5'},
+  pk:    {label:'Pokémon',        color:'#ffcb05'},
+  op:    {label:'One Piece',      color:'#f87171'},
+  fab:   {label:'Flesh and Blood',color:'#4ade80'},
+  gd:    {label:'Gundam',         color:'#fcd34d'},
+  so:    {label:'Sorcery',        color:'#c084fc'},
+  ygo:   {label:'Yu-Gi-Oh!',      color:'#fb923c'},
+};
 
-function getCurrentSeason() {
-  const m = new Date().getMonth(); // 0=Jan
-  return SEASON_DEFS.find(s => s.months.includes(m)) || SEASON_DEFS[0];
-}
+const MONTHS_CS = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const MONTHS_CS_LONG = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+const DAYS_CS = ['Po','Út','St','Čt','Pá','So','Ne'];
 
-function getSeasonBySheet(sheetName) {
-  // sheetName = "Jaro 2026", "Léto 2026" atd.
-  if (!sheetName) return null;
-  const lower = sheetName.toLowerCase();
-  if (lower.includes('jaro'))   return SEASON_DEFS[0];
-  if (lower.includes('léto') || lower.includes('leto')) return SEASON_DEFS[1];
-  if (lower.includes('podzim')) return SEASON_DEFS[2];
-  if (lower.includes('zima'))   return SEASON_DEFS[3];
+let allEvents = [];
+let monthOffset = 0;
+let activeFilter = 'all';
+let flatEvents = [];
+
+// ── DETEKCE LIGY Z TITULKU ──
+function detectLeague(title) {
+  const t = (title || '').toLowerCase();
+  if (t.includes('premodern'))                            return 'mtgp';
+  if (t.includes('pauper'))                               return 'mtgpa';
+  if (t.includes('modern') && !t.includes('premodern'))  return 'mtgm';
+  if (t.includes('draft'))                                return 'mtgd';
+  if (t.includes('riftbound'))                            return 'rb';
+  if (t.includes('pokémon') || t.includes('pokemon'))    return 'pk';
+  if (t.includes('one piece'))                            return 'op';
+  if (t.includes('flesh') || t.includes('blood'))        return 'fab';
+  if (t.includes('gundam'))                               return 'gd';
+  if (t.includes('sorcery'))                              return 'so';
+  if (t.includes('yu-gi') || t.includes('yugi'))         return 'ygo';
   return null;
 }
 
-function getSeasonLabel(year) {
-  const s = getCurrentSeason();
-  return s.label + ' ' + year;
-}
-
-// Detekce sezóny z dat turnajů (headers Sheets)
-function detectSeasonFromDates(roundDates) {
-  if (!roundDates || !roundDates.length) return getCurrentSeason();
-  // Najdi nejbližší budoucí datum
-  const today = new Date(); today.setHours(0,0,0,0);
-  const future = roundDates.filter(d => d >= today).sort((a,b) => a-b);
-  const refDate = future.length ? future[0] : roundDates[roundDates.length-1];
-  const m = refDate.getMonth();
-  return SEASON_DEFS.find(s => s.months.includes(m)) || getCurrentSeason();
-}
-
-// Vrátí plný název listu pro Sheets (např. "Jaro 2026")
-function getSheetTabName(season, year) {
-  return season.sheetName + ' ' + year;
-}
-
-const LEAGUES = [
-  { id:'mtgp', label:'MTG Premodern',   abbr:'PM', color:'#c51df5', bg:'rgba(197,29,245,.15)',  tagCls:'mtgp' },
-  { id:'mtgd', label:'MTG Draft',       abbr:'MD', color:'#b39ddb', bg:'rgba(99,77,200,.18)',   tagCls:'mtgd' },
-  { id:'mtgm', label:'MTG Modern',      abbr:'MM', color:'#9b4dff', bg:'rgba(124,77,255,.18)',  tagCls:'mtgm' },
-  { id:'rb',   label:'Riftbound',       abbr:'RB', color:'#7fb3f5', bg:'rgba(59,130,246,.18)',  tagCls:'rb'   },
-  { id:'pk',   label:'Pokémon',         abbr:'PK', color:'#ffcb05', bg:'rgba(59,100,164,.25)',  tagCls:'pk'   },
-  { id:'op',   label:'One Piece',       abbr:'OP', color:'#f87171', bg:'rgba(239,68,68,.18)',   tagCls:'op'   },
-  { id:'fab',  label:'Flesh & Blood',   abbr:'FB', color:'#4ade80', bg:'rgba(34,197,94,.12)',   tagCls:'fab'  },
-  { id:'gd',   label:'Gundam',          abbr:'GD', color:'#fcd34d', bg:'rgba(245,158,11,.18)',  tagCls:'gd'   },
-  { id:'so',   label:'Sorcery',         abbr:'SO', color:'#c084fc', bg:'rgba(168,85,247,.18)',  tagCls:'so'   },
-  { id:'ygo',  label:'Yu-Gi-Oh!',      abbr:'YGO',color:'#fb923c', bg:'rgba(251,146,60,.18)',  tagCls:'ygo'  },
-  { id:'mtgpa',label:'MTG Pauper',     abbr:'PA', color:'#a78bfa', bg:'rgba(167,139,250,.18)', tagCls:'mtgpa'},
-];
-
-// Sezóny — název listu v Google Sheets
-const SEASONS = ['Jaro 2026', 'Léto 2026', 'Podzim 2026', 'Zima 2026'];
-
-function currentSeason() {
-  const m = new Date().getMonth();
-  if (m < 3) return 'Zima 2026';   // leden–březen
-  if (m < 6) return 'Jaro 2026';   // duben–červen
-  if (m < 9) return 'Léto 2026';   // červenec–září
-  return 'Podzim 2026';             // říjen–prosinec
-}
-
-/* ══ Formát finále ══ */
-function finaleFormat(avg) {
-  if (avg >= 13) return { type:'TOP8', label:'TOP8 finálový turnaj', desc:`Průměr ${avg.toFixed(1)} hráčů/kolo — finále s TOP 8` };
-  if (avg >= 8)  return { type:'TOP4', label:'TOP4 finálový turnaj', desc:`Průměr ${avg.toFixed(1)} hráčů/kolo — finále s TOP 4` };
-  return { type:'ŽEBŘÍČEK', label:'Bez finálového turnaje', desc:`Průměr ${avg.toFixed(1)} hráčů/kolo — ceny pro TOP 3 ze žebříčku` };
-}
-
-function prizesForFormat(fmt) {
-  if (fmt.type === 'TOP8') return [
-    { place:'1.',    label:'Místo',    val:'Booster Box',     items:['1× Booster Box dle formátu','Trofej & diplom','+30 ligových bodů'], feat:true },
-    { place:'2.',    label:'Místo',    val:'Booster Display', items:['1× Booster Display','+20 ligových bodů'], feat:false },
-    { place:'3.–4.', label:'Místo',    val:'6× Boostery',     items:['6× Booster','+15 ligových bodů'], feat:false },
-    { place:'5.–8.', label:'Umístění', val:'2× Boostery',     items:['2× Booster','+8 ligových bodů'], feat:false },
-  ];
-  if (fmt.type === 'TOP4') return [
-    { place:'1.',    label:'Místo',    val:'Booster Box',     items:['1× Booster Box dle formátu','Trofej & diplom','+20 ligových bodů'], feat:true },
-    { place:'2.',    label:'Místo',    val:'Booster Display', items:['1× Booster Display','+15 ligových bodů'], feat:false },
-    { place:'3.–4.', label:'Místo',    val:'4× Boostery',     items:['4× Booster','+10 ligových bodů'], feat:false },
-  ];
-  return [
-    { place:'1.', label:'Místo (žebříček)', val:'Booster Box',  items:['1× Booster Box','+20 ligových bodů'], feat:true },
-    { place:'2.', label:'Místo (žebříček)', val:'4× Boostery',  items:['4× Booster','+15 ligových bodů'], feat:false },
-    { place:'3.', label:'Místo (žebříček)', val:'2× Boostery',  items:['2× Booster','+10 ligových bodů'], feat:false },
-  ];
-}
-
-/* ══════════════════════════════════════════════════════
-   STATE
-   ══════════════════════════════════════════════════════ */
-let activeSeason = currentSeason();
-let activeLeague = LEAGUES[3]; // Pokémon default
-let allEvents = [];            // Google Calendar events
-let loadedStandings = {};      // keyed by leagueId
-let calFilterLeague = 'all';
-
-const AV_COLORS = ['#f97316','#a259ff','#22c55e','#3b82f6','#ec4899','#06b6d4','#eab308','#f43f5e','#8b5cf6','#14b8a6'];
-
-/* ══════════════════════════════════════════════════════
-   LOCAL STORAGE CONFIG
-   ══════════════════════════════════════════════════════ */
-function saveConfig() {
-  // Načti existující config a updatuj jen dostupné elementy
-  const existing = loadConfig();
-  const apiKeyEl = document.getElementById('cfg-api-key');
-  const calIdEl  = document.getElementById('cfg-cal-id');
-  const cfg = {
-    apiKey: apiKeyEl ? apiKeyEl.value.trim() : existing.apiKey || '',
-    calId:  calIdEl  ? calIdEl.value.trim()  : existing.calId  || '',
-    sheets: existing.sheets || {}
+// ── PARSOVÁNÍ TITULKU ──
+function parseTitle(raw) {
+  // Odstraň emoji ze začátku
+  const clean = (raw || '').replace(/^[^\w\u00C0-\u024F(]+/u, '').trim();
+  const parts = clean.split(/\s*[-–]\s*/);
+  return {
+    name:   parts[0]?.trim() || raw,
+    format: parts[1]?.trim() || '',
+    type:   parts[2]?.trim() || '',
   };
-  LEAGUES.forEach(l => {
-    const el = document.getElementById('sheet-' + l.id);
-    if (el) cfg.sheets[l.id] = el.value.trim();
-  });
-  localStorage.setItem('hrananetu_cfg', JSON.stringify(cfg));
-  return cfg;
 }
 
-function loadConfig() {
-  try {
-    const raw = localStorage.getItem('hrananetu_cfg');
-    return raw ? JSON.parse(raw) : {};
-  } catch(e) { return {}; }
-}
-
-function populateConfigUI() {
-  const cfg = loadConfig();
-  const ak = document.getElementById('cfg-api-key');
-  const ci = document.getElementById('cfg-cal-id');
-  if (ak && cfg.apiKey) ak.value = cfg.apiKey;
-  if (ci && cfg.calId)  ci.value = cfg.calId;
-}
-
-/* ══════════════════════════════════════════════════════
-   INIT UI
-   ══════════════════════════════════════════════════════ */
-function initUI() {
-  // Sheets config grid (pouze pokud existuje)
-  const grid = document.getElementById('sheets-cfg-grid');
-  if (grid) {
-    grid.innerHTML = LEAGUES.map(l => `
-      <div class="cfg-row">
-        <div class="cfg-label" style="display:flex;align-items:center;gap:6px">
-          <span style="width:8px;height:8px;border-radius:50%;background:${l.color};display:inline-block"></span>
-          ${l.label} — Sheets ID
-        </div>
-        <input class="cfg-input" id="sheet-${l.id}" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"/>
-      </div>`).join('');
-  }
-
-  populateConfigUI();
-
-  // Filtry kalendáře
-  const cf = document.getElementById('cal-filters');
-  if (cf) {
-    LEAGUES.forEach(l => {
-      const btn = document.createElement('button');
-      btn.className = 'cal-filter';
-      btn.dataset.league = l.id;
-      btn.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${l.color};display:inline-block;margin-right:5px;flex-shrink:0"></span>${l.label}`;
-      btn.onclick = () => filterCalendar(l.id, btn);
-      cf.appendChild(btn);
-    });
-    const btnOther = document.createElement('button');
-    btnOther.className = 'cal-filter';
-    btnOther.dataset.league = 'other';
-    btnOther.textContent = 'Ostatní akce';
-    btnOther.onclick = () => filterCalendar('other', btnOther);
-    cf.appendChild(btnOther);
-  }
-
-  // Dropdown filtr
-  const kalSel = document.getElementById('kal-select');
-  if (kalSel && kalSel.options.length <= 1) {
-    LEAGUES.forEach(l => {
-      const opt = document.createElement('option');
-      opt.value = l.id;
-      opt.textContent = l.label;
-      kalSel.appendChild(opt);
-    });
-    const optOther = document.createElement('option');
-    optOther.value = 'other';
-    optOther.textContent = 'Ostatní akce';
-    kalSel.appendChild(optOther);
-  }
-}
-
-
-async function saveConfigAndLoad() {
-  const apiKey = document.getElementById('cfg-api-key').value.trim();
-  const calId  = document.getElementById('cfg-cal-id').value.trim();
-  const status = document.getElementById('cfg-status');
-  const setStatus = t => { if (status) status.textContent = t; };
-
-  if (!apiKey || !calId) {
-    setStatus('⚠ Vlož API Key a Calendar ID');
-    return;
-  }
-
-  localStorage.setItem('hrananetu_cfg', JSON.stringify({apiKey, calId}));
-
-  setStatus('Načítám…');
-  try {
-    await loadGoogleCalendar(apiKey, calId);
-    setStatus(`✓ Načteno ${allEvents.length} událostí`);
-  } catch(e) {
-    setStatus('⚠ ' + e.message);
-  }
-}
-
-function loadFromLocalStorage() {
-  populateConfigUI();
-  const cfg = loadConfig();
-  if (cfg.apiKey && cfg.calId) saveConfigAndLoad();
-}
-
-/* ══════════════════════════════════════════════════════
-   GOOGLE CALENDAR LOADER
-   Formát popisu události:
-   Formát: Standard
-   Místo: Brno, Úvoz 8
-   Registrace: 13:30
-   Start: 14:00
-   Počet kol: 5
-   Vstupné: 100 Kč
-   Ceny: 1. Booster Box, 2. 4× Booster
-   Liga: Pokémon           ← nepovinné, jinak se odvodí z názvu
-   ══════════════════════════════════════════════════════ */
-async function loadGoogleCalendar(apiKey, calId) {
-  const now = new Date();
-  const timeMin = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-  const timeMax = new Date(now.getFullYear() + 1, 11, 31).toISOString();
-
-  const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events`
-    + `?key=${apiKey}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=200`;
-
-  const res = await fetch(url);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `HTTP ${res.status}`);
-  }
-  const data = await res.json();
-  allEvents = (data.items || []).map(parseGCalEvent).filter(Boolean);
-
-  renderCalendar();
-  updateNextEventStat();
-  const se = document.getElementById('stat-events'); if (se) se.textContent = allEvents.length;
-}
-
-function subtractMinutes(timeStr, mins) {
-  const m = timeStr.match(/^(\d{1,2}):(\d{2})$/);
-  if (!m) return timeStr;
-  const total = parseInt(m[1]) * 60 + parseInt(m[2]) - mins;
-  const h = Math.floor(((total % 1440) + 1440) % 1440 / 60);
-  const min = ((total % 60) + 60) % 60;
-  return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
-}
-
+// ── PARSOVÁNÍ POPISU ──
 function stripEmoji(s) {
-  return s.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{231A}-\u{231B}\u{25AA}-\u{27FF}]+/gu, '').trim();
+  return s.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]+/gu, '').trim();
 }
 
-function parseGCalEvent(item) {
-  // Titulek: "🎮 Název hry - Formát hry - Liga/Turnaj"
-  const rawTitle = item.summary || 'Turnaj';
-  // Odstraň emoji ze začátku - nahraď vše co není písmeno/číslo/závorka
-  const noEmoji = rawTitle.replace(/^[^\w\u00C0-\u024F(]+/u, '').trim();
-  const titleParts  = noEmoji.split(/\s*[-\u2013]\s*/);
-  const title       = titleParts[0]?.trim() || rawTitle;
-  const titleFormat = titleParts[1]?.trim() || '';
-  const titleType   = titleParts[2]?.trim() || '';
-  const isLeague    = /liga/i.test(titleType) || /liga/i.test(titleFormat);
-  const start = item.start?.dateTime || item.start?.date;
-  const end   = item.end?.dateTime   || item.end?.date;
-  if (!start) return null;
-
-  const startDate = new Date(start);
-
-  const rawDesc = (item.description || '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
-
+function parseDesc(desc) {
+  const raw = (desc || '')
+    .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
   const fields = {};
-
-  rawDesc.split('\n').forEach(line => {
-    const clean = stripEmoji(line).trim();
-    if (!clean) return;
-
-    // Zkus "Klíč: hodnota"
-    const cm = clean.match(/^([^:]{1,30}):\s*(.+)$/);
-    if (cm) {
-      fields[cm[1].trim().toLowerCase()] = cm[2].trim();
-    }
-
-    // Speciální parsování bez dvojtečky
-    if (/^formát\s+/i.test(clean))
-      fields['formát'] = clean.replace(/^formát\s+/i,'').trim();
-
-    if (/hrana store|úvoz/i.test(clean) && !fields['místo'])
-      fields['místo'] = clean;
-
-    if (/^počet kol/i.test(clean))
-      fields['počet kol'] = clean.replace(/^počet kol\s*/i,'').trim();
-
-    if (/^vstupné/i.test(clean))
-      fields['vstupné'] = clean.replace(/^vstupné\s*/i,'').trim();
-
-    if (/^ceny/i.test(clean))
-      fields['ceny'] = clean.replace(/^ceny[:\s]*/i,'').trim();
-
-    // "Registrace 18:00, Start 18:30"
-    if (/registrace/i.test(clean)) {
-      const rm = clean.match(/registrace[:\s]+(\d{1,2}:\d{2})/i);
-      const sm = clean.match(/start[:\s]+(\d{1,2}:\d{2})/i);
+  raw.split('\n').forEach(line => {
+    const c = stripEmoji(line).trim();
+    if (!c) return;
+    const m = c.match(/^([^:]{1,30}):\s*(.+)$/);
+    if (m) { fields[m[1].toLowerCase()] = m[2].trim(); return; }
+    if (/^formát\s+/i.test(c))    fields['formát']     = c.replace(/^formát\s+/i,'').trim();
+    if (/hrana store|úvoz/i.test(c) && !fields['místo']) fields['místo'] = c;
+    if (/^počet kol/i.test(c))    fields['počet kol']  = c.replace(/^počet kol\s*/i,'').trim();
+    if (/^vstupné/i.test(c))      fields['vstupné']    = c.replace(/^vstupné\s*/i,'').trim();
+    if (/^ceny/i.test(c))         fields['ceny']       = c.replace(/^ceny[:\s]*/i,'').trim();
+    if (/registrace/i.test(c)) {
+      const rm = c.match(/registrace[:\s]+(\d{1,2}:\d{2})/i);
+      const sm = c.match(/start[:\s]+(\d{1,2}:\d{2})/i);
       if (rm) fields['registrace'] = rm[1];
       if (sm) fields['start'] = sm[1];
     }
   });
+  return fields;
+}
 
-  // Detect league
-  let league = null;
-  const titleLower = title.toLowerCase();
-  for (const l of LEAGUES) {
-    const kw = l.label.toLowerCase().split(' ')[0];
-    if (titleLower.includes(kw) || titleLower.includes(l.id)) { league = l; break; }
+function subtractMins(time, mins) {
+  const m = (time || '').match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return time;
+  const total = parseInt(m[1])*60 + parseInt(m[2]) - mins;
+  const h = Math.floor(((total%1440)+1440)%1440/60);
+  const mn = ((total%60)+60)%60;
+  return String(h).padStart(2,'0') + ':' + String(mn).padStart(2,'0');
+}
+
+// ── NAČTENÍ Z GOOGLE CALENDAR ──
+async function loadCalendar() {
+  const status = document.getElementById('kal-status');
+  let cfg = {};
+  try { cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
+
+  if (!cfg.apiKey || !cfg.calId) {
+    status.style.display = 'block';
+    status.textContent = 'Nastav Google Calendar API na úvodní stránce.';
+    renderCalendar();
+    return;
   }
 
-  const isFinale = /fin[aá]le/i.test(title);
-  const autoStart = startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
-  const startTime = fields['start'] || autoStart;
-  const regTime   = fields['registrace'] || subtractMinutes(startTime, 30);
+  status.style.display = 'block';
+  status.textContent = 'Načítám turnaje…';
 
-  return {
-    id: item.id, title, startDate,
-    endDate: end ? new Date(end) : null,
-    league, isFinale,
-    format:   fields['formát']    || '—',
-    isLeague,
-    titleFormat,
-    tourneyType: titleType,
-    place:    fields['místo']     || '—',
-    regTime,  startTime,
-    rounds:   fields['počet kol'] || '—',
-    entry:    fields['vstupné']   || '—',
-    prizes:   fields['ceny']      || '—',
-    raw: item,
-  };
+  try {
+    const now = new Date();
+    const tMin = new Date(now.getFullYear(), now.getMonth()-1, 1).toISOString();
+    const tMax = new Date(now.getFullYear()+1, 11, 31).toISOString();
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cfg.calId)}/events?key=${cfg.apiKey}&timeMin=${tMin}&timeMax=${tMax}&singleEvents=true&orderBy=startTime&maxResults=300`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.error?.message || 'HTTP ' + res.status);
+    }
+    const data = await res.json();
+
+    allEvents = (data.items || []).map(item => {
+      const startRaw = item.start?.dateTime || item.start?.date;
+      if (!startRaw) return null;
+      const startDate = new Date(startRaw);
+      if (isNaN(startDate)) return null;
+
+      const titleData = parseTitle(item.summary);
+      const fields    = parseDesc(item.description);
+      const ligaId    = detectLeague(item.summary);
+      const isFinale  = /fin[aá]le/i.test(item.summary || '');
+
+      const autoTime  = startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
+      const startTime = fields['start'] || autoTime;
+      const regTime   = fields['registrace'] || subtractMins(startTime, 30);
+
+      // "Přidat do kalendáře" URL
+      const calId = cfg.calId;
+      const addUrl = calId ? `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(calId)}` : '#';
+      const addBtn = document.getElementById('kal-add-btn');
+      if (addBtn && calId) addBtn.href = addUrl;
+
+      return {
+        id: item.id,
+        rawTitle: item.summary || '—',
+        title:    titleData.name,
+        format:   fields['formát'] || titleData.format || '—',
+        type:     titleData.type,
+        startDate,
+        ligaId,
+        isFinale,
+        league:   ligaId ? LEAGUES[ligaId] : null,
+        place:    fields['místo']     || '—',
+        regTime,
+        startTime,
+        rounds:   fields['počet kol'] || '—',
+        entry:    fields['vstupné']   || '—',
+        prizes:   fields['ceny']      || '—',
+      };
+    }).filter(Boolean);
+
+    // Nastav "Přidat do kalendáře"
+    const addBtn = document.getElementById('kal-add-btn');
+    if (addBtn && cfg.calId) addBtn.href = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(cfg.calId)}`;
+
+    status.style.display = 'none';
+    renderCalendar();
+  } catch(err) {
+    status.style.display = 'block';
+    status.textContent = '⚠ Chyba: ' + err.message;
+    renderCalendar();
+  }
 }
 
+// ── RENDER KALENDÁŘE ──
+function shiftMonth(dir) { monthOffset += dir; renderCalendar(); }
+function setFilter(val)  { activeFilter = val; renderCalendar(); }
 
-/* ══════════════════════════════════════════════════════
-   CALENDAR — měsíční zobrazení
-   ══════════════════════════════════════════════════════ */
-const MONTH_CS = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
-const MONTH_CS_SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
-const MONTH_CS_LONG = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
-const DAY_CS = ['Po','Út','St','Čt','Pá','So','Ne'];
-
-let kalMonthOffset = 0;
-let kalActiveFilter = 'all';
-
-function kalShift(dir) { kalMonthOffset += dir; renderCalendar(); }
-function kalFilter(val) { kalActiveFilter = val; renderCalendar(); }
-
-// zpětná kompatibilita
-function shiftWeek(dir) { kalShift(dir); }
-function filterCalendar(id) { kalFilter(id); }
-function filterCalendarSelect(v) { kalFilter(v); }
-
-function kalPillClass(ev) {
+function pillClass(ev) {
   if (ev.isFinale) return 'kp-finale';
-  if (!ev.league)  return 'kp-other';
-  return 'kp-' + ev.league.id;
+  if (ev.ligaId)   return 'kp-' + ev.ligaId;
+  return 'kp-other';
 }
 
-function kalShortTitle(ev) {
+function pillText(ev) {
   const time = ev.startTime && ev.startTime !== '—' ? ev.startTime : '';
   const name = ev.league ? ev.league.label : ev.title;
-  const fmt  = ev.titleFormat || '';
-  return [time, name, fmt].filter(Boolean).join(' · ');
+  const fmt  = ev.format && ev.format !== '—' ? ' · ' + ev.format : '';
+  return [time, name + fmt].filter(Boolean).join(' ');
 }
 
 function renderCalendar() {
   const today = new Date(); today.setHours(0,0,0,0);
-  const base  = new Date(today.getFullYear(), today.getMonth() + kalMonthOffset, 1);
+  const base  = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
   const yr = base.getFullYear();
   const mo = base.getMonth();
 
-  // Nadpis
-  const lbl = document.getElementById('kal-month-label');
-  if (lbl) lbl.textContent = MONTH_CS[mo].toUpperCase() + ' ' + yr;
+  document.getElementById('kal-month-label').textContent = MONTHS_CS[mo].toUpperCase() + ' ' + yr;
 
-  // Google Calendar odkaz
-  const calId = (document.getElementById('cfg-cal-id')||{}).value||'';
-  const addBtn = document.getElementById('kal-add-btn');
-  if (addBtn && calId) addBtn.href = 'https://calendar.google.com/calendar/r?cid=' + encodeURIComponent(calId);
+  const startDow   = (new Date(yr, mo, 1).getDay() + 6) % 7;
+  const daysInMo   = new Date(yr, mo+1, 0).getDate();
+  const totalCells = Math.ceil((startDow + daysInMo) / 7) * 7;
+  const viewStart  = new Date(yr, mo, 1 - startDow);
+  const viewEnd    = new Date(viewStart); viewEnd.setDate(viewStart.getDate() + totalCells - 1); viewEnd.setHours(23,59,59,999);
 
-  // Dny v pohledu
-  const startDow  = (new Date(yr, mo, 1).getDay() + 6) % 7; // 0=Po
-  const daysInMo  = new Date(yr, mo + 1, 0).getDate();
-  const totalCells= Math.ceil((startDow + daysInMo) / 7) * 7;
-  const viewStart = new Date(yr, mo, 1 - startDow);
-  const viewEnd   = new Date(viewStart); viewEnd.setDate(viewStart.getDate() + totalCells - 1); viewEnd.setHours(23,59,59,999);
-
-  // Filtruj eventy
+  // Filtr
   let evs = allEvents.filter(e => e.startDate >= viewStart && e.startDate <= viewEnd);
-  if (kalActiveFilter === 'other') evs = evs.filter(e => !e.league);
-  else if (kalActiveFilter !== 'all') evs = evs.filter(e => e.league && e.league.id === kalActiveFilter);
+  if (activeFilter === 'other') evs = evs.filter(e => !e.ligaId);
+  else if (activeFilter !== 'all') evs = evs.filter(e => e.ligaId === activeFilter);
 
-  // Group by den
+  // Group by day
   const byDay = {};
   evs.forEach(e => {
     const k = e.startDate.toDateString();
-    (byDay[k] = byDay[k]||[]).push(e);
+    (byDay[k] = byDay[k] || []).push(e);
   });
 
-  // Flat list pro modal
-  const flat = [];
+  // Flat pro modal
+  flatEvents = [];
   for (let i = 0; i < totalCells; i++) {
     const d = new Date(viewStart); d.setDate(viewStart.getDate() + i);
-    (byDay[d.toDateString()]||[]).forEach(e => flat.push(e));
+    (byDay[d.toDateString()] || []).forEach(e => flatEvents.push(e));
   }
-  window._kalFlat = flat;
 
   // Render
-  const headHTML = DAY_CS.map(d => `<div class="kal-hdr">${d}</div>`).join('');
-
+  const headHTML = DAYS_CS.map(d => `<div class="kal-hdr">${d}</div>`).join('');
   let bodyHTML = '';
   for (let i = 0; i < totalCells; i++) {
     const d = new Date(viewStart); d.setDate(viewStart.getDate() + i);
     const inMonth = d.getMonth() === mo;
     const isToday = d.toDateString() === today.toDateString();
-    const dayEvs  = byDay[d.toDateString()]||[];
-
+    const dayEvs  = byDay[d.toDateString()] || [];
+    const cls = (!inMonth ? 'kc-out ' : '') + (isToday ? 'kc-today' : '');
     const pills = dayEvs.map(e => {
-      const idx = flat.indexOf(e);
-      return `<div class="kp ${kalPillClass(e)}" onclick="kalOpenModal(${idx})" title="${e.title}">${kalShortTitle(e)}</div>`;
+      const idx = flatEvents.indexOf(e);
+      return `<div class="kp ${pillClass(e)}" onclick="openModal(${idx})">${pillText(e)}</div>`;
     }).join('');
-
-    const cls = [!inMonth?'kc-out':'', isToday?'kc-today':''].filter(Boolean).join(' ');
     bodyHTML += `<div class="kal-cell ${cls}"><div class="kal-num">${d.getDate()}</div><div class="kal-pills">${pills}</div></div>`;
   }
 
-  const grid = document.getElementById('kal-grid');
-  if (grid) grid.innerHTML = `<div class="kal-head">${headHTML}</div><div class="kal-body">${bodyHTML}</div>`;
+  document.getElementById('kal-grid').innerHTML =
+    `<div class="kal-head">${headHTML}</div><div class="kal-body">${bodyHTML}</div>`;
 }
 
-function kalOpenModal(idx) {
-  const e = (window._kalFlat||[])[idx];
+// ── MODAL ──
+function openModal(idx) {
+  const e = flatEvents[idx];
   if (!e) return;
-
+  const color = e.isFinale ? '#f0a500' : (e.league ? e.league.color : 'var(--pl)');
+  const tag   = e.isFinale ? 'Finálový turnaj' : (e.league ? e.league.label : 'Akce');
   const dateStr = e.startDate.toLocaleDateString('cs-CZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const color   = e.isFinale ? '#f0a500' : (e.league ? e.league.color : 'var(--pl)');
-  const tag     = e.isFinale ? 'Finálový turnaj' : (e.league ? e.league.label : 'Akce');
 
   document.getElementById('modal-banner').style.background = color;
-  const leagueLabel = e.isLeague ? ' · LIGA' : (e.tourneyType ? ' · ' + e.tourneyType : '');
-  document.getElementById('modal-tag').textContent  = tag + leagueLabel;
-  document.getElementById('modal-tag').style.color  = color;
+  document.getElementById('modal-tag').textContent = tag;
+  document.getElementById('modal-tag').style.color = color;
   document.getElementById('modal-title').textContent = e.title;
-  document.getElementById('modal-date').textContent  = dateStr;
+  document.getElementById('modal-date').textContent = dateStr;
 
-  // Detaily v gridu 2 sloupce
   const fields = [
-    e.regTime   !== '—' ? {lbl:'Registrace', val:e.regTime,   full:false} : null,
-    e.startTime         ? {lbl:'Start',       val:e.startTime, full:false} : null,
-    e.rounds    !== '—' ? {lbl:'Počet kol',  val:e.rounds,    full:false} : null,
-    e.entry     !== '—' ? {lbl:'Vstupné',    val:e.entry,     full:false} : null,
-    e.format    !== '—' ? {lbl:'Formát',     val:e.format,    full:false} : null,
-    e.place     !== '—' ? {lbl:'Místo',      val:e.place,     full:true}  : null,
+    e.regTime && e.regTime !== '—'   ? {lbl:'Registrace', val:e.regTime,   full:false} : null,
+    e.startTime                       ? {lbl:'Start',       val:e.startTime, full:false} : null,
+    e.rounds && e.rounds !== '—'     ? {lbl:'Počet kol',  val:e.rounds,    full:false} : null,
+    e.entry && e.entry !== '—'       ? {lbl:'Vstupné',    val:e.entry,     full:false} : null,
+    e.format && e.format !== '—'     ? {lbl:'Formát',     val:e.format,    full:false} : null,
+    e.place && e.place !== '—'       ? {lbl:'Místo',      val:e.place,     full:true}  : null,
   ].filter(Boolean);
 
-  const gridRows = fields.map(f =>
-    `<div class="modal-row ${f.full?'full':''}">
-      <div class="modal-lbl">${f.lbl}</div>
-      <div class="modal-val">${f.val}</div>
-    </div>`
+  const rows = fields.map(f =>
+    `<div class="modal-row${f.full?' full':''}"><div class="modal-lbl">${f.lbl}</div><div class="modal-val">${f.val}</div></div>`
   ).join('');
 
-  // Ceny — parsuj do řádků
-  let prizesHtml = '';
+  let prizes = '';
   if (e.prizes && e.prizes !== '—') {
-    const prizeLines = e.prizes.split(',').map(s => s.trim()).filter(Boolean);
-    prizesHtml = `<div class="modal-prizes-box">
-      <div class="modal-prizes-title">Ceny</div>
-      <div class="modal-prizes-list">
-        ${prizeLines.map(p => {
-          const m = p.match(/^(\d+\.\s*|TOP\s*\d+\s*[–-]\s*\d+\.\s*)?(.+)$/i);
-          const place = m && m[1] ? m[1].trim() : '';
-          const prize = m && m[2] ? m[2].trim() : p;
-          return `<div class="modal-prize-row">
-            <span class="modal-prize-place">${place}</span>
-            <span class="modal-prize-val">${prize}</span>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
+    const lines = e.prizes.split(',').map(s=>s.trim()).filter(Boolean);
+    prizes = `<div class="modal-prizes-box"><div class="modal-prizes-title">Ceny</div><div class="modal-prizes-list">${
+      lines.map(p=>`<div class="modal-prize-row"><span class="modal-prize-place"></span><span class="modal-prize-val">${p}</span></div>`).join('')
+    }</div></div>`;
   }
 
-  document.getElementById('modal-body').innerHTML =
-    `<div class="modal-rows">${gridRows}</div>${prizesHtml}`;
-
+  document.getElementById('modal-body').innerHTML = `<div class="modal-rows">${rows}</div>${prizes}`;
   document.getElementById('modal-overlay').classList.add('open');
 }
-function updateNextEventStat() {
-  const now = new Date();
-  const next = allEvents.find(e => e.startDate >= now);
-  if (next) {
-    const _sn = document.getElementById('stat-next'); if(_sn) _sn.textContent =
-      next.startDate.getDate() + '. ' + MONTH_CS_SHORT[next.startDate.getMonth()];
-  }
-}
-
-/* ══ MODAL ══ */
 
 function closeModal(evt) {
-  if (!evt || evt.target === document.getElementById('modal-overlay') || evt.type === 'click') {
+  if (!evt || evt.target === document.getElementById('modal-overlay')) {
     document.getElementById('modal-overlay').classList.remove('open');
   }
 }
-
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-/* ══════════════════════════════════════════════════════
-   GOOGLE SHEETS — STANDINGS
-   ══════════════════════════════════════════════════════ */
-async function loadLeagueStandings(sheetId, league) {
-  const enc = encodeURIComponent(activeSeason);
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${enc}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`List "${activeSeason}" nenalezen nebo Sheets není veřejný.`);
-  const text = await res.text();
-  const data = parseLeagueCSV(text);
-  loadedStandings[league.id] = data;
-  if (league.id === activeLeague.id) {
-    renderLeagueCard(data);
-    renderStandings(data);
-  }
-}
-
-function parseLeagueCSV(text) {
-  const rows = parseCSV(text);
-  if (rows.length < 2) throw new Error('Prázdný list.');
-  const headers = rows[0];
-  const finaleIdx = headers.length - 1;
-  const roundCols = [];
-  for (let i = 2; i < finaleIdx; i++) {
-    if (headers[i]) roundCols.push({ idx:i, label:headers[i] });
-  }
-
-  const players = [];
-  rows.slice(1).forEach((row, i) => {
-    const name = (row[0]||'').trim();
-    if (!name) return;
-    const total = parseFloat(row[1]) || 0;
-    const isFinalist = /fin/i.test(row[finaleIdx]||'') || row[finaleIdx]==='1';
-    const rounds = roundCols.map(r => { const v=parseFloat(row[r.idx]); return isNaN(v)?0:v; });
-    players.push({ name, total, rounds, isFinalist, color:AV_COLORS[i%AV_COLORS.length] });
-  });
-
-  players.sort((a,b) => b.total - a.total);
-  players.forEach((p,i) => p.rank = i+1);
-
-  const playedRounds = roundCols.filter((r,ri) => players.some(p => p.rounds[ri] > 0)).length;
-
-  let avgPlayers = 0;
-  if (playedRounds > 0) {
-    let sum = 0;
-    roundCols.forEach((_,ri) => { sum += players.filter(p => p.rounds[ri]>0).length; });
-    avgPlayers = sum / roundCols.length;
-  }
-
-  return { players, roundCols, playedRounds, totalRounds:roundCols.length, avgPlayers };
-}
-
-function parseCSV(text) {
-  const rows=[];
-  for (const line of text.split('\n')) {
-    if (!line.trim()) continue;
-    const cells=[]; let cur='', inQ=false;
-    for (let i=0;i<line.length;i++){
-      const c=line[i];
-      if(c==='"'){inQ=!inQ;}
-      else if(c===','&&!inQ){cells.push(cur.trim());cur='';}
-      else{cur+=c;}
-    }
-    cells.push(cur.trim());
-    rows.push(cells);
-  }
-  return rows;
-}
-
-/* ══════════════════════════════════════════════════════
-   LEAGUE CARD & STANDINGS RENDER
-   ══════════════════════════════════════════════════════ */
-function selectLeague(l) {
-  activeLeague = l;
-  document.querySelectorAll('.ltab').forEach(b => b.classList.remove('active'));
-  const tab = document.getElementById('ltab-' + l.id);
-  if (tab) tab.classList.add('active');
-
-  const data = loadedStandings[l.id];
-  if (data) {
-    renderLeagueCard(data);
-    renderStandings(data);
-  } else {
-    renderLeagueCardEmpty();
-    // Try to load
-    const cfg = loadConfig();
-    const sid = cfg.sheets && cfg.sheets[l.id];
-    if (sid) {
-      loadLeagueStandings(sid, l).catch(e => {
-        document.getElementById('t-body').innerHTML =
-          `<tr class="empty-row"><td colspan="5">⚠ ${e.message}</td></tr>`;
-      });
-    } else {
-      document.getElementById('t-body').innerHTML =
-        `<tr class="empty-row"><td colspan="5">Nastav Sheets ID na úvodní stránce.</td></tr>`;
-    }
-  }
-}
-
-function renderLeagueCardEmpty() {
-  const l = activeLeague;
-  const logo = document.getElementById('lc-logo');
-  logo.textContent = l.abbr;
-  logo.style.cssText = `background:${l.bg};color:${l.color};border:1px solid ${l.color}44`;
-  document.getElementById('lc-name').textContent = l.label + ' Liga';
-  document.getElementById('lc-season').textContent = activeSeason;
-  document.getElementById('lc-players').textContent = '—';
-  document.getElementById('lc-rounds').textContent = '—';
-  document.getElementById('lc-avg').textContent = '—';
-  document.getElementById('fb-title').textContent = 'Finálový turnaj';
-  document.getElementById('fb-desc').textContent = 'Načti data pro zobrazení podmínek finále';
-  document.getElementById('fb-type').textContent = '—';
-  document.getElementById('s-title').textContent = l.label + ' — Žebříček';
-  document.getElementById('s-badge').textContent = activeSeason;
-}
-
-function renderLeagueCard(data) {
-  const l = activeLeague;
-  const logo = document.getElementById('lc-logo');
-  logo.textContent = l.abbr;
-  logo.style.cssText = `background:${l.bg};color:${l.color};border:1px solid ${l.color}44`;
-  document.getElementById('lc-name').textContent = l.label + ' Liga';
-  document.getElementById('lc-season').textContent = activeSeason;
-  document.getElementById('lc-players').textContent = data.players.length;
-  document.getElementById('lc-rounds').textContent = `${data.playedRounds}/${data.totalRounds}`;
-  document.getElementById('lc-avg').textContent = data.avgPlayers.toFixed(1);
-  document.getElementById('s-title').textContent = l.label + ' — Žebříček';
-  document.getElementById('s-badge').textContent = activeSeason;
-  document.getElementById('stat-players').textContent = data.players.length;
-
-  const fmt = finaleFormat(data.avgPlayers);
-  document.getElementById('fb-title').textContent = fmt.label;
-  document.getElementById('fb-desc').textContent = fmt.desc;
-  document.getElementById('fb-type').textContent = fmt.type;
-  renderPrizes(data.avgPlayers);
-}
-
-function renderStandings(data) {
-  const { players, roundCols } = data;
-
-  document.getElementById('t-head').innerHTML = `<tr>
-    <th style="width:32px">#</th>
-    <th class="cn">Jméno</th>
-    <th class="ct">Body</th>
-    ${roundCols.map(r=>`<th>${r.label}</th>`).join('')}
-    <th>Finále</th>
-  </tr>`;
-
-  document.getElementById('t-body').innerHTML = players.map(p => {
-    const init = p.name.replace(/,.*/, '').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const rCls = p.rank===1?'r1':p.rank===2?'r2':p.rank===3?'r3':'';
-    const rowCls = p.rank===1?'tr1':p.rank<=3?'tr3':p.isFinalist?'trf':'';
-    const rcells = p.rounds.map(v=>`<td><span class="rp ${v===0?'ab':'pr'}">${v}</span></td>`).join('');
-    const finCell = p.isFinalist
-      ? `<td><span style="color:#4ade80;font-size:11px;font-weight:700">✓ Finále</span></td>`
-      : `<td><span style="color:var(--text3);font-size:11px">—</span></td>`;
-    return `<tr class="${rowCls}">
-      <td><span class="rank ${rCls}">${p.rank}.</span></td>
-      <td class="cn"><div class="pcell">
-        <div class="av" style="background:${p.color}20;color:${p.color};border:1px solid ${p.color}40">${init}</div>
-        <span class="pname">${p.name}</span>
-      </div></td>
-      <td><span class="tot">${p.total}</span></td>
-      ${rcells}${finCell}
-    </tr>`;
-  }).join('');
-}
-
-function renderPrizes(avg) {
-  const fmt = finaleFormat(avg);
-  document.getElementById('prizes-note').textContent = fmt.type === 'ŽEBŘÍČEK'
-    ? 'Tato liga nemá finálový turnaj — ceny dle žebříčku.'
-    : `Ceny pro ${fmt.type} finálový turnaj`;
-  document.getElementById('prizes-grid').innerHTML = prizesForFormat(fmt).map(p=>`
-    <div class="pcard ${p.feat?'feat':''}">
-      <div class="pplace">${p.place}</div>
-      <div class="plbl">${p.label}</div>
-      <div class="pval">${p.val}</div>
-      <div class="pitems">${p.items.map(i=>`<div class="pitem">${i}</div>`).join('')}</div>
-    </div>`).join('');
-}
-
-/* ══════════════════════════════════════════════════════
-   SCROLL NAV
-   ══════════════════════════════════════════════════════ */
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    const t=document.querySelector(a.getAttribute('href'));
-    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
-  });
-});
-
-/* ══ START ══ */
-initUI();
-renderCalendar(); // zobraz aktuální týden hned
-
-/* ── TOP HRÁČI ze Sheets ── */
-async function loadTopPlayers() {
-  const LEAGUES_CFG = [
-    {id:'mtgp', sheet:'MTG Premodern liga'},
-    {id:'mtgd', sheet:'MTG Draft liga'},
-    {id:'mtgm', sheet:'MTG Modern liga'},
-    {id:'rb',   sheet:'Riftbound liga'},
-    {id:'pk',   sheet:'Pokemon liga'},
-    {id:'op',   sheet:'One Piece liga'},
-    {id:'fab',  sheet:'FaB liga'},
-    {id:'gd',   sheet:'Gundam liga'},
-    {id:'so',   sheet:'Sorcery liga'},
-  ];
-
-  const season = 'Jaro 2026';
-
-  await Promise.all(LEAGUES_CFG.map(async l => {
-    const el = document.getElementById('th-' + l.id);
-    if (!el) return;
-    try {
-      const saved = localStorage.getItem('hrana_sheets_' + l.id);
-      if (!saved) { el.innerHTML = '<div class="th-loading">Sheets ID není nastaveno</div>'; return; }
-      const {sheetId} = JSON.parse(saved);
-      if (!sheetId) { el.innerHTML = '<div class="th-loading">—</div>'; return; }
-
-      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(season)}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Sheets nedostupný');
-      const text = await res.text();
-
-      // Parsuj CSV
-      const lines = text.split('\n').filter(l => l.trim());
-      if (lines.length < 2) { el.innerHTML = '<div class="th-loading">Žádná data</div>'; return; }
-
-      const rows = lines.slice(1).map(line => {
-        const cells = []; let cur = '', inQ = false;
-        for (const c of line) {
-          if (c === '"') { inQ = !inQ; }
-          else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
-          else cur += c;
-        }
-        cells.push(cur.trim());
-        return cells;
-      });
-
-      const players = rows
-        .filter(r => r[0]?.trim())
-        .map(r => ({name: r[0].trim(), pts: parseFloat(r[1]) || 0}))
-        .sort((a,b) => b.pts - a.pts)
-        .slice(0, 3);
-
-      if (!players.length) { el.innerHTML = '<div class="th-loading">Žádní hráči</div>'; return; }
-
-      el.innerHTML = players.map((p, i) => {
-        const rkCls = i===0?'r1':i===1?'r2':'r3';
-        const slug = p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/,/g,'').trim().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-        return `<div class="th-player">
-          <div class="th-player-left">
-            <span class="th-rank ${rkCls}">${i+1}.</span>
-            <a href="/tcg-hraci.html?hrac=${slug}" class="th-name">${p.name}</a>
-          </div>
-          <span class="th-pts">${p.pts}</span>
-        </div>`;
-      }).join('');
-    } catch(e) {
-      el.innerHTML = '<div class="th-loading">Nelze načíst</div>';
-    }
-  }));
-}
-
-// Spusť po načtení stránky
-window.addEventListener('load', async function() {
-  initUI();
-  renderCalendar();
-
-  // Načti z localStorage - klíč hrananetu_cfg (nastavený na úvodní stránce)
-  let cfg = {};
-  try { cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
-
-  if (cfg.apiKey && cfg.calId) {
-    try {
-      await loadGoogleCalendar(cfg.apiKey, cfg.calId);
-    } catch(err) {
-      const grid = document.getElementById('kal-grid');
-      if (grid) grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text3)">Chyba načítání: ${err.message}</div>`;
-    }
-  } else {
-    const grid = document.getElementById('kal-grid');
-    if (grid) grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">Nastav Google Calendar API na úvodní stránce (admin tečka dole).</div>';
-  }
-});
-
+// ── START ──
+renderCalendar();
+loadCalendar();
 </script>
-
-
 
 <script>
 !function(){var o=false;window.toggleMenu=function(){o=!o;document.getElementById('hbg').classList.toggle('open',o);document.getElementById('mob-nav').classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';};document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('#mob-nav a').forEach(function(a){a.addEventListener('click',function(){o=false;document.getElementById('hbg').classList.remove('open');document.getElementById('mob-nav').classList.remove('open');document.body.style.overflow='';});});});}();
 </script>
-
 </body>
 </html>
