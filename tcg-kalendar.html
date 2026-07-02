@@ -239,19 +239,47 @@ let activeFilter = 'all';
 let flatEvents = [];
 
 // ── DETEKCE LIGY Z TITULKU ──
-function detectLeague(title) {
-  const t = (title || '').toLowerCase();
-  if (t.includes('premodern'))                            return 'mtgp';
-  if (t.includes('pauper'))                               return 'mtgpa';
-  if (t.includes('modern') && !t.includes('premodern'))  return 'mtgm';
-  if (t.includes('draft'))                                return 'mtgd';
-  if (t.includes('riftbound'))                            return 'rb';
-  if (t.includes('pokémon') || t.includes('pokemon'))    return 'pk';
-  if (t.includes('one piece'))                            return 'op';
-  if (t.includes('flesh') || t.includes('blood'))        return 'fab';
-  if (t.includes('gundam'))                               return 'gd';
-  if (t.includes('sorcery'))                              return 'so';
-  if (t.includes('yu-gi') || t.includes('yugi'))         return 'ygo';
+function detectLeague(rawTitle) {
+  // Titulek: "Emoji MTG - Formát - Typ" nebo "Emoji Hra - Formát - Typ"
+  // Odstraň emoji ze začátku
+  const clean = (rawTitle || '').replace(/^[^\wÀ-ɏ(]+/u, '').trim();
+  const parts = clean.split(/\s*[-–]\s*/);
+  // Hlavní hra = první část (MTG, Riftbound, Pokémon...)
+  const game   = (parts[0] || '').toLowerCase().trim();
+  // Formát = druhá část (Draft, Premodern, Pauper, Constructed...)
+  const format = (parts[1] || '').toLowerCase().trim();
+  // Celý titulek pro fallback
+  const full   = clean.toLowerCase();
+
+  // Nejdřív dle hry
+  if (game.includes('riftbound'))                        return 'rb';
+  if (game.includes('pokémon') || game.includes('pokemon')) return 'pk';
+  if (game.includes('one piece'))                        return 'op';
+  if (game.includes('flesh') || game.includes('blood')) return 'fab';
+  if (game.includes('gundam'))                           return 'gd';
+  if (game.includes('sorcery'))                          return 'so';
+  if (game.includes('yu-gi') || game.includes('yugi'))  return 'ygo';
+
+  // MTG - rozliš podle formátu (druhá část)
+  if (game.includes('mtg') || game.includes('magic')) {
+    if (format.includes('premodern'))   return 'mtgp';
+    if (format.includes('pauper'))      return 'mtgpa';
+    if (format.includes('modern'))      return 'mtgm';
+    if (format.includes('draft'))       return 'mtgd';
+    if (format.includes('standard'))    return 'mtgm';
+    if (format.includes('pioneer'))     return 'mtgm';
+    if (format.includes('legacy'))      return 'mtgp';
+    if (format.includes('commander'))   return 'mtgd'; // fallback
+    return 'mtgd'; // obecné MTG → draft jako fallback
+  }
+
+  // Fallback - hledej v celém titulku
+  if (full.includes('premodern'))  return 'mtgp';
+  if (full.includes('pauper'))     return 'mtgpa';
+  if (full.includes('riftbound'))  return 'rb';
+  if (full.includes('pokémon') || full.includes('pokemon')) return 'pk';
+  if (full.includes('one piece'))  return 'op';
+  if (full.includes('yu-gi'))      return 'ygo';
   return null;
 }
 
