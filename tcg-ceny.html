@@ -232,7 +232,7 @@ function renderDetail(l) {
     ? `<strong style="color:var(--text)">${avg.toFixed(1)}</strong> hráčů průměr/kolo`
     : '— data nejsou k dispozici';
 
-  const fmtCards = getFormats().map(f => {
+  const fmtCards = getFormatsForLeague(l.id).map(f => {
     const isActive = f.type === active;
     return `<div class="fmt-card${isActive ? ' active' : ''}">
       <div class="fmt-head">
@@ -417,7 +417,7 @@ async function init() {
       ? `<strong style="color:var(--text)">${avg.toFixed(1)}</strong> hráčů průměr/kolo`
       : '<span style="color:var(--text3)">— data nejsou k dispozici</span>';
 
-    const fmtCards = getFormats().map(f =>
+    const fmtCards = getFormatsForLeague(l.id).map(f =>
       renderFormatCardWithConfig(f, activeType, l.id, configData)
     ).join('');
 
