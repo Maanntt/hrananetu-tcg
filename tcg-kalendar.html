@@ -521,8 +521,10 @@ function loadConfig() {
 
 function populateConfigUI() {
   const cfg = loadConfig();
-  if (cfg.apiKey) document.getElementById('cfg-api-key').value = cfg.apiKey;
-  if (cfg.calId)  document.getElementById('cfg-cal-id').value  = cfg.calId;
+  const ak = document.getElementById('cfg-api-key');
+  const ci = document.getElementById('cfg-cal-id');
+  if (ak && cfg.apiKey) ak.value = cfg.apiKey;
+  if (ci && cfg.calId)  ci.value = cfg.calId;
 }
 
 /* ══════════════════════════════════════════════════════
