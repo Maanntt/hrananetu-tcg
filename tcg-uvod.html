@@ -185,42 +185,6 @@ footer a{color:var(--pl);text-decoration:none}
 <main class="con">
 
   <!-- NASTAVENÍ -->
-  <button class="setup-toggle" onclick="document.getElementById('setup-panel').classList.toggle('open')">
-    ⚙ Nastavení zdrojů dat
-  </button>
-  <div class="setup-panel" id="setup-panel">
-    <div class="setup-label">Config Sheet</div>
-    <div class="setup-row" style="grid-column:1/-1;margin-bottom:8px">
-      <div class="setup-lbl"><span class="setup-dot" style="background:var(--gold)"></span>Config Sheet ID <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none">(ceny, ligy, sezóny)</span></div>
-      <input class="setup-inp" id="sid-config" placeholder="Sheets ID centrálního config sheetu..."/>
-    </div>
-    <div class="setup-label" style="margin-top:8px">Google Sheets — Ligy</div>
-          <div class="setup-grid">
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#4ade80"></span>Flesh and Blood</div><input class="setup-inp" id="sid-fab" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fcd34d"></span>Gundam</div><input class="setup-inp" id="sid-gd" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#b39ddb"></span>MTG Draft</div><input class="setup-inp" id="sid-mtgd" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#9b4dff"></span>MTG Modern</div><input class="setup-inp" id="sid-mtgm" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#a78bfa"></span>MTG Pauper</div><input class="setup-inp" id="sid-mtgpa" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c51df5"></span>MTG Premodern</div><input class="setup-inp" id="sid-mtgp" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#f87171"></span>One Piece</div><input class="setup-inp" id="sid-op" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#ffcb05"></span>Pokémon</div><input class="setup-inp" id="sid-pk" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#7fb3f5"></span>Riftbound</div><input class="setup-inp" id="sid-rb" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c084fc"></span>Sorcery</div><input class="setup-inp" id="sid-so" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fb923c"></span>Yu-Gi-Oh!</div><input class="setup-inp" id="sid-ygo" placeholder="Sheets ID..."/></div>
-    </div>
-    <div class="setup-bottom">
-      <select class="setup-sel" id="setup-season">
-        <option value="Léto 2026">Letní sezóna 2026</option>
-        <option value="Jaro 2026">Jarní sezóna 2026</option>
-        <option value="Podzim 2026">Podzimní sezóna 2026</option>
-        <option value="Zima 2026">Zimní sezóna 2026</option>
-        <option value="Zima 2025">Zimní sezóna 2025</option>
-      </select>
-      <button class="setup-btn" onclick="saveAndLoad()">Uložit a načíst data</button>
-      <span class="setup-status" id="setup-status"></span>
-    </div>
-  </div>
-
 
   <!-- MINI TÝDENNÍ KALENDÁŘ -->
   <div class="week-section">
@@ -305,6 +269,52 @@ footer a{color:var(--pl);text-decoration:none}
 
 </main>
 
+
+<div id="admin-area" style="text-align:center;padding:12px 0 4px">
+  <span id="admin-trigger" onclick="adminAuth()" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;opacity:.3;transition:opacity .3s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.3'" title=""></span>
+  <div class="setup-panel" id="setup-panel" style="text-align:left;margin:16px 28px 0;max-width:1280px;margin-left:auto;margin-right:auto">
+    <div class="setup-label">Google Calendar</div>
+    <div class="setup-row" style="grid-column:1/-1;margin-bottom:8px">
+      <div class="setup-lbl"><span class="setup-dot" style="background:var(--purple)"></span>API Key</div>
+      <input class="setup-inp" id="cfg-api-key" type="password" placeholder="AIzaSy..."/>
+    </div>
+    <div class="setup-row" style="grid-column:1/-1;margin-bottom:16px">
+      <div class="setup-lbl"><span class="setup-dot" style="background:var(--purple)"></span>Calendar ID</div>
+      <input class="setup-inp" id="cfg-cal-id" placeholder="abc@group.calendar.google.com"/>
+    </div>
+    <div class="setup-label">Config Sheet</div>
+    <div class="setup-row" style="grid-column:1/-1;margin-bottom:8px">
+      <div class="setup-lbl"><span class="setup-dot" style="background:var(--gold)"></span>Config Sheet ID <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none">(ceny, ligy, sezóny)</span></div>
+      <input class="setup-inp" id="sid-config" placeholder="Sheets ID centrálního config sheetu..."/>
+    </div>
+    <div class="setup-label" style="margin-top:8px">Google Sheets — Ligy</div>
+          <div class="setup-grid">
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#4ade80"></span>Flesh and Blood</div><input class="setup-inp" id="sid-fab" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fcd34d"></span>Gundam</div><input class="setup-inp" id="sid-gd" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#b39ddb"></span>MTG Draft</div><input class="setup-inp" id="sid-mtgd" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#9b4dff"></span>MTG Modern</div><input class="setup-inp" id="sid-mtgm" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#a78bfa"></span>MTG Pauper</div><input class="setup-inp" id="sid-mtgpa" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c51df5"></span>MTG Premodern</div><input class="setup-inp" id="sid-mtgp" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#f87171"></span>One Piece</div><input class="setup-inp" id="sid-op" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#ffcb05"></span>Pokémon</div><input class="setup-inp" id="sid-pk" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#7fb3f5"></span>Riftbound</div><input class="setup-inp" id="sid-rb" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c084fc"></span>Sorcery</div><input class="setup-inp" id="sid-so" placeholder="Sheets ID..."/></div>
+      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fb923c"></span>Yu-Gi-Oh!</div><input class="setup-inp" id="sid-ygo" placeholder="Sheets ID..."/></div>
+    </div>
+    <div class="setup-bottom">
+      <select class="setup-sel" id="setup-season">
+        <option value="Léto 2026">Letní sezóna 2026</option>
+        <option value="Jaro 2026">Jarní sezóna 2026</option>
+        <option value="Podzim 2026">Podzimní sezóna 2026</option>
+        <option value="Zima 2026">Zimní sezóna 2026</option>
+        <option value="Zima 2025">Zimní sezóna 2025</option>
+      </select>
+      <button class="setup-btn" onclick="saveAndLoad()">Uložit a načíst data</button>
+      <span class="setup-status" id="setup-status"></span>
+    </div>
+  </div>
+
+</div>
 <footer>
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
@@ -482,6 +492,15 @@ async function loadConfigSheet() {
 }
 
 function loadSaved() {
+  // Google Calendar
+  try {
+    const cal = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}');
+    const ak = document.getElementById('cfg-api-key');
+    const ci = document.getElementById('cfg-cal-id');
+    if (ak && cal.apiKey) ak.value = cal.apiKey;
+    if (ci && cal.calId)  ci.value = cal.calId;
+  } catch(e) {}
+
   // Config sheet ID
   const configEl = document.getElementById('sid-config');
   if (configEl) configEl.value = getConfigSheetId();
@@ -814,6 +833,29 @@ async function loadStats(season) {
   const elEvents  = document.getElementById('stat-events');
   if (elPlayers) elPlayers.textContent = totalPlayers.size > 0 ? totalPlayers.size : '—';
   if (elEvents)  elEvents.textContent  = totalRounds > 0 ? totalRounds : '—';
+}
+
+
+/* ── ADMIN AUTH ── */
+const ADMIN_KEY = 'hn_admin_auth';
+
+function adminAuth() {
+  const panel = document.getElementById('setup-panel');
+  if (!panel) return;
+  // Pokud už je autorizován (session), jen toggle
+  if (sessionStorage.getItem(ADMIN_KEY) === '1') {
+    panel.classList.toggle('open');
+    return;
+  }
+  const pwd = prompt('');
+  if (pwd === null) return;
+  if (pwd === 'hrana2026') {
+    sessionStorage.setItem(ADMIN_KEY, '1');
+    panel.classList.add('open');
+    loadSaved();
+  } else {
+    // Špatné heslo - nic nezobrazuj
+  }
 }
 
 // ── START ──
