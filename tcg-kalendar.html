@@ -233,51 +233,38 @@ const LIGA_CFG = {
 // Detekce ligy z titulku Google Calendar
 // Titulek (bez emoji): "MTG - Premodern - Liga" nebo "Riftbound - Skirmish - Liga"
 function detectLiga(raw) {
-  // Odstraň emoji ze začátku a normalizuj
-  const clean = (raw || '').replace(/^[\s\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F9FF}\u{2300}-\u{23FF}\u{FE00}-\u{FEFF}]+/gu, '').trim();
+  // Odstraň emoji ze začátku
+  const clean = (raw||'').replace(/^[\s\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F9FF}\u{2300}-\u{23FF}]+/gu,'').trim();
   const t = clean.toLowerCase();
 
-  // Yu-Gi-Oh! - zkontroluj PRVNÍ jako celek před split (pomlčky jsou součástí jména!)
-  if (t.startsWith('yu-gi-oh') || t.startsWith('yu gi oh') || t.startsWith('yugioh')) return 'ygo';
+  // Yu-Gi-Oh! musí být před splitem - obsahuje pomlčky v názvu!
+  if (t.startsWith('yu-gi-oh') || t.startsWith('yugioh')) return 'ygo';
 
-  // Rozděl na části po " - " nebo " – "
-  const parts = clean.split(/\s+-\s+|\s+–\s+/);
-  const game   = (parts[0] || '').toLowerCase().trim();
-  const format = (parts[1] || '').toLowerCase().trim();
+  // Split přesně na " - " (mezera pomlčka mezera)
+  const parts = clean.split(' - ');
+  const game   = (parts[0]||'').toLowerCase().trim();
+  const format = (parts[1]||'').toLowerCase().trim();
 
-  // Non-MTG hry dle první části
-  if (game.startsWith('riftbound'))                          return 'rb';
-  if (game.startsWith('pokémon') || game.startsWith('pokemon')) return 'pk';
-  if (game.startsWith('one piece'))                          return 'op';
-  if (game.startsWith('flesh and blood') || game.startsWith('fab')) return 'fab';
-  if (game.startsWith('gundam'))                             return 'gd';
-  if (game.startsWith('sorcery'))                            return 'so';
+  // Non-MTG hry
+  if (game.startsWith('riftbound'))               return 'rb';
+  if (game.startsWith('pokémon')||game.startsWith('pokemon')) return 'pk';
+  if (game.startsWith('one piece'))               return 'op';
+  if (game.startsWith('flesh'))                   return 'fab';
+  if (game.startsWith('gundam'))                  return 'gd';
+  if (game.startsWith('sorcery'))                 return 'so';
 
-  // MTG - dle formátu (druhá část)
+  // MTG - rozliš dle formátu
   if (game === 'mtg' || game === 'magic') {
-    if (format.startsWith('premodern'))                      return 'mtgp';
-    if (format.startsWith('pauper'))                         return 'mtgpa';
-    if (format.startsWith('prerelease') || format.startsWith('pre-release')) return 'mtgpre';
-    if (format.startsWith('commander') || format.startsWith('edh')) return 'mtgcmd';
-    if (format.startsWith('modern'))                         return 'mtgm';
-    if (format.startsWith('standard'))                       return 'mtgstd';
-    if (format.startsWith('pioneer'))                        return 'mtgstd';
-    if (format.startsWith('draft') || format.startsWith('sealed')) return 'mtgd';
-    if (format.startsWith('legacy') || format.startsWith('vintage')) return 'mtgp';
-    // Formát začíná čímkoliv jiným (Draft Marvel Heroes, Pauper Liga atd.)
-    // Zkus hledat klíčové slovo kdekoliv ve formátu
-    if (format.includes('premodern'))   return 'mtgp';
-    if (format.includes('pauper'))      return 'mtgpa';
-    if (format.includes('prerelease'))  return 'mtgpre';
-    if (format.includes('commander'))   return 'mtgcmd';
-    if (format.includes('modern'))      return 'mtgm';
-    if (format.includes('standard'))    return 'mtgstd';
-    if (format.includes('pioneer'))     return 'mtgstd';
-    if (format.includes('draft'))       return 'mtgd';
-    if (format.includes('sealed'))      return 'mtgd';
+    if (format.includes('premodern'))              return 'mtgp';
+    if (format.includes('pauper'))                 return 'mtgpa';
+    if (format.includes('prerelease'))             return 'mtgpre';
+    if (format.includes('commander')||format.includes('edh')) return 'mtgcmd';
+    if (format.includes('modern'))                 return 'mtgm';
+    if (format.includes('standard')||format.includes('pioneer')) return 'mtgstd';
+    if (format.includes('draft')||format.includes('sealed'))  return 'mtgd';
+    if (format.includes('legacy')||format.includes('vintage')) return 'mtgp';
     return null;
   }
-
   return null;
 }
 
