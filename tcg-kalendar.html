@@ -1187,22 +1187,24 @@ async function loadTopPlayers() {
 }
 
 // Spusť po načtení stránky
-document.addEventListener('DOMContentLoaded', async function() {
+window.addEventListener('load', async function() {
   initUI();
   renderCalendar();
 
-  // Načti API config z localStorage (nastaveno na úvodní stránce)
-  const cfg = loadConfig();
+  // Načti z localStorage - klíč hrananetu_cfg (nastavený na úvodní stránce)
+  let cfg = {};
+  try { cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
+
   if (cfg.apiKey && cfg.calId) {
     try {
       await loadGoogleCalendar(cfg.apiKey, cfg.calId);
-    } catch(e) {
-      console.log('Calendar load error:', e);
+    } catch(err) {
+      const grid = document.getElementById('kal-grid');
+      if (grid) grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text3)">Chyba načítání: ${err.message}</div>`;
     }
   } else {
-    // Zobraz prázdný kalendář s textem
     const grid = document.getElementById('kal-grid');
-    if (grid) grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">Nastav Google Calendar API na úvodní stránce.</div>';
+    if (grid) grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">Nastav Google Calendar API na úvodní stránce (admin tečka dole).</div>';
   }
 });
 
