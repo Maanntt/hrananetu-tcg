@@ -44,15 +44,16 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 .page-title{font-family:'Rajdhani',sans-serif;font-size:46px;font-weight:700;line-height:1;margin-bottom:8px}
 .page-sub{font-size:14px;color:var(--text3)}
 
-/* TOOLBAR */
-.toolbar{display:flex;align-items:center;gap:10px;padding:18px 0;border-bottom:1px solid var(--border);margin-bottom:24px}
-.sort-lbl{font-size:13px;color:var(--text3);margin-right:4px}
-.sort-btn{background:var(--bg2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:500;padding:7px 14px;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
-.sort-btn:hover{border-color:var(--purple);color:var(--pl)}
-.sort-btn.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
+/* SEASON TABS */
+.season-tabs{display:flex;gap:8px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--border);margin-bottom:24px}
+.stab{background:var(--bg2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .15s}
+.stab:hover{border-color:var(--purple);color:var(--pl)}
+.stab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
 
 /* TABLE */
 .status{padding:60px 20px;text-align:center;color:var(--text3);font-size:14px}
+.status .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-3px}
+@keyframes spin{to{transform:rotate(360deg)}}
 .hraci-table{width:100%;border-collapse:collapse;margin-bottom:60px}
 .hraci-table th{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;text-align:left;padding:10px 14px;border-bottom:1px solid var(--border2)}
 .hraci-table th.tr{text-align:right}
@@ -66,7 +67,7 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 .player-name{font-weight:600;color:var(--text)}
 .pts-val{font-weight:700;color:var(--text)}
 .played-val{color:var(--text2)}
-.reward-badge{display:inline-block;font-size:12px;font-weight:700;color:var(--gold);background:rgba(240,165,0,.12);border:1px solid rgba(240,165,0,.3);padding:3px 10px;border-radius:20px;white-space:nowrap}
+.reward-badge{display:inline-block;font-size:12px;font-weight:700;color:#22d3ee;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);padding:3px 10px;border-radius:20px;white-space:nowrap}
 .reward-none{color:var(--text3);font-size:13px}
 
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;text-align:center;font-size:12px;color:var(--text3)}
@@ -109,15 +110,11 @@ footer a{color:var(--pl);text-decoration:none}
     <div class="eyebrow">TCG Klub</div>
     <div class="page-title">HRÁČI</div>
     <div class="page-sub">Celkový žebříček napříč všemi ligami. Body a turnaje jednoho hráče se sčítají přes všechny ligy.</div>
+    <div class="page-sub" style="margin-top:6px;color:var(--gold)">🎁 Za každých 10 odehraných turnajů získá hráč 50 bitů na e-shop — odměna se vyplácí na konci sezóny.</div>
   </div>
 
-  <div class="toolbar">
-    <span class="sort-lbl">Řadit podle:</span>
-    <button class="sort-btn active" id="sort-pts" onclick="setSort('points')">Bodů</button>
-    <button class="sort-btn" id="sort-played" onclick="setSort('played')">Odehraných turnajů</button>
-  </div>
-
-  <div id="status" class="status" style="display:none"></div>
+  <div class="season-tabs" id="season-tabs"></div>
+  <div id="status" class="status"></div>
   <div id="table-wrap"></div>
 </div>
 
@@ -129,26 +126,25 @@ footer a{color:var(--pl);text-decoration:none}
 const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
 
 const LEAGUES = [
-  {id:'fab',  name:'Flesh and Blood', color:'#4ade80'},
-  {id:'gd',   name:'Gundam',          color:'#fcd34d'},
-  {id:'mtgd', name:'MTG Draft',       color:'#b39ddb'},
-  {id:'mtgm', name:'MTG Modern',      color:'#9b4dff'},
-  {id:'mtgpa',name:'MTG Pauper',      color:'#a78bfa'},
-  {id:'mtgp', name:'MTG Premodern',   color:'#c51df5'},
-  {id:'op',   name:'One Piece',       color:'#f87171'},
-  {id:'pk',   name:'Pokémon',         color:'#ffcb05'},
-  {id:'rb',   name:'Riftbound',       color:'#7fb3f5'},
-  {id:'so',   name:'Sorcery',         color:'#c084fc'},
-  {id:'ygo',  name:'Yu-Gi-Oh!',       color:'#fb923c'},
+  {id:'fab',  name:'Flesh and Blood'},
+  {id:'gd',   name:'Gundam'},
+  {id:'mtgd', name:'MTG Draft'},
+  {id:'mtgm', name:'MTG Modern'},
+  {id:'mtgpa',name:'MTG Pauper'},
+  {id:'mtgp', name:'MTG Premodern'},
+  {id:'op',   name:'One Piece'},
+  {id:'pk',   name:'Pokémon'},
+  {id:'rb',   name:'Riftbound'},
+  {id:'so',   name:'Sorcery'},
+  {id:'ygo',  name:'Yu-Gi-Oh!'},
 ];
 
 const AV_COLORS = ['#c51df5','#f97316','#22c55e','#3b82f6','#ec4899','#eab308','#06b6d4','#8b5cf6'];
 
-// Odměny pro TOP8 (bity na e-shop) - uprav dle potřeby
-const BIT_REWARDS = ['400 bitů', '350 bitů', '300 bitů', '250 bitů', '200 bitů', '150 bitů', '100 bitů', '50 bitů'];
-
-let sortBy = 'points'; // 'points' | 'played'
-let playerRows = [];   // [{name, points, played}]
+let leagueSheetIds = {};
+let seasonsList = [];   // [{name, start, end}] seřazeno od nejnovější
+let activeSeason = null;
+const seasonDataCache = {}; // seasonName -> playerRows[]
 
 function initials(name) {
   const parts = name.split(',').map(s => s.trim()).filter(Boolean);
@@ -193,44 +189,29 @@ function parseCzechDate(str) {
   return new Date(parseInt(m[3]), parseInt(m[2])-1, parseInt(m[1]));
 }
 
-function determineActiveSeason(seasonRows) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  for (const row of seasonRows) {
-    const start = parseCzechDate(row[1]);
-    const end   = parseCzechDate(row[2]);
-    if (start && end && today >= start && today <= end) return row[0];
-  }
-  const future = seasonRows
-    .map(r => ({ name: r[0], start: parseCzechDate(r[1]) }))
-    .filter(r => r.start && r.start > today)
-    .sort((a,b) => a.start - b.start);
-  if (future.length) return future[0].name;
-  return seasonRows.length ? seasonRows[seasonRows.length-1][0] : 'Léto 2026';
-}
+async function loadMasterMeta() {
+  const [ligyRows, sezRows] = await Promise.all([
+    fetchMasterTab('Ligy'),
+    fetchMasterTab('Sezony'),
+  ]);
 
-async function fetchLeagueSheetIds() {
-  const rows = await fetchMasterTab('Ligy');
-  const map = {};
-  rows.slice(1).forEach(r => {
+  leagueSheetIds = {};
+  ligyRows.slice(1).forEach(r => {
     const id = (r[0]||'').trim();
     const sid = (r[2]||'').trim();
-    if (id && sid) map[id] = sid;
+    if (id && sid) leagueSheetIds[id] = sid;
   });
-  return map;
-}
 
-async function fetchActiveSeason() {
-  const rows = await fetchMasterTab('Sezony');
-  const data = rows.slice(1).filter(r => r[0]);
-  return determineActiveSeason(data);
-}
+  const today = new Date(); today.setHours(0,0,0,0);
+  seasonsList = sezRows.slice(1)
+    .filter(r => r[0])
+    .map(r => ({ name: r[0].trim(), start: parseCzechDate(r[1]), end: parseCzechDate(r[2]) }))
+    .filter(s => s.start)
+    .sort((a, b) => b.start - a.start); // nejnovější první
 
-// Parsuje list jedné ligy - vrátí [{name, points, played}]
-function parseLeagueSheet(text) {
-  const lines = text.trim().split('\n').filter(l => l.trim());
-  if (lines.length < 2) return [];
-  const headers = parseCSV(lines[0])[0] || parseCSVLineSingle(lines[0]);
-  return [];
+  activeSeason = seasonsList.find(s => s.end && today >= s.start && today <= s.end)?.name
+    || (seasonsList[0] && seasonsList[0].name)
+    || 'Léto 2026';
 }
 
 function parseCSVLineSingle(line) {
@@ -255,8 +236,6 @@ async function fetchLeagueData(sheetId, tabName) {
   if (rows.length < 2) return [];
 
   const headers = rows[0];
-
-  // Odstraň prázdné sloupce na konci
   let effectiveLen = headers.length;
   while (effectiveLen > 0 && !(headers[effectiveLen - 1] || '').trim()) effectiveLen--;
 
@@ -266,7 +245,6 @@ async function fetchLeagueData(sheetId, tabName) {
     if (plainText(headers[i]).includes('body')) { pointsIdx = i; break; }
   }
 
-  // Najdi override sloupec
   let overrideIdx = -1;
   for (let i = effectiveLen - 1; i > pointsIdx; i--) {
     const h = plainText(headers[i]);
@@ -286,62 +264,61 @@ async function fetchLeagueData(sheetId, tabName) {
   }).filter(Boolean);
 }
 
-async function loadAllPlayers() {
-  const status = document.getElementById('status');
-  status.style.display = 'block';
-  status.textContent = 'Načítám hráče ze všech lig…';
+async function loadSeasonPlayers(seasonName) {
+  if (seasonDataCache[seasonName]) return seasonDataCache[seasonName];
 
-  try {
-    const [sheetIds, activeSeason] = await Promise.all([
-      fetchLeagueSheetIds(),
-      fetchActiveSeason(),
-    ]);
-
-    const results = await Promise.all(
-      LEAGUES.filter(l => sheetIds[l.id]).map(l => fetchLeagueData(sheetIds[l.id], activeSeason))
-    );
-
-    const agg = {}; // name -> {points, played}
-    results.flat().forEach(p => {
-      if (!agg[p.name]) agg[p.name] = { name: p.name, points: 0, played: 0 };
-      agg[p.name].points += p.points;
-      agg[p.name].played += p.played;
-    });
-
-    playerRows = Object.values(agg);
-    status.style.display = 'none';
-
-    if (!playerRows.length) {
-      status.style.display = 'block';
-      status.textContent = 'Zatím nejsou k dispozici žádná data hráčů.';
-      return;
-    }
-
-    render();
-  } catch (err) {
-    status.style.display = 'block';
-    status.textContent = '⚠ ' + err.message;
-  }
-}
-
-function setSort(by) {
-  sortBy = by;
-  document.getElementById('sort-pts').classList.toggle('active', by === 'points');
-  document.getElementById('sort-played').classList.toggle('active', by === 'played');
-  render();
-}
-
-function render() {
-  const sorted = [...playerRows].sort((a, b) =>
-    sortBy === 'points' ? b.points - a.points : b.played - a.played
+  const leaguesWithSheets = LEAGUES.filter(l => leagueSheetIds[l.id]);
+  const results = await Promise.all(
+    leaguesWithSheets.map(l => fetchLeagueData(leagueSheetIds[l.id], seasonName))
   );
 
+  const agg = {};
+  results.flat().forEach(p => {
+    if (!agg[p.name]) agg[p.name] = { name: p.name, points: 0, played: 0 };
+    agg[p.name].points += p.points;
+    agg[p.name].played += p.played;
+  });
+
+  const rows = Object.values(agg);
+  seasonDataCache[seasonName] = rows;
+  return rows;
+}
+
+function renderTabs() {
+  const wrap = document.getElementById('season-tabs');
+  wrap.innerHTML = seasonsList.map(s =>
+    `<button class="stab ${s.name === activeSeason ? 'active' : ''}" onclick="selectSeason('${s.name}')">${s.name}</button>`
+  ).join('');
+}
+
+async function selectSeason(name) {
+  activeSeason = name;
+  renderTabs();
+  await renderSeasonTable(name);
+}
+
+async function renderSeasonTable(seasonName) {
+  const status = document.getElementById('status');
+  const wrap = document.getElementById('table-wrap');
+  wrap.innerHTML = '';
+  status.style.display = 'block';
+  status.innerHTML = '<span class="spinner"></span>Načítám hráče pro ' + seasonName + '…';
+
+  const rows = await loadSeasonPlayers(seasonName);
+
+  if (!rows.length) {
+    status.textContent = 'Pro tuto sezónu zatím nejsou k dispozici žádná data.';
+    return;
+  }
+  status.style.display = 'none';
+
+  const sorted = [...rows].sort((a, b) => b.played - a.played);
   const rankCls = i => i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
 
-  const rows = sorted.map((p, i) => {
-    const reward = i < 8 ? BIT_REWARDS[i] : null;
-    const rewardHtml = reward
-      ? `<span class="reward-badge">${reward}</span>`
+  const bodyRows = sorted.map((p, i) => {
+    const bonusUnits = Math.floor(p.played / 10);
+    const bonusHtml = bonusUnits > 0
+      ? `<span class="reward-badge">${bonusUnits * 50} bitů</span>`
       : `<span class="reward-none">—</span>`;
     const color = AV_COLORS[i % AV_COLORS.length];
 
@@ -355,24 +332,39 @@ function render() {
       </td>
       <td class="tr played-val">${p.played}</td>
       <td class="tr pts-val">${p.points}</td>
-      <td class="tr">${rewardHtml}</td>
+      <td class="tr">${bonusHtml}</td>
     </tr>`;
   }).join('');
 
-  document.getElementById('table-wrap').innerHTML = `
+  wrap.innerHTML = `
     <table class="hraci-table">
       <thead><tr>
         <th>#</th>
         <th>Hráč</th>
         <th class="tr">Turnajů</th>
         <th class="tr">Body</th>
-        <th class="tr">Odměna</th>
+        <th class="tr">Bity za věrnost</th>
       </tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>${bodyRows}</tbody>
     </table>`;
 }
 
-loadAllPlayers();
+async function init() {
+  const status = document.getElementById('status');
+  status.style.display = 'block';
+  status.innerHTML = '<span class="spinner"></span>Načítám sezóny…';
+
+  try {
+    await loadMasterMeta();
+    renderTabs();
+    await renderSeasonTable(activeSeason);
+  } catch (err) {
+    status.style.display = 'block';
+    status.textContent = '⚠ ' + err.message;
+  }
+}
+
+init();
 </script>
 
 <script>
