@@ -463,8 +463,10 @@ function parseSheets(text) {
   const headers = parseCSVLine(lines[0]);
 
   // Poslední sloupec = "Pořadí override" (pokud existuje), předposlední = FINÁLE
-  const lastHeader = (headers[headers.length - 1] || '').toLowerCase();
-  const hasOverrideCol = lastHeader.includes('pořadí') || lastHeader.includes('override');
+  const lastHeader = (headers[headers.length - 1] || '').normalize('NFC').toLowerCase();
+  // Odstraň diakritiku pro spolehlivé porovnání (Sheets CSV export může použít jinou Unicode normalizaci)
+  const lastHeaderPlain = lastHeader.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const hasOverrideCol = lastHeaderPlain.includes('poradi') || lastHeaderPlain.includes('override');
   const overrideIdx = hasOverrideCol ? headers.length - 1 : -1;
   const finaleIdx   = hasOverrideCol ? headers.length - 2 : headers.length - 1;
 
@@ -592,19 +594,26 @@ function renderRounds(roundCols, players, today) {
 
   // Přidej finálové kolo pokud existuje
   if (hasFinale) {
+    const fmt = finaleFormat(currentData.avgPlayers);
+    const isRealFinale = fmt.type !== 'Žebříček';
+    const finaleTitle = isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny';
+    const finaleSubtitle = isRealFinale
+      ? `Konec sezóny · odměny dle ${fmt.type}`
+      : 'Volný turnaj · nízká účast → odměny dle celkového žebříčku, ne finále';
+
     const finaleDiv = document.createElement('div');
     finaleDiv.innerHTML = `
       <button class="round-btn finale-btn" onclick="toggleRound('finale', this)" id="rbtn-finale">
         <div>
-          <div class="round-date">Finálový turnaj</div>
-          <div class="round-label">Konec sezóny · ${finaleFormat(currentData.avgPlayers).type}</div>
+          <div class="round-date">${finaleTitle}</div>
+          <div class="round-label">${finaleSubtitle}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <span class="round-arrow">›</span>
         </div>
       </button>
       <div class="round-detail" id="rdetail-finale">
-        ${renderFinaleDetail(players, finaleFormat(currentData.avgPlayers).n)}
+        ${renderFinaleDetail(players, fmt.n)}
       </div>`;
     list.appendChild(finaleDiv);
   }
