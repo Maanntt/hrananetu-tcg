@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archiv – Liga – HranaNetu.cz TCG Klub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap">
+<style>
+/* HEADER */
+header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
+.hi{max-width:1280px;margin:0 auto;padding:0 28px;height:72px;display:flex;align-items:center;gap:28px}
+.logo{text-decoration:none;flex-shrink:0}.logo img{height:46px;width:auto;display:block}
+.main-nav{display:flex;align-items:center;gap:3px;flex:1}
+.main-nav a{text-decoration:none;font-size:14px;font-weight:500;color:var(--text2);padding:7px 13px;border-radius:7px;transition:color .15s,background .15s;white-space:nowrap}
+.main-nav a:hover{color:var(--text);background:var(--bg3)}.main-nav a.act{color:var(--pl);background:var(--bg3)}
+.hdr-btns{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.btn-outline{border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:14px;font-weight:500;padding:8px 16px;border-radius:7px;text-decoration:none;transition:all .15s}
+.btn-outline:hover{border-color:var(--purple);color:var(--pl)}
+.btn-solid{background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:8px 18px;border-radius:7px;text-decoration:none;transition:background .15s}
+.btn-solid:hover{background:var(--pl)}
+.hbg{display:none;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:7px;border:1px solid var(--border2);border-radius:7px;background:transparent;flex-shrink:0;width:38px;height:38px}
+.hbg span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s;pointer-events:none}
+.hbg.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0}.hbg.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mob-nav{display:none;position:fixed;top:72px;left:0;right:0;bottom:0;background:var(--bg2);z-index:199;flex-direction:column;gap:4px;padding:20px 24px;border-top:1px solid var(--border);overflow-y:auto}
+.mob-nav.open{display:flex}
+.mob-nav a{text-decoration:none;font-size:17px;font-weight:500;color:var(--text2);padding:14px 16px;border-radius:10px;transition:all .15s;display:block}
+.mob-nav a:hover{color:var(--text);background:var(--bg3)}.mob-nav a.act{color:var(--pl);background:var(--pd)}
+@media(max-width:900px){.main-nav,.hdr-btns{display:none}.hbg{display:flex}}
+@media(max-width:480px){.hi{padding:0 16px;height:64px}.logo img{height:40px}.mob-nav{top:64px}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f;--bg2:#0f0f1c;--bg3:#16162a;
+  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);
+  --purple:#c51df5;--pl:#d44fff;--pd:rgba(197,29,245,0.15);
+  --gold:#f0a500;
+  --text:#f0ecff;
+  --text2:#b8b4d0;
+  --text3:#7a768f;
+  --green:#22c55e;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;font-size:16px}
+
+/* LAYOUT */
+.con{max-width:1280px;margin:0 auto;padding:0 28px}
+.page{display:grid;grid-template-columns:1fr 340px;gap:32px;padding:40px 0 80px;align-items:start}
+
+/* BREADCRUMB */
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);padding:20px 0 0}
+.breadcrumb a{color:var(--text3);text-decoration:none;transition:color .15s}
+.breadcrumb a:hover{color:var(--text)}
+.breadcrumb-sep{opacity:.4}
+
+/* LIGA HERO */
+.liga-hero{padding:28px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.liga-hero-code{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px}
+.liga-hero-name{font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:700;line-height:1;text-transform:uppercase;margin-bottom:16px}
+.liga-stats-row{display:flex;gap:32px;flex-wrap:wrap}
+.lstat{display:flex;flex-direction:column;gap:2px}
+.lstat-val{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;line-height:1}
+.lstat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px}
+
+/* SHEETS CONFIG */
+.cfg-inp:focus{border-color:var(--purple)}
+/* TURNAJE — SEZNAM KOLE */
+.rounds-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.rounds-list{display:flex;flex-direction:column;gap:6px;margin-bottom:32px}
+.round-btn{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;text-align:left;font-family:'Inter',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.round-btn:hover{border-color:var(--border2);background:var(--bg3)}
+.round-btn.active{border-color:var(--purple);background:var(--pd)}
+.round-btn.finale-btn{border-color:rgba(240,165,0,.3);background:rgba(240,165,0,.04)}
+.round-btn.finale-btn.active{border-color:var(--gold);background:rgba(240,165,0,.1)}
+.round-btn.future{opacity:.55}
+.round-date{font-size:13px;font-weight:600;color:var(--text)}
+.round-label{font-size:11px;color:var(--text3);margin-top:1px}
+.round-participants{font-size:12px;color:var(--text3);flex-shrink:0}
+.round-arrow{font-size:14px;color:var(--text3);flex-shrink:0;transition:transform .15s}
+.round-btn.active .round-arrow{transform:rotate(90deg);color:var(--pl)}
+.round-btn.finale-btn .round-date{color:var(--gold)}
+
+/* DETAIL KOLA — DROPDOWN */
+.round-detail{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:-2px;margin-bottom:4px}
+.round-detail.open{display:block}
+.round-detail-
+
+
+
+.rdm strong{color:var(--text2);font-weight:500}
+.round-results-table{width:100%;border-collapse:collapse;margin-top:14px}
+.round-results-table th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.round-results-table th.tr{text-align:right}
+.round-results-table td{padding:8px 8px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.round-results-table td.tr{text-align:right}
+.round-results-table tr:last-child td{border-bottom:none}
+.round-results-table tr:hover td{background:rgba(255,255,255,.02)}
+.rrt-name{display:flex;align-items:center;gap:8px}
+.rrt-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.rrt-pts{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700}
+.rrt-pts.zero{color:var(--text3);font-size:13px;font-family:'Inter',sans-serif;font-weight:400}
+.rrt-pts.pos{color:var(--green)}
+.rrt-link{color:var(--text2);text-decoration:none;transition:color .15s}
+.rrt-link:hover{color:var(--pl)}
+.no-results{font-size:13px;color:var(--text3);text-align:center;padding:16px}
+
+/* PRAVÝ PANEL — TABULKA */
+.right-panel{position:sticky;top:80px}
+.panel-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:20px}
+.panel-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700}
+.panel-badge{background:var(--pd);color:var(--pl);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid rgba(197,29,245,.3)}
+.panel-badge.gold{background:rgba(240,165,0,.12);color:var(--gold);border-color:rgba(240,165,0,.3)}
+
+/* STANDINGS TABULKA */
+.standings-table{width:100%;border-collapse:collapse}
+.standings-table td{padding:9px 18px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+.standings-table tr:last-child td{border-bottom:none}
+.standings-table tr:hover td{background:rgba(255,255,255,.025)}
+.standings-table tr.st-top3 td{background:rgba(240,165,0,.04)}
+.standings-table tr.st-topN td{background:rgba(197,29,245,.03)}
+.st-rank{font-weight:700;font-size:12px;color:var(--text3);width:28px}
+.st-rank.r1{color:#f0a500}.st-rank.r2{color:#c0c0c0}.st-rank.r3{color:#cd7f32}
+.st-player{display:flex;align-items:center;gap:8px}
+.st-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.st-name{font-size:13px;font-weight:500;color:var(--text);text-decoration:none;transition:color .15s}
+.st-name:hover{color:var(--pl)}
+.st-pts{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;text-align:right}
+.st-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;white-space:nowrap}
+.st-badge.finale{background:rgba(197,29,245,.15);color:var(--pl);border:1px solid rgba(197,29,245,.25)}
+.st-badge.top3{background:rgba(240,165,0,.15);color:var(--gold);border:1px solid rgba(240,165,0,.25)}
+
+/* PODIUM */
+.podium-wrap{padding:16px 18px}
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.podium-card{border-radius:10px;padding:16px 10px;text-align:center;border:1px solid var(--border)}
+.podium-card.p1{background:rgba(240,165,0,.07);border-color:rgba(240,165,0,.3)}
+.podium-card.p2{background:rgba(192,192,192,.04);border-color:rgba(192,192,192,.15)}
+.podium-card.p3{background:rgba(205,127,50,.04);border-color:rgba(205,127,50,.15)}
+.pod-rank{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;line-height:1}
+.p1 .pod-rank{color:#f0a500}.p2 .pod-rank{color:#c0c0c0}.p3 .pod-rank{color:#cd7f32}
+.pod-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:8px auto 6px}
+.pod-name{font-size:11px;font-weight:600;color:var(--text);line-height:1.3;text-decoration:none}
+.pod-name:hover{color:var(--pl)}
+.pod-pts{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-top:4px}
+
+/* ARCHIV BANNER */
+.archiv-banner{display:flex;align-items:center;gap:10px;background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.3);border-radius:10px;padding:12px 18px;margin-top:20px;font-size:13px;color:var(--gold)}
+.archiv-banner b{font-weight:700}
+
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:0;text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--pl);text-decoration:none}
+@media(max-width:900px){.page{grid-template-columns:1fr}.right-panel{position:static}}
+@media(max-width:480px){.liga-hero-name{font-size:34px}.podium{gap:4px}.podium-card{padding:12px 6px}}
+
+/* Hamburger */
+</style>
+</head>
+<body>
+<header>
+  <div class="hi">
+    <a href="/tcg-uvod.html" class="logo"><img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz"></a>
+    <nav class="main-nav">
+      <a href="/tcg-uvod.html">Úvod</a>
+      <a href="/tcg-kalendar.html">Kalendář</a>
+      <a href="/tcg-ligy.html">Ligy</a>
+      <a href="/tcg-ceny.html">Ceny</a>
+      <a href="/tcg-hraci.html">Hráči</a>
+      <a href="/tcg-archiv.html" class="act">Archiv</a>
+      <a href="/tcg-pravidla.html">Pravidla</a>
+    </nav>
+    <div class="hdr-btns">
+      <a href="https://www.hrananetu.cz/customer/registration/" class="btn-outline">Registrace</a>
+      <a href="https://www.hrananetu.cz" class="btn-solid">E-shop ↗</a>
+    </div>
+    <button class="hbg" id="hbg" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<nav class="mob-nav" id="mob-nav">
+  <a href="/tcg-uvod.html">Úvod</a>
+  <a href="/tcg-kalendar.html">Kalendář</a>
+  <a href="/tcg-ligy.html">Ligy</a>
+  <a href="/tcg-ceny.html">Ceny</a>
+  <a href="/tcg-hraci.html">Hráči</a>
+  <a href="/tcg-archiv.html" class="act">Archiv</a>
+  <a href="/tcg-pravidla.html">Pravidla</a>
+</nav>
+
+<div class="con">
+  <div class="breadcrumb">
+    <a href="/tcg-archiv.html">Archiv sezón</a>
+    <span class="breadcrumb-sep">›</span>
+    <span id="bc-season">—</span>
+    <span class="breadcrumb-sep">›</span>
+    <span id="bc-name">—</span>
+  </div>
+</div>
+
+<div class="con">
+  <div class="archiv-banner">📁 <span>Archivní data — <b id="banner-season">—</b> (sezóna skončila, žebříček je konečný)</span></div>
+</div>
+
+<div class="con">
+  <!-- LIGA HERO -->
+  <div class="liga-hero">
+    <div class="liga-hero-code" id="hero-code">—</div>
+    <div class="liga-hero-name" id="hero-name">—</div>
+    <div class="liga-stats-row">
+      <div class="lstat"><div class="lstat-val" id="stat-players">—</div><div class="lstat-lbl">Hráčů</div></div>
+      <div class="lstat"><div class="lstat-val" id="stat-rounds">—</div><div class="lstat-lbl">Odehráno kol</div></div>
+      <div class="lstat"><div class="lstat-val" id="stat-next">—</div><div class="lstat-lbl">Sezóna</div></div>
+      <div class="lstat"><div class="lstat-val" id="stat-finale">—</div><div class="lstat-lbl">Formát finále</div></div>
+      <div class="lstat" style="margin-left:auto;flex-shrink:0">
+        <a id="ceny-link" href="/tcg-ceny.html" style="font-size:13px;font-weight:600;color:var(--gold);text-decoration:none;opacity:.8;white-space:nowrap">🏆 Ceny & Odměny →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEETS CONFIG -->
+<div class="page">
+    <!-- LEVÝ PANEL — KOLA -->
+    <div class="left-panel">
+      <div class="rounds-title">Turnaje sezóny</div>
+      <div class="rounds-list" id="rounds-list">
+        <div style="color:var(--text3);font-size:13px;padding:8px 0">Načti data ze Sheets pro zobrazení turnajů.</div>
+      </div>
+    </div>
+
+    <!-- PRAVÝ PANEL — STANDINGS -->
+    <div class="right-panel">
+
+      <!-- PODIUM -->
+      <div class="panel-section" id="podium-section" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">Nejlepší hráči</div>
+          <div class="panel-badge gold">TOP 3</div>
+        </div>
+        <div class="podium-wrap">
+          <div class="podium" id="podium"></div>
+        </div>
+      </div>
+
+      <!-- CELKOVÉ POŘADÍ -->
+      <div class="panel-section">
+        <div class="panel-head">
+          <div class="panel-title">Celkové pořadí</div>
+          <div class="panel-badge" id="standings-badge">—</div>
+        </div>
+        <table class="standings-table" id="standings-table">
+          <tbody id="standings-body">
+            <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načti data ze Sheets.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
+</footer>
+
+<script src="hn-data.js"></script>
+<script>
+/* ── SEZÓNY ──
+   Jarní:   Únor–Květen    (finále Květen)
+   Letní:   Červen–Srpen   (finále Srpen)
+   Podzimní: Září–Listopad (finále Listopad)
+   Zimní:   Prosinec–Únor  (finále Únor)
+*/
+const SEASON_DEFS = [
+  { id:'jaro',   label:'Jarní sezóna',    sheetName:'Jaro',    months:[1,2,3,4],   finaleMonth:4,  finaleLabel:'Květen'   },
+  { id:'leto',   label:'Letní sezóna',    sheetName:'Léto',    months:[5,6,7],     finaleMonth:7,  finaleLabel:'Srpen'    },
+  { id:'podzim', label:'Podzimní sezóna', sheetName:'Podzim',  months:[8,9,10],    finaleMonth:10, finaleLabel:'Listopad' },
+  { id:'zima',   label:'Zimní sezóna',    sheetName:'Zima',    months:[11,0],      finaleMonth:1,  finaleLabel:'Únor'     },
+];
+
+function getCurrentSeason() {
+  const m = new Date().getMonth(); // 0=Jan
+  return SEASON_DEFS.find(s => s.months.includes(m)) || SEASON_DEFS[0];
+}
+
+function getSeasonBySheet(sheetName) {
+  // sheetName = "Jaro 2026", "Léto 2026" atd.
+  if (!sheetName) return null;
+  const lower = sheetName.toLowerCase();
+  if (lower.includes('jaro'))   return SEASON_DEFS[0];
+  if (lower.includes('léto') || lower.includes('leto')) return SEASON_DEFS[1];
+  if (lower.includes('podzim')) return SEASON_DEFS[2];
+  if (lower.includes('zima'))   return SEASON_DEFS[3];
+  return null;
+}
+
+function getSeasonLabel(year) {
+  const s = getCurrentSeason();
+  return s.label + ' ' + year;
+}
+
+// Detekce sezóny z dat turnajů (headers Sheets)
+function detectSeasonFromDates(roundDates) {
+  if (!roundDates || !roundDates.length) return getCurrentSeason();
+  // Najdi nejbližší budoucí datum
+  const today = new Date(); today.setHours(0,0,0,0);
+  const future = roundDates.filter(d => d >= today).sort((a,b) => a-b);
+  const refDate = future.length ? future[0] : roundDates[roundDates.length-1];
+  const m = refDate.getMonth();
+  return SEASON_DEFS.find(s => s.months.includes(m)) || getCurrentSeason();
+}
+
+// Vrátí plný název listu pro Sheets (např. "Jaro 2026")
+function getSheetTabName(season, year) {
+  return season.sheetName + ' ' + year;
+}
+
+// LEAGUES jako slovník podle id, postavený ze sdíleného seznamu v hn-data.js
+const LEAGUES = {};
+HN.LEAGUES.forEach(l => { LEAGUES[l.id] = { code: l.code, name: l.name, color: l.color }; });
+
+const AV_COLORS = ['#c51df5','#f97316','#22c55e','#3b82f6','#ec4899','#06b6d4','#eab308','#f43f5e','#8b5cf6','#14b8a6','#e11d48','#0891b2'];
+const MONTHS_CS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+const MONTHS_CS_SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+
+let leagueId = '';
+let seasonName = '';
+let leagueColor = '#c51df5';
+let currentData = null;
+let activeRoundIdx = null;
+
+function getLeagueId() {
+  // Zkus ?liga= parametr (GitHub Pages)
+  const params = new URLSearchParams(window.location.search);
+  const liga = params.get('liga');
+  if (liga && liga in LEAGUES) return liga;
+  // Fallback na poslední část URL
+  const parts = window.location.pathname.split('/');
+  const last = parts[parts.length - 1];
+  if (last && last in LEAGUES) return last;
+  return 'mtgp';
+}
+
+function getSeasonParam() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('sezona') || '';
+}
+
+function finaleFormat(avgPlayed) {
+  // Formát finále se určuje z průměrné účasti v ODEHRANÝCH kolech
+  if (avgPlayed >= 13) return {type:'TOP8', n:8};
+  if (avgPlayed >= 8)  return {type:'TOP4', n:4};
+  return {type:'Žebříček', n:3};
+}
+
+function initials(name) {
+  return name.replace(/,.*/, '').trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function parseCzechDate(str) {
+  str = str.trim().replace(/\s+/g,'');
+  const yr = new Date().getFullYear();
+  const m = str.match(/^(\d{1,2})\.(\d{1,2})\.?(\d{4})?$/);
+  if (m) {
+    const d = new Date(m[3] ? parseInt(m[3]) : yr, parseInt(m[2])-1, parseInt(m[1]));
+    return isNaN(d) ? null : d;
+  }
+  return null;
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  return `${d.getDate()}. ${MONTHS_CS[d.getMonth()]} ${d.getFullYear()}`;
+}
+function formatDateShort(d) {
+  if (!d) return '—';
+  return `${d.getDate()}. ${MONTHS_CS_SHORT[d.getMonth()]}`;
+}
+
+/* ── Init ── */
+async function init() {
+  leagueId = getLeagueId();
+  seasonName = getSeasonParam();
+  const cfg = LEAGUES[leagueId] || LEAGUES['mtgp'];
+  leagueColor = cfg.color;
+
+  document.getElementById('bc-name').textContent      = cfg.name;
+  document.getElementById('bc-season').textContent    = seasonName || '—';
+  document.getElementById('banner-season').textContent = seasonName || '—';
+  document.getElementById('hero-code').textContent    = cfg.code;
+  document.getElementById('hero-code').style.color    = cfg.color;
+  document.getElementById('hero-name').textContent    = cfg.name.toUpperCase();
+  document.getElementById('hero-name').style.color    = cfg.color;
+  document.title = cfg.name + ' — Archiv ' + (seasonName || '') + ' – HranaNetu.cz TCG Klub';
+  const cenyLink = document.getElementById('ceny-link');
+  if (cenyLink) cenyLink.href = `/tcg-ceny.html?liga=${leagueId}`;
+
+  if (!seasonName) {
+    document.getElementById('standings-body').innerHTML =
+      '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Chybí parametr sezóny v URL.</td></tr>';
+    return;
+  }
+
+  // Najdi Sheet ID ligy z Master Sheetu (nezávisí na sezóně - stejná tabulka pro všechny sezóny)
+  const master = await HN.load();
+  const entry = master.leagues[leagueId];
+  if (!entry || !entry.sheetId) {
+    document.getElementById('standings-body').innerHTML =
+      '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Ligu se nepodařilo najít v Master Sheetu.</td></tr>';
+    return;
+  }
+  loadData(entry.sheetId, seasonName);
+}
+
+/* ── Sheets Loader ── */
+async function loadData(sheetIdArg, tabArg) {
+  const sheetId = (sheetIdArg || '').replace(/.*\/d\/([^/]+).*/, '$1').replace(/[^a-zA-Z0-9_-]/g,'');
+  const tab = tabArg;
+  const statusEl = document.getElementById('cfg-status-msg');
+  if (!sheetId) { if (statusEl) statusEl.textContent = 'Chybí Sheet ID.'; return; }
+  if (statusEl) statusEl.textContent = 'Načítám…';
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`List "${tab}" nenalezen nebo Sheets není veřejný.`);
+    const text = await res.text();
+    currentData = parseSheets(text);
+    renderAll(currentData);
+    if (statusEl) statusEl.textContent = '✓ ' + currentData.players.length + ' hráčů, ' + currentData.roundCols.length + ' kol';
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '⚠ ' + e.message;
+  }
+}
+
+function parseCSVLine(line) {
+  const cells = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+    else { cur += c; }
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+
+// Normalizuj text: odstraň diakritiku a mezery, malá písmena (spolehlivé porovnání i při jiné Unicode normalizaci z Sheets)
+function plainText(s) {
+  return (s || '').normalize('NFC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+function parseSheets(text) {
+  const lines = text.split('\n').filter(l => l.trim());
+  if (lines.length < 2) throw new Error('Prázdný list.');
+  const headers = parseCSVLine(lines[0]);
+
+  // Odstraň prázdné sloupce na konci (Sheets export může přidat extra prázdný sloupec kvůli formátování)
+  let effectiveLen = headers.length;
+  while (effectiveLen > 0 && !(headers[effectiveLen - 1] || '').trim()) effectiveLen--;
+
+  // Najdi sloupec "Body Celkově" - nejdřív podle NÁZVU, jinak podle POZICE
+  // (hlavička může být prázdná - Body sloupec je vždy hned před prvním datumovým sloupcem)
+  let pointsIdx = 1; // výchozí fallback
+  let foundByName = false;
+  for (let i = 1; i < effectiveLen; i++) {
+    if (plainText(headers[i]).includes('body')) { pointsIdx = i; foundByName = true; break; }
+  }
+  if (!foundByName) {
+    for (let i = 1; i < effectiveLen; i++) {
+      if (/^\d{1,2}\.\s*\d{1,2}\.?$/.test((headers[i]||'').trim())) {
+        pointsIdx = Math.max(1, i - 1);
+        break;
+      }
+    }
+  }
+
+  // Najdi sloupec "Pořadí override" kdekoliv od konce (ne nutně přesně poslední)
+  let overrideIdx = -1;
+  for (let i = effectiveLen - 1; i > pointsIdx; i--) {
+    const h = plainText(headers[i]);
+    if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
+  }
+
+  // FINÁLE sloupec = poslední platný sloupec před override (nebo úplně poslední, pokud override neexistuje)
+  const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
+
+  // Sloupce kol (hned za Body Celkově až předposlední/přede-předposlední)
+  const roundCols = [];
+  for (let i = pointsIdx + 1; i < finaleIdx; i++) {
+    if (!headers[i]) continue;
+    const date = parseCzechDate(headers[i]);
+    roundCols.push({idx: i, label: headers[i], date});
+  }
+
+  // Hráči
+  const players = [];
+  lines.slice(1).forEach((line, i) => {
+    const row = parseCSVLine(line);
+    const name = (row[0] || '').trim();
+    if (!name) return;
+    const total = parseFloat(row[pointsIdx]) || 0;
+    const isFinalist = /fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1';
+    const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
+    // Počet odehraných turnajů = kolik kol má hráč hodnotu > 0
+    const playedCount = rounds.filter(r => r > 0).length;
+    // Ruční override pořadí (vyplní organizátor při shodě bodů i turnajů)
+    const overrideRaw = overrideIdx >= 0 ? parseFloat(row[overrideIdx]) : NaN;
+    const override = isNaN(overrideRaw) ? null : overrideRaw;
+    players.push({name, total, rounds, playedCount, override, isFinalist, color: AV_COLORS[i % AV_COLORS.length]});
+  });
+
+  // Řazení: 1) body sestupně, 2) méně odehraných turnajů výš, 3) ruční override
+  players.sort((a, b) => {
+    if (b.total !== a.total) return b.total - a.total;
+    if (a.playedCount !== b.playedCount) return a.playedCount - b.playedCount;
+    if (a.override !== null && b.override !== null) return a.override - b.override;
+    if (a.override !== null) return -1;
+    if (b.override !== null) return 1;
+    return 0; // úplná shoda - zachovej pořadí ze Sheetu
+  });
+  players.forEach((p, i) => p.rank = i + 1);
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const playedRounds = roundCols.filter((r, ri) =>
+    r.date && r.date <= today && players.some(p => p.rounds[ri] > 0)
+  ).length;
+
+  // avgPlayers = průměr jen z ODEHRANÝCH kol (ne plánovaných)
+  let avgPlayers = 0;
+  if (playedRounds > 0) {
+    let sum = 0;
+    let count = 0;
+    roundCols.forEach((r, ri) => {
+      const played = players.filter(p => p.rounds[ri] > 0).length;
+      if (played > 0) { sum += played; count++; }
+    });
+    avgPlayers = count > 0 ? sum / count : 0;
+  }
+
+  return {players, roundCols, playedRounds, totalRounds: roundCols.length, avgPlayers};
+}
+
+/* ── Render All ── */
+function renderAll(data) {
+  const {players, roundCols, playedRounds, totalRounds, avgPlayers} = data;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const fmt = finaleFormat(avgPlayers);
+
+  // Hero stats
+  document.getElementById('stat-players').textContent = players.length;
+  document.getElementById('stat-rounds').textContent  = `${playedRounds}/${totalRounds}`;
+  document.getElementById('stat-finale').textContent  = fmt.type;
+
+  // Příští turnaj
+  const nextRound = roundCols.find(r => r.date && r.date > today);
+  document.getElementById('stat-next').textContent = seasonName || '—';
+
+  // Standings badge
+  document.getElementById('standings-badge').textContent = `Kolo ${playedRounds}/${totalRounds}`;
+
+  renderRounds(roundCols, players, today);
+
+  // Aktualizuj sezónu v hero z načtených dat
+  if (roundCols.length) {
+    const dates = roundCols.map(r => r.date).filter(Boolean);
+    if (dates.length) {
+      const detectedSzn = detectSeasonFromDates(dates);
+      const yr = dates[0].getFullYear();
+      const heroSzn = document.getElementById('hero-season');
+      if (heroSzn) heroSzn.textContent = detectedSzn.label + ' ' + yr;
+    }
+  }
+  renderPodium(players);
+  renderStandings(players, fmt.n);
+}
+
+/* ── Kola ── */
+function renderRounds(roundCols, players, today) {
+  const list = document.getElementById('rounds-list');
+
+  // Přidej finálové kolo pokud jsou data
+  const allRounds = [...roundCols];
+  // Finálové kolo = poslední sloupec FINÁLE (zvláštní označení)
+  const hasFinale = players.some(p => p.isFinalist);
+
+  list.innerHTML = allRounds.map((r, ri) => {
+    const isPast   = r.date && r.date <= today;
+    const isFuture = r.date && r.date > today;
+    const participants = isPast ? players.filter(p => p.rounds[ri] > 0).length : null;
+    const isFinaleRound = false; // finále je separátní
+
+    return `<div>
+      <button class="round-btn ${isFuture?'future':''}" onclick="toggleRound(${ri}, this)" id="rbtn-${ri}">
+        <div>
+          <div class="round-date">${r.date ? formatDate(r.date) : r.label}</div>
+          <div class="round-label">${isPast ? `Kolo ${ri+1} · odehráno` : `Kolo ${ri+1} · plánováno`}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${participants !== null ? `<span class="round-participants">${participants} hráčů</span>` : ''}
+          <span class="round-arrow">›</span>
+        </div>
+      </button>
+      <div class="round-detail" id="rdetail-${ri}">
+        ${renderRoundDetail(r, ri, players)}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Přidej finálové kolo pokud existuje
+  if (hasFinale) {
+    const fmt = finaleFormat(currentData.avgPlayers);
+    const isRealFinale = fmt.type !== 'Žebříček';
+    const finaleTitle = isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny';
+    const finaleSubtitle = isRealFinale
+      ? `Konec sezóny · odměny dle ${fmt.type}`
+      : 'Volný turnaj · nízká účast → odměny dle celkového žebříčku, ne finále';
+    const finaleNote = 'Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.';
+
+    const finaleDiv = document.createElement('div');
+    finaleDiv.innerHTML = `
+      <button class="round-btn finale-btn" onclick="toggleRound('finale', this)" id="rbtn-finale">
+        <div>
+          <div class="round-date">${finaleTitle}</div>
+          <div class="round-label">${finaleSubtitle}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">${finaleNote}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="round-arrow">›</span>
+        </div>
+      </button>
+      <div class="round-detail" id="rdetail-finale">
+        ${renderFinaleDetail(players, fmt.n)}
+      </div>`;
+    list.appendChild(finaleDiv);
+  }
+}
+
+function renderRoundDetail(r, ri, players) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isPast = r.date && r.date <= today;
+
+  if (!isPast) {
+    return `<div class="no-results">Tento turnaj ještě neproběhl.</div>`;
+  }
+
+  const participated = players
+    .filter(p => p.rounds[ri] > 0)
+    .sort((a, b) => b.rounds[ri] - a.rounds[ri]);
+
+  if (!participated.length) {
+    return `<div class="no-results">Žádná data pro toto kolo.</div>`;
+  }
+
+  return `
+    <table class="round-results-table">
+      <thead><tr>
+        <th style="width:32px">#</th>
+        <th>Hráč</th>
+        <th class="tr">Body za kolo</th>
+        <th class="tr">Celkem</th>
+      </tr></thead>
+      <tbody>
+        ${participated.map((p, i) => `
+          <tr>
+            <td style="font-size:12px;font-weight:600;color:var(--text3)">${i+1}.</td>
+            <td><div class="rrt-name">
+              <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+              <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
+            </div></td>
+            <td class="tr"><span class="rrt-pts pos">+${p.rounds[ri]}</span></td>
+            <td class="tr"><span class="rrt-pts">${p.total}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderFinaleDetail(players, topN) {
+  const finalists = players.slice(0, topN);
+  return `
+    <div class="round-detail-header">
+      <div class="round-detail-title">Finálový turnaj — ${finaleFormat(currentData.avgPlayers).type}</div>
+      <div class="round-detail-meta">
+        <span class="rdm"><strong>${topN}</strong> postupujících</span>
+      </div>
+    </div>
+    <table class="round-results-table">
+      <thead><tr>
+        <th style="width:32px">#</th>
+        <th>Hráč</th>
+        <th class="tr">Body (žebříček)</th>
+      </tr></thead>
+      <tbody>
+        ${finalists.map(p => `
+          <tr>
+            <td style="font-size:12px;font-weight:600;color:var(--text3)">${p.rank}.</td>
+            <td><div class="rrt-name">
+              <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+              <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
+            </div></td>
+            <td class="tr"><span class="rrt-pts">${p.total}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function toggleRound(ri, btn) {
+  const detail = document.getElementById('rdetail-' + ri);
+  const isOpen = detail.classList.contains('open');
+
+  // Zavři všechny
+  document.querySelectorAll('.round-detail.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.round-btn.active').forEach(b => b.classList.remove('active'));
+
+  if (!isOpen) {
+    detail.classList.add('open');
+    btn.classList.add('active');
+    activeRoundIdx = ri;
+    // Scroll do view na mobilu
+    setTimeout(() => detail.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+  } else {
+    activeRoundIdx = null;
+  }
+}
+
+/* ── Podium ── */
+function renderPodium(players) {
+  const top3 = players.slice(0, 3);
+  if (top3.length < 1) return;
+  document.getElementById('podium-section').style.display = '';
+  const order = top3.length === 3 ? [1,0,2] : top3.length === 2 ? [1,0] : [0];
+  const classes = ['p2','p1','p3'];
+  document.getElementById('podium').innerHTML = order.map((idx, vi) => {
+    const p = top3[idx];
+    if (!p) return '';
+    return `<div class="podium-card ${classes[vi]}">
+      <div class="pod-rank">${p.rank}.</div>
+      <div class="pod-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+      <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="pod-name">${p.name}</a>
+      <div class="pod-pts">${p.total} b.</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Standings ── */
+let standingsShowAll = false;
+const STANDINGS_DEFAULT = 10;
+
+function renderStandings(players, topN) {
+  renderStandingsRows(players, topN, standingsShowAll);
+}
+
+function renderStandingsRows(players, topN, showAll) {
+  const visible = showAll ? players : players.slice(0, STANDINGS_DEFAULT);
+  const hasMore = players.length > STANDINGS_DEFAULT;
+
+  document.getElementById('standings-body').innerHTML = visible.map(p => {
+    const rCls   = p.rank===1?'r1':p.rank===2?'r2':p.rank===3?'r3':'';
+    const rowCls = p.rank<=3?'st-top3':p.rank<=topN?'st-topN':'';
+    let badge = '';
+    if (p.rank <= 3)         badge = `<span class="st-badge top3">⭐ TOP3</span>`;
+    else if (p.rank <= topN) badge = `<span class="st-badge finale">✦ Finále</span>`;
+    return `<tr class="${rowCls}">
+      <td><span class="st-rank ${rCls}">${p.rank}.</span></td>
+      <td><div class="st-player">
+        <div class="st-av" style="background:${p.color}20;color:${p.color};border:1px solid ${p.color}40">${initials(p.name)}</div>
+        <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="st-name">${p.name}</a>
+        ${badge}
+      </div></td>
+      <td style="text-align:right"><span class="st-pts">${p.total}</span></td>
+    </tr>`;
+  }).join('')
+  + (hasMore ? `<tr id="standings-toggle-row">
+    <td colspan="3" style="text-align:center;padding:10px">
+      <button onclick="toggleStandings()" style="background:none;border:none;color:var(--pl);font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:4px 0">
+        ${showAll
+          ? `↑ Zobrazit méně`
+          : `↓ Zobrazit všechny (${players.length})`}
+      </button>
+    </td>
+  </tr>` : '');
+}
+
+function toggleStandings() {
+  standingsShowAll = !standingsShowAll;
+  if (currentData) {
+    const fmt = finaleFormat(currentData.avgPlayers);
+    renderStandingsRows(currentData.players, fmt.n, standingsShowAll);
+  }
+}
+
+/* ── Utils ── */
+function slugify(name) {
+  return name.toLowerCase()
+    .replace(/,/g,'').trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\s+/g,'-')
+    .replace(/[^a-z0-9-]/g,'');
+}
+
+init();
+</script>
+
+
+
+<script>
+!function(){var o=false;window.toggleMenu=function(){o=!o;document.getElementById('hbg').classList.toggle('open',o);document.getElementById('mob-nav').classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';};document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('#mob-nav a').forEach(function(a){a.addEventListener('click',function(){o=false;document.getElementById('hbg').classList.remove('open');document.getElementById('mob-nav').classList.remove('open');document.body.style.overflow='';});});});}();
+</script>
+</body>
+</html>

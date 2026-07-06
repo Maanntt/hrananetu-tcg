@@ -256,6 +256,9 @@ async function loadLeagueForSeason(league, seasonTab) {
     const played = dataRows.filter(r => parseFloat(r[ri]) > 0).length;
     if (played > 0) { sum += played; count++; }
   });
+  // Liga bez jediného reálně odehraného kola (jen prázdné/testovací řádky
+  // nebo participační body bez turnaje) se v archivu sezóny nezobrazuje.
+  if (count === 0) return null;
   const avg = count > 0 ? sum / count : 0;
   const fmt = finaleFormatFromAvg(avg);
 
@@ -283,7 +286,7 @@ function renderCard(data) {
     </div>
     <div class="arch-card-foot">
       <span>${totalPlayers} hráčů</span>
-      <a href="/tcg-liga-detail.html?liga=${league.id}" style="color:var(--pl);text-decoration:none">Detail →</a>
+      <a href="/tcg-archiv-detail.html?liga=${league.id}&sezona=${encodeURIComponent(activeSeason)}" style="color:var(--pl);text-decoration:none">Detail →</a>
     </div>
   </div>`;
 }
