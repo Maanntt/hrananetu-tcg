@@ -412,11 +412,17 @@ async function loadLeagueAvg(l) {
 
     const header = rows[0];
 
-    // Najdi sloupec "Body Celkově" podle názvu (umožňuje extra sloupce jako Přezdívka)
+    // Najdi sloupec "Body Celkově" - podle názvu, jinak podle pozice před prvním datem
     let pointsIdx = 1;
+    let foundByName = false;
     for (let i = 1; i < header.length; i++) {
       const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-      if (h.includes('body')) { pointsIdx = i; break; }
+      if (h.includes('body')) { pointsIdx = i; foundByName = true; break; }
+    }
+    if (!foundByName) {
+      for (let i = 1; i < header.length; i++) {
+        if (/^\d{1,2}\.\s*\d{1,2}\.?$/.test((header[i]||'').trim())) { pointsIdx = Math.max(1, i-1); break; }
+      }
     }
 
     const finaleIdx = header.length - 1;

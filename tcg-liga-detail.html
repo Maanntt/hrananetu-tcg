@@ -471,11 +471,20 @@ function parseSheets(text) {
   let effectiveLen = headers.length;
   while (effectiveLen > 0 && !(headers[effectiveLen - 1] || '').trim()) effectiveLen--;
 
-  // Najdi sloupec "Body Celkově" podle NÁZVU (ne pevné pozice) - umožňuje libovolné extra sloupce
-  // mezi Jménem a Body Celkově (např. Přezdívka)
+  // Najdi sloupec "Body Celkově" - nejdřív podle NÁZVU, jinak podle POZICE
+  // (hlavička může být prázdná - Body sloupec je vždy hned před prvním datumovým sloupcem)
   let pointsIdx = 1; // výchozí fallback
+  let foundByName = false;
   for (let i = 1; i < effectiveLen; i++) {
-    if (plainText(headers[i]).includes('body')) { pointsIdx = i; break; }
+    if (plainText(headers[i]).includes('body')) { pointsIdx = i; foundByName = true; break; }
+  }
+  if (!foundByName) {
+    for (let i = 1; i < effectiveLen; i++) {
+      if (/^\d{1,2}\.\s*\d{1,2}\.?$/.test((headers[i]||'').trim())) {
+        pointsIdx = Math.max(1, i - 1);
+        break;
+      }
+    }
   }
 
   // Najdi sloupec "Pořadí override" kdekoliv od konce (ne nutně přesně poslední)
