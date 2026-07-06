@@ -404,19 +404,20 @@ async function loadMasterSheet(sheetId) {
   });
 
   // ── Ceny → per liga, "Všechny" jako fallback ──
+  // Struktura sloupců: Liga | Formát | 1.místo | 2.místo | 3.místo | 4.místo | 5.místo | 6.místo | 7.místo | 8.místo
   const prizes = {};
   const ensureLeague = (id) => {
-    if (!prizes[id]) prizes[id] = { zeb:{}, top4:{}, top8:{} };
+    if (!prizes[id]) prizes[id] = { zeb: [], top4: [], top8: [] };
     return prizes[id];
   };
-  const applyRow = (target, format, c,d,e,f) => {
+  const applyRow = (target, format, places) => {
     const fmt = (format||'').toUpperCase().trim();
     if (fmt.includes('ŽEBŘÍČEK') || fmt === 'ZEBRICEK') {
-      target.zeb = { p1:c||'', p2:d||'', p3:e||'' };
+      target.zeb = places.slice(0, 3);
     } else if (fmt.includes('TOP4') || fmt.includes('TOP 4')) {
-      target.top4 = { p1:c||'', p2:d||'', p34:e||'' };
+      target.top4 = places.slice(0, 4);
     } else if (fmt.includes('TOP8') || fmt.includes('TOP 8')) {
-      target.top8 = { p1:c||'', p2:d||'', p34:e||'', p58:f||'' };
+      target.top8 = places.slice(0, 8);
     }
   };
 
@@ -424,8 +425,9 @@ async function loadMasterSheet(sheetId) {
   const allLeagueIds = Object.values(LEAGUE_NAME_MAP);
   cenyRows.slice(1).forEach(r => {
     const ligaName = (r[0]||'').trim();
+    const places = [r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9]].map(v => (v||'').trim());
     if (ligaName.toLowerCase() === 'všechny') {
-      allLeagueIds.forEach(id => applyRow(ensureLeague(id), r[1], r[2],r[3],r[4],r[5]));
+      allLeagueIds.forEach(id => applyRow(ensureLeague(id), r[1], places));
     }
   });
   // Pak konkrétní ligy (přepíší "Všechny")
@@ -433,7 +435,8 @@ async function loadMasterSheet(sheetId) {
     const ligaName = (r[0]||'').trim();
     if (ligaName.toLowerCase() === 'všechny') return;
     const id = LEAGUE_NAME_MAP[ligaName.toLowerCase()];
-    if (id) applyRow(ensureLeague(id), r[1], r[2],r[3],r[4],r[5]);
+    const places = [r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9]].map(v => (v||'').trim());
+    if (id) applyRow(ensureLeague(id), r[1], places);
   });
   localStorage.setItem('hn_prizes', JSON.stringify(prizes));
 

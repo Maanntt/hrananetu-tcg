@@ -174,32 +174,14 @@ const LEAGUES = [
   {id:'ygo',  code:'YGO',       name:'Yu-Gi-Oh!',       color:'#fb923c'},
 ];
 
-const FORMATS = [
-  {
-    type:'ŽEBŘÍČEK', thresh:'průměr < 8 hráčů',
-    prizes:[
-      {place:'1.',  gold:true,  main:'Booster Box',  detail:''},
-      {place:'2.',  gold:false, main:'4× Booster',   detail:''},
-      {place:'3.',  gold:false, main:'2× Booster',   detail:''},
-    ]
-  },
-  {
-    type:'TOP 4', thresh:'průměr 8–12 hráčů',
-    prizes:[
-      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom'},
-      {place:'2.',    gold:false, main:'Booster Display',  detail:''},
-      {place:'3.–4.', gold:false, main:'4× Booster',      detail:''},
-    ]
-  },
-  {
-    type:'TOP 8', thresh:'průměr 13+ hráčů',
-    prizes:[
-      {place:'1.',    gold:true,  main:'Booster Box',     detail:'Trofej & diplom'},
-      {place:'2.',    gold:false, main:'Booster Display',  detail:''},
-      {place:'3.–4.', gold:false, main:'6× Booster',      detail:''},
-      {place:'5.–8.', gold:false, main:'2× Booster',      detail:''},
-    ]
-  },
+// Definice formátů: kolik míst dostává odměnu a jaké jsou výchozí ceny
+const FORMAT_DEFS = [
+  { key:'zeb',  type:'ŽEBŘÍČEK', thresh:'průměr < 8 hráčů',   places:3,
+    defaults:['Booster Box','4× Booster','2× Booster'] },
+  { key:'top4', type:'TOP 4',    thresh:'průměr 8–12 hráčů',  places:4,
+    defaults:['Booster Box','Booster Display','4× Booster','2× Booster'] },
+  { key:'top8', type:'TOP 8',    thresh:'průměr 13+ hráčů',   places:8,
+    defaults:['Booster Box','Booster Display','6× Booster','6× Booster','2× Booster','2× Booster','2× Booster','2× Booster'] },
 ];
 
 // avg → aktivní formát typ
@@ -245,7 +227,6 @@ function renderDetail(l) {
           <div class="prize-place${p.gold ? ' gold' : ''}">${p.place}</div>
           <div>
             <div class="prize-main">${p.main}</div>
-            <div class="prize-detail">${p.detail}</div>
           </div>
         </div>`).join('')}
       </div>
@@ -350,34 +331,24 @@ async function loadLeagueAvg(l) {
 }
 
 // ── Start ──
-function getPrizesForLeague(id, format, configData) {
-  if (!configData || !configData.prizes || !configData.prizes.length) return null;
-  // Nejdřív hledej ceny specifické pro ligu
-  const specific = configData.prizes.find(p =>
-    p.liga.toLowerCase() === id.toLowerCase() &&
-    p.format.toUpperCase().includes(format.replace(' ',''))
-  );
-  if (specific) return specific;
-  // Fallback na "Všechny"
-  return configData.prizes.find(p =>
-    (p.liga === 'Všechny' || p.liga === '') &&
-    p.format.toUpperCase().includes(format.replace(' ',''))
-  ) || null;
+function getFormatsForLeague(id) {
+  let allPrizes = {};
+  try { allPrizes = JSON.parse(localStorage.getItem('hn_prizes') || '{}'); } catch(e) {}
+  const leaguePrizes = allPrizes[id] || {};
+
+  return FORMAT_DEFS.map(def => {
+    const saved = leaguePrizes[def.key] || [];
+    const prizes = [];
+    for (let i = 0; i < def.places; i++) {
+      const val = (saved[i] || '').trim() || def.defaults[i] || '';
+      if (!val) continue;
+      prizes.push({ place: (i + 1) + '.', gold: i === 0, main: val });
+    }
+    return { type: def.type, thresh: def.thresh, prizes };
+  });
 }
 
-function renderFormatCardWithConfig(fmt, activeType, id, configData) {
-  const isActive = fmt.type === activeType;
-  const fmtKey = fmt.type.replace(' ','');
-  const cenyData = getPrizesForLeague(id, fmt.type, configData);
-
-  // Použij data z config sheetu nebo výchozí
-  const prizes = cenyData ? [
-    {place:'1.',    gold:true,  main: cenyData.p1  || fmt.prizes[0]?.main || '—', detail: fmt.prizes[0]?.detail || ''},
-    {place:'2.',    gold:false, main: cenyData.p2  || fmt.prizes[1]?.main || '—', detail: fmt.prizes[1]?.detail || ''},
-    {place:'3.–4.', gold:false, main: cenyData.p34 || fmt.prizes[2]?.main || '—', detail: fmt.prizes[2]?.detail || ''},
-    ...(fmt.prizes[3] ? [{place:'5.–8.', gold:false, main: cenyData.p58 || fmt.prizes[3]?.main || '—', detail: fmt.prizes[3]?.detail || ''}] : []),
-  ].filter(p => p.main && p.main !== '—') : fmt.prizes;
-
+function renderFmtCard(fmt, isActive) {
   return `<div class="fmt-card${isActive ? ' active' : ''}">
     <div class="fmt-head">
       <div class="fmt-type"${isActive ? ' style="color:var(--pl)"' : ''}>${fmt.type}</div>
@@ -385,27 +356,20 @@ function renderFormatCardWithConfig(fmt, activeType, id, configData) {
       ${isActive ? '<div class="fmt-badge">✦ Aktuální formát</div>' : ''}
     </div>
     <div class="fmt-body">
-      ${prizes.map(p => `<div class="prize-row">
+      ${fmt.prizes.map(p => `<div class="prize-row">
         <div class="prize-place${p.gold ? ' gold' : ''}">${p.place}</div>
         <div>
           <div class="prize-main">${p.main}</div>
-          ${p.detail ? `<div class="prize-detail">${p.detail}</div>` : ''}
         </div>
       </div>`).join('')}
     </div>
   </div>`;
 }
 
+
 async function init() {
   renderTabs();
   renderDetails();
-
-  // Načti config sheet data
-  let configData = null;
-  try {
-    const stored = localStorage.getItem('hn_config_data');
-    if (stored) configData = JSON.parse(stored);
-  } catch(e) {}
 
   // Načti průměry ze Sheets
   await Promise.all(LEAGUES.map(l => loadLeagueAvg(l)));
@@ -419,7 +383,7 @@ async function init() {
       : '<span style="color:var(--text3)">— data nejsou k dispozici</span>';
 
     const fmtCards = getFormatsForLeague(l.id).map(f =>
-      renderFormatCardWithConfig(f, activeType, l.id, configData)
+      renderFmtCard(f, f.type === activeType)
     ).join('');
 
     return `<div class="liga-detail" id="detail-${l.id}">
@@ -441,6 +405,7 @@ async function init() {
             <div class="lstat-lbl">Průměrná účast</div>
           </div>
         </div>
+        <div style="font-size:12px;color:var(--text3);font-style:italic;margin-top:12px">Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.</div>
       </div>
       <div class="formats-grid">${fmtCards}</div>
     </div>`;
