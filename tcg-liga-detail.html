@@ -475,15 +475,17 @@ function parseSheets(text) {
     }
   }
 
-  // Najdi sloupec "Pořadí override" kdekoliv od konce (ne nutně přesně poslední)
-  let overrideIdx = -1;
+  // Najdi sloupce "Pořadí override" a "Topka" kdekoliv od konce (v libovolném pořadí)
+  let overrideIdx = -1, topkaIdx = -1;
   for (let i = effectiveLen - 1; i > pointsIdx; i--) {
     const h = plainText(headers[i]);
-    if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
+    if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
+    if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
   }
 
-  // FINÁLE sloupec = poslední platný sloupec před override (nebo úplně poslední, pokud override neexistuje)
-  const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
+  // FINÁLE sloupec = poslední platný sloupec, který není override ani Topka
+  let finaleIdx = effectiveLen - 1;
+  while (finaleIdx === overrideIdx || finaleIdx === topkaIdx) finaleIdx--;
 
   // Sloupce kol (hned za Body Celkově až předposlední/přede-předposlední)
   const roundCols = [];
@@ -507,7 +509,10 @@ function parseSheets(text) {
     // Ruční override pořadí (vyplní organizátor při shodě bodů i turnajů)
     const overrideRaw = overrideIdx >= 0 ? parseFloat(row[overrideIdx]) : NaN;
     const override = isNaN(overrideRaw) ? null : overrideRaw;
-    players.push({name, total, rounds, playedCount, override, isFinalist, color: AV_COLORS[i % AV_COLORS.length]});
+    // Sloupec "Topka" = ruční konečné pořadí ve finálovém turnaji (1-4 nebo 1-8)
+    const topkaRaw = topkaIdx >= 0 ? parseFloat(row[topkaIdx]) : NaN;
+    const topka = isNaN(topkaRaw) ? null : topkaRaw;
+    players.push({name, total, rounds, playedCount, override, isFinalist, topka, color: AV_COLORS[i % AV_COLORS.length]});
   });
 
   // Řazení: 1) body sestupně, 2) méně odehraných turnajů výš, 3) ruční override
@@ -676,6 +681,33 @@ function renderRoundDetail(r, ri, players) {
 }
 
 function renderFinaleDetail(players, topN) {
+  const withTopka = players.filter(p => p.topka !== null && p.topka > 0);
+  if (withTopka.length) {
+    withTopka.sort((a, b) => a.topka - b.topka);
+    return `
+      <div class="round-detail-header">
+        <div class="round-detail-title">Finálový turnaj — konečné pořadí</div>
+      </div>
+      <table class="round-results-table">
+        <thead><tr>
+          <th style="width:32px">#</th>
+          <th>Hráč</th>
+          <th class="tr">Body (sezóna)</th>
+        </tr></thead>
+        <tbody>
+          ${withTopka.map(p => `
+            <tr>
+              <td style="font-size:12px;font-weight:600;color:var(--text3)">${p.topka}.</td>
+              <td><div class="rrt-name">
+                <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+                <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
+              </div></td>
+              <td class="tr"><span class="rrt-pts">${p.total}</span></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+
   const finalists = players.slice(0, topN);
   return `
     <div class="round-detail-header">
@@ -683,6 +715,7 @@ function renderFinaleDetail(players, topN) {
       <div class="round-detail-meta">
         <span class="rdm"><strong>${topN}</strong> postupujících</span>
       </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">Konečné pořadí finále zatím nebylo zaznamenáno (sloupec "Topka") - zobrazeno podle sezónních bodů.</div>
     </div>
     <table class="round-results-table">
       <thead><tr>

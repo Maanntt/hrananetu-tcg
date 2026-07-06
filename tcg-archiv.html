@@ -226,12 +226,14 @@ async function loadLeagueForSeason(league, seasonTab) {
     }
   }
 
-  let overrideIdx = -1;
+  let overrideIdx = -1, topkaIdx = -1;
   for (let i = effectiveLen - 1; i > pointsIdx; i--) {
     const h = plainText(headers[i]);
-    if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
+    if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
+    if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
   }
-  const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
+  let finaleIdx = effectiveLen - 1;
+  while (finaleIdx === overrideIdx || finaleIdx === topkaIdx) finaleIdx--;
 
   const roundIdxs = [];
   for (let i = pointsIdx + 1; i < finaleIdx; i++) if (headers[i]) roundIdxs.push(i);
@@ -242,7 +244,13 @@ async function loadLeagueForSeason(league, seasonTab) {
   const players = dataRows.map(r => ({
     name: r[0].trim(),
     pts: parseFloat(r[pointsIdx]) || 0,
+    topka: topkaIdx >= 0 && !isNaN(parseFloat(r[topkaIdx])) ? parseFloat(r[topkaIdx]) : null,
   })).sort((a,b) => b.pts - a.pts);
+
+  // TOP3 karty: pokud je vyplněný sloupec "Topka" (skutečné pořadí finále), použij ho.
+  // Jinak fallback na sezónní pořadí podle bodů (jako dřív).
+  const withTopka = players.filter(p => p.topka !== null && p.topka > 0).sort((a,b) => a.topka - b.topka);
+  const top3 = withTopka.length ? withTopka.slice(0,3) : players.slice(0,3);
 
   let sum = 0, count = 0;
   roundIdxs.forEach(ri => {
@@ -255,7 +263,7 @@ async function loadLeagueForSeason(league, seasonTab) {
   const avg = count > 0 ? sum / count : 0;
   const fmt = finaleFormatFromAvg(avg);
 
-  return { league, top3: players.slice(0,3), totalPlayers: players.length, avg, fmt };
+  return { league, top3, totalPlayers: players.length, avg, fmt };
 }
 
 function renderCard(data) {
