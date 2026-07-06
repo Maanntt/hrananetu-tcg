@@ -159,103 +159,15 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
-const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
-
-const LEAGUE_NAME_MAP = {
-  'flesh and blood': 'fab', 'flesh & blood': 'fab',
-  'gundam': 'gd',
-  'mtg draft': 'mtgd',
-  'mtg modern': 'mtgm',
-  'mtg pauper': 'mtgpa',
-  'mtg premodern': 'mtgp',
-  'mtg standard': 'mtgstd',
-  'one piece': 'op',
-  'pokémon': 'pk', 'pokemon': 'pk',
-  'riftbound': 'rb',
-  'sorcery': 'so',
-  'yu-gi-oh!': 'ygo', 'yu-gi-oh': 'ygo', 'yugioh': 'ygo',
-};
-
-function parseCSVMaster(text) {
-  const rows = [];
-  for (const line of text.trim().split('\n')) {
-    if (!line.trim()) continue;
-    const cells = []; let cur = '', inQ = false;
-    for (const c of line) {
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
-      else cur += c;
-    }
-    cells.push(cur.trim());
-    rows.push(cells);
-  }
-  return rows;
-}
-
-async function fetchMasterCenyTab() {
-  const url = `https://docs.google.com/spreadsheets/d/${MASTER_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Ceny')}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Nelze načíst Ceny z Master Sheetu');
-  const text = await res.text();
-  if (text.includes('google.visualization') || text.trim().startsWith('/*')) {
-    throw new Error('List "Ceny" nenalezen');
-  }
-  return parseCSVMaster(text);
-}
-
-function buildPlacesRow(r) {
-  const p1 = (r[2]||'').trim(), p2 = (r[3]||'').trim(), p3 = (r[4]||'').trim(), p4 = (r[5]||'').trim();
-  const p58 = (r[6]||'').trim();
-  return [p1, p2, p3, p4, p58, p58, p58, p58];
-}
-
+// Ceny se teď načítají přes sdílený hn-data.js loader (HN.load()),
+// který stahuje záložku "Ceny" z Master Sheetu a ukládá do localStorage['hn_prizes'].
 async function loadCenyFromMaster() {
-  try {
-    const cenyRows = await fetchMasterCenyTab();
-    const prizes = {};
-    const ensureLeague = (id) => { if (!prizes[id]) prizes[id] = { zeb: [], top4: [], top8: [] }; return prizes[id]; };
-    const applyRow = (target, format, places) => {
-      const fmt = (format||'').toUpperCase().trim();
-      if (fmt.includes('ŽEBŘÍČEK') || fmt === 'ZEBRICEK') target.zeb = places.slice(0, 3);
-      else if (fmt.includes('TOP4') || fmt.includes('TOP 4')) target.top4 = places.slice(0, 4);
-      else if (fmt.includes('TOP8') || fmt.includes('TOP 8')) target.top8 = places.slice(0, 8);
-    };
-
-    const allLeagueIds = Object.values(LEAGUE_NAME_MAP);
-    cenyRows.slice(1).forEach(r => {
-      const ligaName = (r[0]||'').trim();
-      if (ligaName.toLowerCase() === 'všechny') {
-        const places = buildPlacesRow(r);
-        allLeagueIds.forEach(id => applyRow(ensureLeague(id), r[1], places));
-      }
-    });
-    cenyRows.slice(1).forEach(r => {
-      const ligaName = (r[0]||'').trim();
-      if (ligaName.toLowerCase() === 'všechny') return;
-      const id = LEAGUE_NAME_MAP[ligaName.toLowerCase()];
-      if (id) applyRow(ensureLeague(id), r[1], buildPlacesRow(r));
-    });
-
-    localStorage.setItem('hn_prizes', JSON.stringify(prizes));
-  } catch(e) {
-    console.warn('Nelze načíst ceny z Master Sheetu, používám lokální cache:', e.message);
-  }
+  await HN.load();
 }
 
-const LEAGUES = [
-  {id:'fab',  code:'FAB',       name:'Flesh and Blood', color:'#4ade80'},
-  {id:'gd',   code:'GUNDAM',    name:'Gundam',          color:'#fcd34d'},
-  {id:'mtgd', code:'MTG',       name:'MTG Draft',       color:'#b39ddb'},
-  {id:'mtgm', code:'MTG',       name:'MTG Modern',      color:'#9b4dff'},
-  {id:'mtgpa',code:'MTG',       name:'MTG Pauper',      color:'#a78bfa'},
-  {id:'mtgp', code:'MTG',       name:'MTG Premodern',   color:'#c51df5'},
-  {id:'op',   code:'ONE PIECE', name:'One Piece',       color:'#f87171'},
-  {id:'pk',   code:'POKÉMON',   name:'Pokémon',         color:'#ffcb05'},
-  {id:'rb',   code:'RIFTBOUND', name:'Riftbound',       color:'#7fb3f5'},
-  {id:'so',   code:'SORCERY',   name:'Sorcery',         color:'#c084fc'},
-  {id:'ygo',  code:'YGO',       name:'Yu-Gi-Oh!',       color:'#fb923c'},
-];
+const LEAGUES = HN.LEAGUES;
 
 // Definice formátů: kolik míst dostává odměnu a jaké jsou výchozí ceny
 const FORMAT_DEFS = [

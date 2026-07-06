@@ -122,22 +122,9 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
-const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
-
-const LEAGUES = [
-  {id:'fab',  name:'Flesh and Blood'},
-  {id:'gd',   name:'Gundam'},
-  {id:'mtgd', name:'MTG Draft'},
-  {id:'mtgm', name:'MTG Modern'},
-  {id:'mtgpa',name:'MTG Pauper'},
-  {id:'mtgp', name:'MTG Premodern'},
-  {id:'op',   name:'One Piece'},
-  {id:'pk',   name:'Pokémon'},
-  {id:'rb',   name:'Riftbound'},
-  {id:'so',   name:'Sorcery'},
-  {id:'ygo',  name:'Yu-Gi-Oh!'},
-];
+const LEAGUES = HN.LEAGUES;
 
 const AV_COLORS = ['#c51df5','#f97316','#22c55e','#3b82f6','#ec4899','#eab308','#06b6d4','#8b5cf6'];
 
@@ -172,16 +159,7 @@ function plainText(s) {
   return (s || '').normalize('NFC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
 
-async function fetchMasterTab(tabName) {
-  const url = `https://docs.google.com/spreadsheets/d/${MASTER_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Nelze načíst list "' + tabName + '"');
-  const text = await res.text();
-  if (text.includes('google.visualization') || text.trim().startsWith('/*')) {
-    throw new Error('List "' + tabName + '" nenalezen');
-  }
-  return parseCSV(text);
-}
+const fetchMasterTab = (tabName) => HN.fetchTab(tabName);
 
 function parseCzechDate(str) {
   const m = (str||'').trim().match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/);

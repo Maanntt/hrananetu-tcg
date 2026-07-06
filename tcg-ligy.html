@@ -382,6 +382,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz" style="color:#c51df5;text-decoration:none">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -454,7 +455,7 @@ const SEASON = ACTIVE_SEASON.sheetName + ' ' + SEASON_YR;
 
 function getSheetsId(leagueId) {
   try {
-    const saved = localStorage.getItem('hrana_sheets_' + leagueId);
+    const saved = localStorage.getItem('hn_' + leagueId);
     if (saved) return JSON.parse(saved).sheetId || null;
   } catch(e) {}
   return null;
@@ -569,7 +570,7 @@ async function loadAllNextDates() {
   });
 }
 
-loadAllNextDates();
+(async () => { await HN.load(); await loadAllNextDates(); })();
 
 // Aktualizuj sezónu label
 document.addEventListener('DOMContentLoaded', () => {

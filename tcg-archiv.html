@@ -124,22 +124,9 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
-const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
-
-const LEAGUES = [
-  {id:'fab',   code:'FAB',       name:'Flesh and Blood', color:'#4ade80'},
-  {id:'gd',    code:'GUNDAM',    name:'Gundam',          color:'#fcd34d'},
-  {id:'mtgd',  code:'MTG',       name:'MTG Draft',       color:'#b39ddb'},
-  {id:'mtgm',  code:'MTG',       name:'MTG Modern',      color:'#9b4dff'},
-  {id:'mtgpa', code:'MTG',       name:'MTG Pauper',      color:'#a78bfa'},
-  {id:'mtgp',  code:'MTG',       name:'MTG Premodern',   color:'#c51df5'},
-  {id:'op',    code:'ONE PIECE', name:'One Piece',       color:'#f87171'},
-  {id:'pk',    code:'POKÉMON',   name:'Pokémon',         color:'#ffcb05'},
-  {id:'rb',    code:'RIFTBOUND', name:'Riftbound',       color:'#7fb3f5'},
-  {id:'so',    code:'SORCERY',   name:'Sorcery',         color:'#c084fc'},
-  {id:'ygo',   code:'YGO',       name:'Yu-Gi-Oh!',       color:'#fb923c'},
-];
+const LEAGUES = HN.LEAGUES;
 
 let activeSeason = null;
 let seasonsList = [];      // proslé sezóny z Master Sheetu
@@ -176,16 +163,7 @@ function parseCSVLineSingle(line) {
   return cells;
 }
 
-async function fetchMasterTab(tabName) {
-  const url = `https://docs.google.com/spreadsheets/d/${MASTER_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Nelze načíst list "' + tabName + '"');
-  const text = await res.text();
-  if (text.includes('google.visualization') || text.trim().startsWith('/*')) {
-    throw new Error('List "' + tabName + '" nenalezen');
-  }
-  return parseCSV(text);
-}
+const fetchMasterTab = (tabName) => HN.fetchTab(tabName);
 
 function parseCzechDate(str) {
   const m = (str||'').trim().match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/);

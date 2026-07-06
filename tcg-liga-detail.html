@@ -250,6 +250,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -301,19 +302,9 @@ function getSheetTabName(season, year) {
   return season.sheetName + ' ' + year;
 }
 
-const LEAGUES = {
-  fab: {code:'FAB',      name:'Flesh and Blood', color:'#4ade80'},
-  gd:  {code:'GUNDAM',   name:'Gundam',           color:'#fcd34d'},
-  mtgd:{code:'MTG',      name:'MTG Draft',        color:'#b39ddb'},
-  mtgm:{code:'MTG',      name:'MTG Modern',       color:'#9b4dff'},
-  mtgpa:{code:'MTG',     name:'MTG Pauper',       color:'#a78bfa'},
-  mtgp:{code:'MTG',      name:'MTG Premodern',    color:'#c51df5'},
-  op:  {code:'ONE PIECE',name:'One Piece',        color:'#f87171'},
-  pk:  {code:'POKÉMON',  name:'Pokémon',          color:'#ffcb05'},
-  rb:  {code:'RIFTBOUND',name:'Riftbound',        color:'#7fb3f5'},
-  so:  {code:'SORCERY',  name:'Sorcery',          color:'#c084fc'},
-  ygo: {code:'YGO',      name:'Yu-Gi-Oh!',        color:'#fb923c'},
-};
+// LEAGUES jako slovník podle id, postavený ze sdíleného seznamu v hn-data.js
+const LEAGUES = {};
+HN.LEAGUES.forEach(l => { LEAGUES[l.id] = { code: l.code, name: l.name, color: l.color }; });
 
 const AV_COLORS = ['#c51df5','#f97316','#22c55e','#3b82f6','#ec4899','#06b6d4','#eab308','#f43f5e','#8b5cf6','#14b8a6','#e11d48','#0891b2'];
 const MONTHS_CS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
@@ -810,7 +801,7 @@ function slugify(name) {
     .replace(/[^a-z0-9-]/g,'');
 }
 
-init();
+(async () => { await HN.load(); init(); })();
 </script>
 
 

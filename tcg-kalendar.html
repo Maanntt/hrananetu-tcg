@@ -207,6 +207,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
 // ── KONFIGURACE LING ──
 // Klíč pro detekci: hledáme v rawTitle (bez emoji)
@@ -478,7 +479,7 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); }
 
 // ── START ──
 render();
-loadCalendar();
+(async () => { await HN.load(); await loadCalendar(); })();
 </script>
 
 <script>

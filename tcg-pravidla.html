@@ -265,9 +265,11 @@ footer a{color:var(--pl);text-decoration:none}
   <div style="font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;color:var(--text);margin-bottom:8px">PRAVIDLA LIG</div>
   <div style="font-size:13px;color:var(--text3);font-style:italic;margin-bottom:32px">Podmínky účasti, bodování a pravidla jednotlivých lig.</div>
 
-  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;text-align:center;margin-top:32px">
-    <div style="font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px">Připravujeme</div>
-    <div style="font-size:14px;color:var(--text3)">Pravidla lig budou brzy zveřejněna.</div>
+  <div id="pravidla-content">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;text-align:center;margin-top:32px">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px">Načítám pravidla…</div>
+      <div style="font-size:14px;color:var(--text3)">Data se stahují z Master Sheetu.</div>
+    </div>
   </div>
 </main>
 
@@ -276,8 +278,48 @@ footer a{color:var(--pl);text-decoration:none}
   <div style="margin-top:6px">Data načítána z Google Sheets a Google Kalendáře · <a href="mailto:info@hrananetu.cz">info@hrananetu.cz</a></div>
 </footer>
 
+<script src="hn-data.js"></script>
 <script>
+function escapeHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
+// Text z buňky může obsahovat víc řádků (Google Sheets zalomení = \n uvnitř buňky).
+// Každý řádek vykreslíme jako samostatný odstavec, "- " na začátku řádku jako odrážku.
+function renderRuleText(text) {
+  const lines = (text || '').split(/\r?\n/).filter(l => l.trim());
+  if (!lines.length) return '';
+  const items = lines.filter(l => /^[-•]\s*/.test(l.trim()));
+  if (items.length === lines.length) {
+    return '<ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">' +
+      lines.map(l => '<li style="color:var(--text2);font-size:14px;line-height:1.6">' + escapeHtml(l.replace(/^[-•]\s*/, '')) + '</li>').join('') +
+      '</ul>';
+  }
+  return lines.map(l => '<p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:8px">' + escapeHtml(l) + '</p>').join('');
+}
+
+function renderRules(rules) {
+  const el = document.getElementById('pravidla-content');
+  if (!rules || !rules.length) {
+    el.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;text-align:center;margin-top:32px">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px">Připravujeme</div>
+        <div style="font-size:14px;color:var(--text3)">Pravidla lig budou brzy zveřejněna.</div>
+      </div>`;
+    return;
+  }
+  el.innerHTML = rules.map(r => `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 26px;margin-bottom:16px">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;color:var(--pl);margin-bottom:10px">${escapeHtml(r.heading)}</div>
+      ${renderRuleText(r.text)}
+    </div>
+  `).join('');
+}
+
+(async () => {
+  const data = await HN.load();
+  renderRules(data.rules);
+})();
 </script>
 
 
