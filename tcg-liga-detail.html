@@ -611,6 +611,7 @@ function renderRounds(roundCols, players, today) {
     const finaleSubtitle = isRealFinale
       ? `Konec sezóny · odměny dle ${fmt.type}`
       : 'Volný turnaj · nízká účast → odměny dle celkového žebříčku, ne finále';
+    const finaleNote = 'Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.';
 
     const finaleDiv = document.createElement('div');
     finaleDiv.innerHTML = `
@@ -618,6 +619,7 @@ function renderRounds(roundCols, players, today) {
         <div>
           <div class="round-date">${finaleTitle}</div>
           <div class="round-label">${finaleSubtitle}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">${finaleNote}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <span class="round-arrow">›</span>
