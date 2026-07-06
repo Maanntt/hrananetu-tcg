@@ -214,16 +214,22 @@ async function loadLeagueForSeason(league, seasonTab) {
   const dataRows = rows.slice(1).filter(r => r[0] && r[0].trim());
   if (!dataRows.length) return null;
 
-  // Body celkově = sloupec index 1
+  // Najdi sloupec "Body Celkově" podle názvu (umožňuje extra sloupce jako Přezdívka)
+  let pointsIdx = 1;
+  for (let i = 1; i < header.length; i++) {
+    const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    if (h.includes('body')) { pointsIdx = i; break; }
+  }
+
   const players = dataRows.map(r => ({
     name: r[0].replace(/^"+|"+$/g,'').trim(),
-    pts: parseFloat(r[1]) || 0,
+    pts: parseFloat(r[pointsIdx]) || 0,
   })).sort((a,b) => b.pts - a.pts);
 
   // Průměr hráčů z odehraných kol
   const finaleIdx = header.length - 1;
   const roundIdxs = [];
-  for (let i = 2; i < finaleIdx; i++) if (header[i]) roundIdxs.push(i);
+  for (let i = pointsIdx + 1; i < finaleIdx; i++) if (header[i]) roundIdxs.push(i);
 
   let sum = 0, count = 0;
   roundIdxs.forEach(ri => {

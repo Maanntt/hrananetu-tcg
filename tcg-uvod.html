@@ -513,12 +513,18 @@ async function loadLeagueTop3(l, season) {
     const rows = parseCSV(text);
     if (rows.length < 2) { el.innerHTML = '<div class="th-msg">Žádná data</div>'; return; }
 
-    // Header řádek = rows[0], data od rows[1]
-    // Sloupec 0 = Jméno, sloupec 1 = Body Celkově
+    // Najdi sloupec "Body Celkově" podle názvu (umožňuje extra sloupce jako Přezdívka)
+    const header = rows[0];
+    let pointsIdx = 1;
+    for (let i = 1; i < header.length; i++) {
+      const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      if (h.includes('body')) { pointsIdx = i; break; }
+    }
+
     const players = rows.slice(1)
       .map(r => {
         const name = (r[0]||'').replace(/^\"*|\"*$/g,'').trim();
-        const pts  = parseFloat((r[1]||'').replace(/^\"*|\"*$/g,'').replace(/[^0-9.]/g,'')) || 0;
+        const pts  = parseFloat((r[pointsIdx]||'').replace(/^\"*|\"*$/g,'').replace(/[^0-9.]/g,'')) || 0;
         return {name, pts};
       })
       .filter(p => p.name && p.name.length > 1 && isNaN(Number(p.name)))
@@ -816,10 +822,17 @@ async function loadStats(season) {
         if (name) totalPlayers.add(name.toLowerCase());
       });
 
-      // Turnaje = počet datumových sloupců (index 2 až předposlední) + případně FINÁLE sloupec
+      // Najdi sloupec "Body Celkově" podle názvu
       const header = rows[0];
+      let pointsIdx = 1;
+      for (let i = 1; i < header.length; i++) {
+        const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        if (h.includes('body')) { pointsIdx = i; break; }
+      }
+
+      // Turnaje = počet datumových sloupců hned za Body Celkově, až předposlední
       let rounds = 0;
-      for (let i = 2; i < header.length - 1; i++) {
+      for (let i = pointsIdx + 1; i < header.length - 1; i++) {
         const h = (header[i]||'').trim();
         if (h) rounds++;
       }

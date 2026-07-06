@@ -471,9 +471,16 @@ function parseSheets(text) {
   let effectiveLen = headers.length;
   while (effectiveLen > 0 && !(headers[effectiveLen - 1] || '').trim()) effectiveLen--;
 
+  // Najdi sloupec "Body Celkově" podle NÁZVU (ne pevné pozice) - umožňuje libovolné extra sloupce
+  // mezi Jménem a Body Celkově (např. Přezdívka)
+  let pointsIdx = 1; // výchozí fallback
+  for (let i = 1; i < effectiveLen; i++) {
+    if (plainText(headers[i]).includes('body')) { pointsIdx = i; break; }
+  }
+
   // Najdi sloupec "Pořadí override" kdekoliv od konce (ne nutně přesně poslední)
   let overrideIdx = -1;
-  for (let i = effectiveLen - 1; i >= 2; i--) {
+  for (let i = effectiveLen - 1; i > pointsIdx; i--) {
     const h = plainText(headers[i]);
     if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
   }
@@ -481,9 +488,9 @@ function parseSheets(text) {
   // FINÁLE sloupec = poslední platný sloupec před override (nebo úplně poslední, pokud override neexistuje)
   const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
 
-  // Sloupce kol (index 2 až předposlední/přede-předposlední)
+  // Sloupce kol (hned za Body Celkově až předposlední/přede-předposlední)
   const roundCols = [];
-  for (let i = 2; i < finaleIdx; i++) {
+  for (let i = pointsIdx + 1; i < finaleIdx; i++) {
     if (!headers[i]) continue;
     const date = parseCzechDate(headers[i]);
     roundCols.push({idx: i, label: headers[i], date});
@@ -495,7 +502,7 @@ function parseSheets(text) {
     const row = parseCSVLine(line);
     const name = (row[0] || '').trim();
     if (!name) return;
-    const total = parseFloat(row[1]) || 0;
+    const total = parseFloat(row[pointsIdx]) || 0;
     const isFinalist = /fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1';
     const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
     // Počet odehraných turnajů = kolik kol má hráč hodnotu > 0
