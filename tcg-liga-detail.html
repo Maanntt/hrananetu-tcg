@@ -460,10 +460,15 @@ function parseCSVLine(line) {
 function parseSheets(text) {
   const lines = text.split('\n').filter(l => l.trim());
   if (lines.length < 2) throw new Error('Prázdný list.');
-  const headers   = parseCSVLine(lines[0]);
-  const finaleIdx = headers.length - 1;
+  const headers = parseCSVLine(lines[0]);
 
-  // Sloupce kol (index 2 až předposlední)
+  // Poslední sloupec = "Pořadí override" (pokud existuje), předposlední = FINÁLE
+  const lastHeader = (headers[headers.length - 1] || '').toLowerCase();
+  const hasOverrideCol = lastHeader.includes('pořadí') || lastHeader.includes('override');
+  const overrideIdx = hasOverrideCol ? headers.length - 1 : -1;
+  const finaleIdx   = hasOverrideCol ? headers.length - 2 : headers.length - 1;
+
+  // Sloupce kol (index 2 až předposlední/přede-předposlední)
   const roundCols = [];
   for (let i = 2; i < finaleIdx; i++) {
     if (!headers[i]) continue;
@@ -480,10 +485,23 @@ function parseSheets(text) {
     const total = parseFloat(row[1]) || 0;
     const isFinalist = /fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1';
     const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
-    players.push({name, total, rounds, isFinalist, color: AV_COLORS[i % AV_COLORS.length]});
+    // Počet odehraných turnajů = kolik kol má hráč hodnotu > 0
+    const playedCount = rounds.filter(r => r > 0).length;
+    // Ruční override pořadí (vyplní organizátor při shodě bodů i turnajů)
+    const overrideRaw = overrideIdx >= 0 ? parseFloat(row[overrideIdx]) : NaN;
+    const override = isNaN(overrideRaw) ? null : overrideRaw;
+    players.push({name, total, rounds, playedCount, override, isFinalist, color: AV_COLORS[i % AV_COLORS.length]});
   });
 
-  players.sort((a, b) => b.total - a.total);
+  // Řazení: 1) body sestupně, 2) méně odehraných turnajů výš, 3) ruční override
+  players.sort((a, b) => {
+    if (b.total !== a.total) return b.total - a.total;
+    if (a.playedCount !== b.playedCount) return a.playedCount - b.playedCount;
+    if (a.override !== null && b.override !== null) return a.override - b.override;
+    if (a.override !== null) return -1;
+    if (b.override !== null) return 1;
+    return 0; // úplná shoda - zachovej pořadí ze Sheetu
+  });
   players.forEach((p, i) => p.rank = i + 1);
 
   const today = new Date(); today.setHours(0,0,0,0);
