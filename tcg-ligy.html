@@ -555,11 +555,18 @@ async function loadAllNextDates() {
     return;
   }
 
+  // Porovnání CELÝCH slov (ne podřetězec!) - jinak by 'modern' omylem
+  // chytilo i event "MTG Premodern" (obsahuje 'modern' jako podřetězec).
+  function keywordMatches(raw, kw) {
+    const esc = kw.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp('\\b' + esc + '\\b', 'i').test(raw);
+  }
+
   // Pro každou ligu najdi nejbližší ligový event
   Object.keys(LEAGUES_CFG).forEach(id => {
     const kws = LEAGUES_CFG[id].keywords || [id];
     const matches = events.filter(e =>
-      e.isLeague && kws.some(kw => e.raw.includes(kw.toLowerCase()))
+      e.isLeague && kws.some(kw => keywordMatches(e.raw, kw))
     ).sort((a,b) => a.date - b.date);
 
     if (matches.length) {
