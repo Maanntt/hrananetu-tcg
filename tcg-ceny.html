@@ -276,7 +276,16 @@ function activeFormat(avg) {
 
 // State
 const leagueAvgs = {}; // id → avg
-let activeLeague = LEAGUES[0].id;
+
+// Zjisti ligu z URL parametru (?liga=fab), fallback na první ligu
+function getLeagueFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const liga = params.get('liga');
+  if (liga && LEAGUES.some(l => l.id === liga)) return liga;
+  return LEAGUES[0].id;
+}
+
+let activeLeague = getLeagueFromURL();
 
 // ── Render tabs ──
 function renderTabs() {
@@ -349,10 +358,14 @@ function renderDetails() {
   showLeague(activeLeague);
 }
 
-function showLeague(id) {
+function showLeague(id, scrollTo) {
   document.querySelectorAll('.liga-detail').forEach(d => d.classList.remove('visible'));
   const el = document.getElementById('detail-' + id);
   if (el) el.classList.add('visible');
+  if (scrollTo) {
+    const tab = document.getElementById('tab-' + id);
+    if (tab) tab.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  }
 }
 
 function selectLeague(id) {
@@ -510,7 +523,7 @@ async function init() {
   }).join('');
 
   renderTabs();
-  showLeague(activeLeague);
+  showLeague(activeLeague, true);
 }
 
 init();

@@ -87,7 +87,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .round-detail-meta{display:flex;gap:16px;flex-wrap:wrap}
 .rdm{font-size:12px;color:var(--text3)}
 .rdm strong{color:var(--text2);font-weight:500}
-.round-results-table{width:100%;border-collapse:collapse}
+.round-results-table{width:100%;border-collapse:collapse;margin-top:14px}
 .round-results-table th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
 .round-results-table th.tr{text-align:right}
 .round-results-table td{padding:8px 8px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle}
@@ -649,12 +649,6 @@ function renderRoundDetail(r, ri, players) {
   }
 
   return `
-    <div class="round-detail-header">
-      <div class="round-detail-title">${r.date ? formatDate(r.date) : r.label}</div>
-      <div class="round-detail-meta">
-        <span class="rdm"><strong>${participated.length}</strong> hráčů</span>
-      </div>
-    </div>
     <table class="round-results-table">
       <thead><tr>
         <th style="width:32px">#</th>
