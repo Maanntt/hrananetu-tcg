@@ -109,6 +109,57 @@ window.HN = (function () {
 
   let _loadPromise = null;
 
+  // ── Ochrana proti tichému fallbacku Google gviz API ──
+  // Google gviz endpoint (tqx=out:csv&sheet=NÁZEV) občas, když NÁZEV listu
+  // neexistuje, MÍSTO CHYBY tiše vrátí data z prvního/výchozího listu tabulky.
+  // To vypadá jako platná data, ale patří jinému (špatnému) listu.
+  // Řešení: pro každý Sheet ID jednou zjistíme skutečný seznam názvů listů
+  // přes starší, ale stále veřejně funkční "worksheets feed" API. Pokud se
+  // to nepodaří (API nedostupné), přistoupíme k datům bez tohoto ověření
+  // (stejné chování jako dřív) - je to bezpečnostní síť navíc, ne jediná obrana.
+  const _tabListCache = {};
+  async function getSheetTabTitles(sheetId) {
+    if (_tabListCache[sheetId] !== undefined) return _tabListCache[sheetId];
+    try {
+      const url = `https://spreadsheets.google.com/feeds/worksheets/${sheetId}/public/basic?alt=json`;
+      const res = await fetch(url);
+      if (!res.ok) { _tabListCache[sheetId] = null; return null; }
+      const json = await res.json();
+      const entries = (json.feed && json.feed.entry) || [];
+      const titles = entries.map(e => e.title && e.title['$t']).filter(Boolean);
+      _tabListCache[sheetId] = titles;
+      return titles;
+    } catch (e) {
+      _tabListCache[sheetId] = null;
+      return null;
+    }
+  }
+
+  // Stáhne konkrétní list (tab) konkrétní tabulky (liga) podle jména sezóny.
+  // Vrací pole CSV řádků, nebo null pokud list neexistuje / je prázdný / chyba.
+  async function fetchLeagueTab(sheetId, tabName) {
+    const cleanId = (sheetId || '').replace(/.*\/d\/([^/]+).*/, '$1').replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!cleanId || !tabName) return null;
+
+    // 1) Ověř, že list opravdu existuje (pokud se seznam podařilo zjistit)
+    const titles = await getSheetTabTitles(cleanId);
+    if (titles) {
+      const wanted = tabName.trim().toLowerCase();
+      const exists = titles.some(t => (t || '').trim().toLowerCase() === wanted);
+      if (!exists) return null;
+    }
+
+    // 2) Stáhni samotná data
+    const url = `https://docs.google.com/spreadsheets/d/${cleanId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=${Date.now()}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const text = await res.text();
+    if (text.includes('google.visualization') || text.trim().startsWith('/*') || text.includes('#REF')) return null;
+    const rows = parseCSV(text);
+    if (rows.length < 2) return null;
+    return rows;
+  }
+
   // Hlavní loader. VŽDY stáhne živá data z Master Sheetu bez ohledu na to,
   // z jaké stránky uživatel přišel. Volá se na začátku každé stránky.
   function load() {
@@ -191,5 +242,28 @@ window.HN = (function () {
     return _loadPromise;
   }
 
-  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, load };
+  // Stejné jako fetchLeagueTab, ale vrací syrový CSV text místo naparsovaných
+  // řádků - pro stránky s vlastním parserem (tcg-liga-detail.html, tcg-archiv-detail.html).
+  async function fetchLeagueTabText(sheetId, tabName) {
+    const cleanId = (sheetId || '').replace(/.*\/d\/([^/]+).*/, '$1').replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!cleanId || !tabName) throw new Error('Chybí Sheet ID nebo název listu.');
+
+    const titles = await getSheetTabTitles(cleanId);
+    if (titles) {
+      const wanted = tabName.trim().toLowerCase();
+      const exists = titles.some(t => (t || '').trim().toLowerCase() === wanted);
+      if (!exists) throw new Error(`List "${tabName}" v tabulce neexistuje.`);
+    }
+
+    const url = `https://docs.google.com/spreadsheets/d/${cleanId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=${Date.now()}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`List "${tabName}" nenalezen nebo Sheets není veřejný.`);
+    const text = await res.text();
+    if (text.includes('google.visualization') || text.trim().startsWith('/*') || text.includes('#REF')) {
+      throw new Error(`List "${tabName}" nenalezen.`);
+    }
+    return text;
+  }
+
+  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, load };
 })();

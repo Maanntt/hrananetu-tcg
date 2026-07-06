@@ -424,10 +424,7 @@ async function loadData(sheetIdArg, tabArg) {
   if (!sheetId) { if (statusEl) statusEl.textContent = 'Nastav Sheets ID na úvodní stránce.'; return; }
   if (statusEl) statusEl.textContent = 'Načítám…';
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`List "${tab}" nenalezen nebo Sheets není veřejný.`);
-    const text = await res.text();
+    const text = await HN.fetchLeagueTabText(sheetId, tab);
     currentData = parseSheets(text);
     renderAll(currentData);
     if (statusEl) statusEl.textContent = '✓ ' + currentData.players.length + ' hráčů, ' + currentData.roundCols.length + ' kol';

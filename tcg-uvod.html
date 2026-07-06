@@ -362,23 +362,10 @@ async function loadLeagueTop3(l, season) {
     // Zajisti čisté ID bez URL části
     const sheetId = (saved.sheetId||'').replace(/[^a-zA-Z0-9_-]/g,'').substring(0,44);
     const tab = saved.tab || season;
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-
-    const text = await res.text();
-
-    // Detekuj jestli to je CSV nebo JS/chybová odpověď
-    const trimmed = text.trim();
-    if (trimmed.startsWith('google') || trimmed.startsWith('/*') || 
-        trimmed.includes('google.visualization') || trimmed.startsWith('function') ||
-        !trimmed.includes(',')) {
-      el.innerHTML = '<div class="th-msg">Zkontroluj název listu: ' + tab + '</div>';
-      return;
-    }
-
-    const rows = parseCSV(text);
-    if (rows.length < 2) { el.innerHTML = '<div class="th-msg">Žádná data</div>'; return; }
+    // Ověřený fetch (kontroluje, že list pro danou sezónu opravdu existuje -
+    // ochrana proti tichému fallbacku Google gviz API na výchozí list)
+    const rows = await HN.fetchLeagueTab(sheetId, tab);
+    if (!rows) { el.innerHTML = '<div class="th-msg">Žádná data pro ' + tab + '</div>'; return; }
 
     // Najdi sloupec "Body Celkově" - podle názvu, jinak podle pozice před prvním datem
     const header = rows[0];
@@ -680,14 +667,8 @@ async function loadStats(season) {
       const saved = JSON.parse(localStorage.getItem('hn_' + l.id) || 'null');
       if (!saved || !saved.sheetId) return;
 
-      const url = `https://docs.google.com/spreadsheets/d/${saved.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(season)}&_=${Date.now()}`;
-      const res = await fetch(url);
-      if (!res.ok) return;
-      const text = await res.text();
-      if (text.trim().startsWith('google') || text.trim().startsWith('/*') || text.includes('google.visualization')) return;
-
-      const rows = parseCSV(text);
-      if (rows.length < 2) return;
+      const rows = await HN.fetchLeagueTab(saved.sheetId, season);
+      if (!rows) return;
 
       // Hráči = řádky od indexu 1 kde je neprázdné jméno
       rows.slice(1).forEach(r => {

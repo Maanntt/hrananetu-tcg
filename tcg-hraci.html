@@ -204,14 +204,8 @@ function parseCSVLineSingle(line) {
 }
 
 async function fetchLeagueData(sheetId, tabName) {
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=${Date.now()}`;
-  const res = await fetch(url);
-  if (!res.ok) return [];
-  const text = await res.text();
-  if (text.includes('google.visualization') || text.trim().startsWith('/*')) return [];
-
-  const rows = text.trim().split('\n').filter(l => l.trim()).map(parseCSVLineSingle);
-  if (rows.length < 2) return [];
+  const rows = await HN.fetchLeagueTab(sheetId, tabName);
+  if (!rows) return [];
 
   const headers = rows[0];
   let effectiveLen = headers.length;
