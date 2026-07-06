@@ -457,18 +457,29 @@ function parseCSVLine(line) {
   return cells;
 }
 
+// Normalizuj text: odstraň diakritiku a mezery, malá písmena (spolehlivé porovnání i při jiné Unicode normalizaci z Sheets)
+function plainText(s) {
+  return (s || '').normalize('NFC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
 function parseSheets(text) {
   const lines = text.split('\n').filter(l => l.trim());
   if (lines.length < 2) throw new Error('Prázdný list.');
   const headers = parseCSVLine(lines[0]);
 
-  // Poslední sloupec = "Pořadí override" (pokud existuje), předposlední = FINÁLE
-  const lastHeader = (headers[headers.length - 1] || '').normalize('NFC').toLowerCase();
-  // Odstraň diakritiku pro spolehlivé porovnání (Sheets CSV export může použít jinou Unicode normalizaci)
-  const lastHeaderPlain = lastHeader.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const hasOverrideCol = lastHeaderPlain.includes('poradi') || lastHeaderPlain.includes('override');
-  const overrideIdx = hasOverrideCol ? headers.length - 1 : -1;
-  const finaleIdx   = hasOverrideCol ? headers.length - 2 : headers.length - 1;
+  // Odstraň prázdné sloupce na konci (Sheets export může přidat extra prázdný sloupec kvůli formátování)
+  let effectiveLen = headers.length;
+  while (effectiveLen > 0 && !(headers[effectiveLen - 1] || '').trim()) effectiveLen--;
+
+  // Najdi sloupec "Pořadí override" kdekoliv od konce (ne nutně přesně poslední)
+  let overrideIdx = -1;
+  for (let i = effectiveLen - 1; i >= 2; i--) {
+    const h = plainText(headers[i]);
+    if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
+  }
+
+  // FINÁLE sloupec = poslední platný sloupec před override (nebo úplně poslední, pokud override neexistuje)
+  const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
 
   // Sloupce kol (index 2 až předposlední/přede-předposlední)
   const roundCols = [];
