@@ -44,18 +44,15 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 .page-title{font-family:'Rajdhani',sans-serif;font-size:46px;font-weight:700;line-height:1;margin-bottom:8px}
 .page-sub{font-size:14px;color:var(--text3)}
 
-/* SEZÓNA TABS */
 .season-tabs{display:flex;gap:8px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid var(--border);margin-bottom:32px}
 .stab{background:var(--bg2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .15s}
 .stab:hover{border-color:var(--purple);color:var(--pl)}
 .stab.active{border-color:var(--purple);background:var(--pd);color:var(--pl)}
 
-/* LOADING/EMPTY */
 .arch-status{padding:60px 20px;text-align:center;color:var(--text3);font-size:14px}
 .arch-status .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-3px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* LEAGUE CARDS GRID */
 .arch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:60px}
 .arch-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .15s}
 .arch-card:hover{border-color:var(--border2)}
@@ -128,6 +125,8 @@ footer a{color:var(--pl);text-decoration:none}
 </footer>
 
 <script>
+const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
+
 const LEAGUES = [
   {id:'fab',   code:'FAB',       name:'Flesh and Blood', color:'#4ade80'},
   {id:'gd',    code:'GUNDAM',    name:'Gundam',          color:'#fcd34d'},
@@ -135,7 +134,6 @@ const LEAGUES = [
   {id:'mtgm',  code:'MTG',       name:'MTG Modern',      color:'#9b4dff'},
   {id:'mtgpa', code:'MTG',       name:'MTG Pauper',      color:'#a78bfa'},
   {id:'mtgp',  code:'MTG',       name:'MTG Premodern',   color:'#c51df5'},
-  {id:'mtgstd',code:'MTG',       name:'MTG Standard',    color:'#22d3ee'},
   {id:'op',    code:'ONE PIECE', name:'One Piece',       color:'#f87171'},
   {id:'pk',    code:'POKÉMON',   name:'Pokémon',         color:'#ffcb05'},
   {id:'rb',    code:'RIFTBOUND', name:'Riftbound',       color:'#7fb3f5'},
@@ -143,22 +141,13 @@ const LEAGUES = [
   {id:'ygo',   code:'YGO',       name:'Yu-Gi-Oh!',       color:'#fb923c'},
 ];
 
-// Možné historické sezóny (nejnovější první, aktuální se vynechá)
-function pastSeasons() {
-  const now = new Date();
-  const yr = now.getFullYear();
-  const seasons = [];
-  // Projdi 3 roky zpět, 4 sezóny na rok
-  for (let y = yr; y >= yr - 2; y--) {
-    ['Zima', 'Podzim', 'Léto', 'Jaro'].forEach(s => {
-      seasons.push(`${s} ${y}`);
-    });
-  }
-  return seasons;
-}
-
 let activeSeason = null;
-let seasonsWithData = [];
+let seasonsList = [];      // proslé sezóny z Master Sheetu
+let leagueSheetIds = {};
+
+function plainText(s) {
+  return (s || '').normalize('NFC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
 
 function parseCSV(text) {
   const rows = [];
@@ -176,23 +165,63 @@ function parseCSV(text) {
   return rows;
 }
 
-function getSheetId(leagueId) {
-  for (const key of ['hn_' + leagueId, 'hrana_sheets_' + leagueId]) {
-    try {
-      const s = localStorage.getItem(key);
-      if (s) { const d = JSON.parse(s); if (d.sheetId) return d.sheetId; }
-    } catch(e) {}
+function parseCSVLineSingle(line) {
+  const cells = []; let cur = '', inQ = false;
+  for (const c of line) {
+    if (c === '"') inQ = !inQ;
+    else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+    else cur += c;
   }
-  return null;
+  cells.push(cur.trim());
+  return cells;
 }
 
-async function fetchSeasonData(sheetId, seasonTab) {
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(seasonTab)}`;
+async function fetchMasterTab(tabName) {
+  const url = `https://docs.google.com/spreadsheets/d/${MASTER_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Nelze načíst list "' + tabName + '"');
+  const text = await res.text();
+  if (text.includes('google.visualization') || text.trim().startsWith('/*')) {
+    throw new Error('List "' + tabName + '" nenalezen');
+  }
+  return parseCSV(text);
+}
+
+function parseCzechDate(str) {
+  const m = (str||'').trim().match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/);
+  if (!m) return null;
+  return new Date(parseInt(m[3]), parseInt(m[2])-1, parseInt(m[1]));
+}
+
+// Načti Ligy (sheetId mapping) a jen PROŠLÉ sezóny z Master Sheetu
+async function loadMasterMeta() {
+  const [ligyRows, sezRows] = await Promise.all([
+    fetchMasterTab('Ligy'),
+    fetchMasterTab('Sezony'),
+  ]);
+
+  leagueSheetIds = {};
+  ligyRows.slice(1).forEach(r => {
+    const id = (r[0]||'').trim();
+    const sid = (r[2]||'').trim();
+    if (id && sid) leagueSheetIds[id] = sid;
+  });
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  seasonsList = sezRows.slice(1)
+    .filter(r => r[0])
+    .map(r => ({ name: r[0].trim(), start: parseCzechDate(r[1]), end: parseCzechDate(r[2]) }))
+    .filter(s => s.end && s.end < today) // striktně proslé sezóny (skončily před dneškem)
+    .sort((a, b) => b.start - a.start); // nejnovější první
+}
+
+async function fetchLeagueSheetData(sheetId, tabName) {
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
   const res = await fetch(url);
   if (!res.ok) return null;
   const text = await res.text();
   if (text.includes('google.visualization') || text.trim().startsWith('/*') || text.includes('#REF')) return null;
-  const rows = parseCSV(text);
+  const rows = text.trim().split('\n').filter(l => l.trim()).map(parseCSVLineSingle);
   if (rows.length < 2) return null;
   return rows;
 }
@@ -204,32 +233,39 @@ function finaleFormatFromAvg(avg) {
 }
 
 async function loadLeagueForSeason(league, seasonTab) {
-  const sheetId = getSheetId(league.id);
+  const sheetId = leagueSheetIds[league.id];
   if (!sheetId) return null;
 
-  const rows = await fetchSeasonData(sheetId, seasonTab);
+  const rows = await fetchLeagueSheetData(sheetId, seasonTab);
   if (!rows) return null;
 
-  const header = rows[0];
-  const dataRows = rows.slice(1).filter(r => r[0] && r[0].trim());
-  if (!dataRows.length) return null;
+  const headers = rows[0];
+  let effectiveLen = headers.length;
+  while (effectiveLen > 0 && !(headers[effectiveLen - 1] || '').trim()) effectiveLen--;
 
   // Najdi sloupec "Body Celkově" podle názvu (umožňuje extra sloupce jako Přezdívka)
   let pointsIdx = 1;
-  for (let i = 1; i < header.length; i++) {
-    const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    if (h.includes('body')) { pointsIdx = i; break; }
+  for (let i = 1; i < effectiveLen; i++) {
+    if (plainText(headers[i]).includes('body')) { pointsIdx = i; break; }
   }
 
+  let overrideIdx = -1;
+  for (let i = effectiveLen - 1; i > pointsIdx; i--) {
+    const h = plainText(headers[i]);
+    if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
+  }
+  const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
+
+  const roundIdxs = [];
+  for (let i = pointsIdx + 1; i < finaleIdx; i++) if (headers[i]) roundIdxs.push(i);
+
+  const dataRows = rows.slice(1).filter(r => r[0] && r[0].trim());
+  if (!dataRows.length) return null;
+
   const players = dataRows.map(r => ({
-    name: r[0].replace(/^"+|"+$/g,'').trim(),
+    name: r[0].trim(),
     pts: parseFloat(r[pointsIdx]) || 0,
   })).sort((a,b) => b.pts - a.pts);
-
-  // Průměr hráčů z odehraných kol
-  const finaleIdx = header.length - 1;
-  const roundIdxs = [];
-  for (let i = pointsIdx + 1; i < finaleIdx; i++) if (header[i]) roundIdxs.push(i);
 
   let sum = 0, count = 0;
   roundIdxs.forEach(ri => {
@@ -239,13 +275,7 @@ async function loadLeagueForSeason(league, seasonTab) {
   const avg = count > 0 ? sum / count : 0;
   const fmt = finaleFormatFromAvg(avg);
 
-  return {
-    league,
-    top3: players.slice(0,3),
-    totalPlayers: players.length,
-    avg,
-    fmt,
-  };
+  return { league, top3: players.slice(0,3), totalPlayers: players.length, avg, fmt };
 }
 
 function renderCard(data) {
@@ -274,33 +304,10 @@ function renderCard(data) {
   </div>`;
 }
 
-async function checkSeasonHasData(seasonTab) {
-  // Zkus první ligu s nastaveným Sheets ID
-  for (const l of LEAGUES) {
-    const sheetId = getSheetId(l.id);
-    if (!sheetId) continue;
-    const rows = await fetchSeasonData(sheetId, seasonTab);
-    if (rows) return true;
-  }
-  return false;
-}
-
-async function findSeasonsWithData() {
-  const candidates = pastSeasons();
-  const found = [];
-  // Testuj max 8 sezón dopředu abychom zbytečně nespamovali
-  for (const s of candidates.slice(0, 8)) {
-    const has = await checkSeasonHasData(s);
-    if (has) found.push(s);
-    if (found.length >= 6) break; // dost sezón k zobrazení
-  }
-  return found;
-}
-
 function renderTabs() {
   const wrap = document.getElementById('season-tabs');
-  wrap.innerHTML = seasonsWithData.map(s =>
-    `<button class="stab ${s===activeSeason?'active':''}" onclick="selectSeason('${s}')">${s}</button>`
+  wrap.innerHTML = seasonsList.map(s =>
+    `<button class="stab ${s.name===activeSeason?'active':''}" onclick="selectSeason('${s.name}')">${s.name}</button>`
   ).join('');
 }
 
@@ -314,13 +321,15 @@ async function loadSeasonGrid(season) {
   const status = document.getElementById('arch-status');
   const grid = document.getElementById('arch-grid');
   grid.innerHTML = '';
+  status.style.display = 'block';
   status.innerHTML = '<span class="spinner"></span>Načítám sezónu ' + season + '…';
 
   const results = await Promise.all(LEAGUES.map(l => loadLeagueForSeason(l, season)));
   const valid = results.filter(Boolean);
 
-  status.innerHTML = '';
+  status.style.display = 'none';
   if (!valid.length) {
+    status.style.display = 'block';
     status.textContent = 'Pro tuto sezónu nejsou k dispozici žádná data.';
     return;
   }
@@ -329,18 +338,23 @@ async function loadSeasonGrid(season) {
 
 async function init() {
   const status = document.getElementById('arch-status');
-  status.innerHTML = '<span class="spinner"></span>Hledám dostupné sezóny…';
+  status.style.display = 'block';
+  status.innerHTML = '<span class="spinner"></span>Načítám sezóny…';
 
-  seasonsWithData = await findSeasonsWithData();
+  try {
+    await loadMasterMeta();
 
-  if (!seasonsWithData.length) {
-    status.textContent = 'Zatím nejsou k dispozici žádná archivní data. Jakmile skončí první sezóna, objeví se zde.';
-    return;
+    if (!seasonsList.length) {
+      status.textContent = 'Zatím nejsou k dispozici žádná archivní data. Jakmile skončí první sezóna, objeví se zde.';
+      return;
+    }
+
+    activeSeason = seasonsList[0].name;
+    renderTabs();
+    await loadSeasonGrid(activeSeason);
+  } catch (err) {
+    status.textContent = '⚠ ' + err.message;
   }
-
-  activeSeason = seasonsWithData[0];
-  renderTabs();
-  await loadSeasonGrid(activeSeason);
 }
 
 init();
