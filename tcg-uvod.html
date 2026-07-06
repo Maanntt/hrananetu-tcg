@@ -138,20 +138,41 @@ footer a{color:var(--pl);text-decoration:none}
 .week-empty{font-size:11px;color:var(--text3);padding:2px 0}
 @media(max-width:768px){.week-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.week-col:nth-child(n+5){display:none}}
 @media(max-width:480px){.week-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.week-col:nth-child(n+4){display:none}.week-label{min-width:100px;font-size:12px}}
+
+/* MODAL - detail eventu */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-top{height:4px;border-radius:16px 16px 0 0}
+.modal-head{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.modal-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1.2}
+.modal-date{font-size:12px;color:var(--text3);margin-top:4px}
+.modal-x{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1}
+.modal-x:hover{background:var(--bg3);color:var(--text)}
+.modal-body{padding:20px 22px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.detail-row{display:flex;flex-direction:column;gap:3px}
+.detail-row.full{grid-column:1/-1}
+.detail-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+.detail-val{font-size:14px;color:var(--text);font-weight:500}
+.prizes-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px}
+.prizes-title{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.prize-row{font-size:13px;color:var(--text2);padding:3px 0}
 </style>
 </head>
 <body>
 <header>
   <div class="hi">
-    <a href="/hrananetu-tcg-dev/tcg-uvod.html" class="logo"><img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz"></a>
+    <a href="/tcg-uvod.html" class="logo"><img src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="HranaNetu.cz"></a>
     <nav class="main-nav">
-      <a href="/hrananetu-tcg-dev/tcg-uvod.html" class="act">Úvod</a>
-      <a href="/hrananetu-tcg-dev/tcg-kalendar.html">Kalendář</a>
-      <a href="/hrananetu-tcg-dev/tcg-ligy.html">Ligy</a>
-      <a href="/hrananetu-tcg-dev/tcg-ceny.html">Ceny</a>
-      <a href="/hrananetu-tcg-dev/tcg-hraci.html">Hráči</a>
-      <a href="/hrananetu-tcg-dev/tcg-archiv.html">Archiv</a>
-      <a href="/hrananetu-tcg-dev/tcg-pravidla.html">Pravidla</a>
+      <a href="/tcg-uvod.html" class="act">Úvod</a>
+      <a href="/tcg-kalendar.html">Kalendář</a>
+      <a href="/tcg-ligy.html">Ligy</a>
+      <a href="/tcg-ceny.html">Ceny</a>
+      <a href="/tcg-hraci.html">Hráči</a>
+      <a href="/tcg-archiv.html">Archiv</a>
+      <a href="/tcg-pravidla.html">Pravidla</a>
     </nav>
     <div class="hdr-btns">
       <a href="https://www.hrananetu.cz/customer/registration/" class="btn-outline">Registrace</a>
@@ -161,13 +182,13 @@ footer a{color:var(--pl);text-decoration:none}
   </div>
 </header>
 <nav class="mob-nav" id="mob-nav">
-  <a href="/hrananetu-tcg-dev/tcg-uvod.html" class="act">Úvod</a>
-  <a href="/hrananetu-tcg-dev/tcg-kalendar.html">Kalendář</a>
-  <a href="/hrananetu-tcg-dev/tcg-ligy.html">Ligy</a>
-  <a href="/hrananetu-tcg-dev/tcg-ceny.html">Ceny</a>
-  <a href="/hrananetu-tcg-dev/tcg-hraci.html">Hráči</a>
-  <a href="/hrananetu-tcg-dev/tcg-archiv.html">Archiv</a>
-  <a href="/hrananetu-tcg-dev/tcg-pravidla.html">Pravidla</a>
+  <a href="/tcg-uvod.html" class="act">Úvod</a>
+  <a href="/tcg-kalendar.html">Kalendář</a>
+  <a href="/tcg-ligy.html">Ligy</a>
+  <a href="/tcg-ceny.html">Ceny</a>
+  <a href="/tcg-hraci.html">Hráči</a>
+  <a href="/tcg-archiv.html">Archiv</a>
+  <a href="/tcg-pravidla.html">Pravidla</a>
 </nav>
 
 <!-- HERO -->
@@ -194,7 +215,7 @@ footer a{color:var(--pl);text-decoration:none}
         <button class="week-arrow" onclick="weekShift(-1)">‹</button>
         <span class="week-label" id="week-label">—</span>
         <button class="week-arrow" onclick="weekShift(1)">›</button>
-        <a href="/hrananetu-tcg-dev/tcg-kalendar.html" class="section-link" style="margin-left:12px">Celý kalendář →</a>
+        <a href="/tcg-kalendar.html" class="section-link" style="margin-left:12px">Celý kalendář →</a>
       </div>
     </div>
     <div class="week-grid" id="week-grid">
@@ -206,20 +227,20 @@ footer a{color:var(--pl);text-decoration:none}
   <div class="section">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
       <div class="eyebrow" style="margin-bottom:0">Top hráči</div>
-      <a href="/hrananetu-tcg-dev/tcg-ligy.html" class="section-link">Všechny žebříčky →</a>
+      <a href="/tcg-ligy.html" class="section-link">Všechny žebříčky →</a>
     </div>
         <div class="th-grid">
-      <div class="th-card"><div class="th-card-name" style="color:#4ade80"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=fab">FLESH AND BLOOD →</a></div><div id="top-fab"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#fcd34d"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=gd">GUNDAM →</a></div><div id="top-gd"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#b39ddb"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=mtgd">MTG DRAFT →</a></div><div id="top-mtgd"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#9b4dff"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=mtgm">MTG MODERN →</a></div><div id="top-mtgm"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#a78bfa"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=mtgpa">MTG PAUPER →</a></div><div id="top-mtgpa"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#c51df5"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=mtgp">MTG PREMODERN →</a></div><div id="top-mtgp"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#f87171"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=op">ONE PIECE →</a></div><div id="top-op"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#ffcb05"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=pk">POKÉMON →</a></div><div id="top-pk"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#7fb3f5"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=rb">RIFTBOUND →</a></div><div id="top-rb"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#c084fc"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=so">SORCERY →</a></div><div id="top-so"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#fb923c"><a href="/hrananetu-tcg-dev/tcg-liga-detail.html?liga=ygo">YU-GI-OH! →</a></div><div id="top-ygo"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#4ade80"><a href="/tcg-liga-detail.html?liga=fab">FLESH AND BLOOD →</a></div><div id="top-fab"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#fcd34d"><a href="/tcg-liga-detail.html?liga=gd">GUNDAM →</a></div><div id="top-gd"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#b39ddb"><a href="/tcg-liga-detail.html?liga=mtgd">MTG DRAFT →</a></div><div id="top-mtgd"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#9b4dff"><a href="/tcg-liga-detail.html?liga=mtgm">MTG MODERN →</a></div><div id="top-mtgm"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#a78bfa"><a href="/tcg-liga-detail.html?liga=mtgpa">MTG PAUPER →</a></div><div id="top-mtgpa"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#c51df5"><a href="/tcg-liga-detail.html?liga=mtgp">MTG PREMODERN →</a></div><div id="top-mtgp"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#f87171"><a href="/tcg-liga-detail.html?liga=op">ONE PIECE →</a></div><div id="top-op"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#ffcb05"><a href="/tcg-liga-detail.html?liga=pk">POKÉMON →</a></div><div id="top-pk"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#7fb3f5"><a href="/tcg-liga-detail.html?liga=rb">RIFTBOUND →</a></div><div id="top-rb"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#c084fc"><a href="/tcg-liga-detail.html?liga=so">SORCERY →</a></div><div id="top-so"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#fb923c"><a href="/tcg-liga-detail.html?liga=ygo">YU-GI-OH! →</a></div><div id="top-ygo"><div class="th-msg">Načítám…</div></div></div>
     </div>
   </div>
 
@@ -502,7 +523,7 @@ async function loadLeagueTop3(l, season) {
       return `<div class="th-player">
         <div style="display:flex;align-items:center;gap:8px">
           <span class="th-rank ${rk}">${i+1}.</span>
-          <a href="/hrananetu-tcg-dev/tcg-hraci.html?hrac=${slug}" class="th-name">${p.name}</a>
+          <a href="/tcg-hraci.html?hrac=${slug}" class="th-name">${p.name}</a>
         </div>
         <span class="th-pts">${p.pts}</span>
       </div>`;
@@ -564,6 +585,8 @@ function detectLeagueFromTitle(title) {
   return null;
 }
 
+let flatWeekEvents = [];
+
 function renderWeek() {
   const grid = document.getElementById('week-grid');
   const label = document.getElementById('week-label');
@@ -577,6 +600,8 @@ function renderWeek() {
   const mL = `${monday.getDate()}. ${WEEK_MONTHS[monday.getMonth()]}`;
   const sL = `${sunday.getDate()}. ${WEEK_MONTHS[sunday.getMonth()]}`;
   if (label) label.textContent = `${mL} – ${sL}`;
+
+  flatWeekEvents = [];
 
   grid.innerHTML = WEEK_DAYS.map((day, di) => {
     const date = new Date(monday); date.setDate(monday.getDate() + di);
@@ -592,8 +617,11 @@ function renderWeek() {
       const lc  = lid ? WEEK_LEAGUES[lid] : {color:'var(--text2)', bg:'rgba(255,255,255,.07)'};
       const time = e.startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
       const fmt  = e.gameFormat ? ` · ${e.gameFormat}` : '';
-      
-      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color}" title="${[e.title, e.gameFormat].filter(Boolean).join(' · ')}">
+
+      flatWeekEvents.push(e);
+      const idx = flatWeekEvents.length - 1;
+
+      return `<div class="week-pill" style="background:${lc.bg};color:${lc.color};border-left:2px solid ${lc.color};cursor:pointer" onclick="openWeekModal(${idx})" title="${[e.title, e.gameFormat].filter(Boolean).join(' · ')}">
         <span style="opacity:.6;font-size:9px">${time}</span>
         <span style="font-weight:600;margin-left:3px">${e.title}</span><span style="font-size:9px;opacity:.7">${fmt}</span>
       </div>`;
@@ -605,6 +633,84 @@ function renderWeek() {
       ${pills || '<div class="week-empty">—</div>'}
     </div>`;
   }).join('');
+}
+
+// ── MODAL detailu eventu ──
+function openWeekModal(idx) {
+  const e = flatWeekEvents[idx];
+  if (!e) return;
+
+  const lid = detectLeagueFromTitle(e.rawTitle || e.title);
+  const lc  = lid ? WEEK_LEAGUES[lid] : {color:'var(--pl)'};
+  const color = e.isFinale ? '#f0a500' : lc.color;
+  const tag   = e.isFinale ? 'Finálový turnaj' : e.title;
+  const ds    = e.startDate.toLocaleDateString('cs-CZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('wm-top').style.background = color;
+  document.getElementById('wm-tag').textContent = tag;
+  document.getElementById('wm-tag').style.color = color;
+  document.getElementById('wm-title').textContent = e.cleanTitle || e.title;
+  document.getElementById('wm-date').textContent = ds;
+
+  const rows = [
+    e.regTime && e.regTime!=='—'  ? {l:'Registrace',v:e.regTime,   full:false} : null,
+    e.startTime                    ? {l:'Start',      v:e.startTime, full:false} : null,
+    e.rounds && e.rounds!=='—'    ? {l:'Počet kol',  v:e.rounds,    full:false} : null,
+    e.entry  && e.entry!=='—'     ? {l:'Vstupné',    v:e.entry,     full:false} : null,
+    e.format && e.format!=='—'    ? {l:'Formát',     v:e.format,    full:false} : null,
+    e.place  && e.place!=='—'     ? {l:'Místo',      v:e.place,     full:true}  : null,
+  ].filter(Boolean);
+
+  const prizes = e.prizes && e.prizes!=='—'
+    ? `<div class="prizes-box"><div class="prizes-title">Ceny</div>${
+        e.prizes.split(',').map(p=>`<div class="prize-row">${p.trim()}</div>`).join('')
+      }</div>` : '';
+
+  document.getElementById('wm-body').innerHTML =
+    `<div class="detail-grid">${rows.map(r=>`<div class="detail-row${r.full?' full':''}"><div class="detail-lbl">${r.l}</div><div class="detail-val">${r.v}</div></div>`).join('')}</div>${prizes}`;
+
+  document.getElementById('week-modal').classList.add('open');
+}
+
+function closeWeekModal() {
+  document.getElementById('week-modal').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeWeekModal(); });
+
+function stripEmojiWeek(s) {
+  return (s||'').replace(/^[^\w\u00C0-\u024F(]+/, '').trim();
+}
+
+function parseDescWeek(desc) {
+  const text = (desc||'').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&');
+  const f = {};
+  text.split('\n').forEach(line => {
+    const c = stripEmojiWeek(line).trim();
+    if (!c) return;
+    const m = c.match(/^([^:]{1,25}):\s*(.+)$/);
+    if (m) { f[m[1].toLowerCase()] = m[2].trim(); return; }
+    if (/^formát\s+/i.test(c)) f['formát'] = c.replace(/^formát\s+/i,'').trim();
+    if (/hrana store|úvoz/i.test(c) && !f['místo']) f['místo'] = c;
+    if (/^počet kol/i.test(c)) f['počet kol'] = c.replace(/^počet kol\s*/i,'').trim();
+    if (/^vstupné/i.test(c)) f['vstupné'] = c.replace(/^vstupné\s*/i,'').trim();
+    if (/^ceny/i.test(c)) f['ceny'] = c.replace(/^ceny[:\s]*/i,'').trim();
+    if (/registrace/i.test(c)) {
+      const rm = c.match(/registrace[:\s]+(\d{1,2}:\d{2})/i);
+      const sm = c.match(/start[:\s]+(\d{1,2}:\d{2})/i);
+      if (rm) f['registrace'] = rm[1];
+      if (sm) f['start'] = sm[1];
+    }
+  });
+  return f;
+}
+
+function subMinsWeek(t, m) {
+  const match = (t||'').match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return t;
+  const total = parseInt(match[1])*60 + parseInt(match[2]) - m;
+  const h = Math.floor(((total%1440)+1440)%1440/60);
+  const mn = ((total%60)+60)%60;
+  return String(h).padStart(2,'0')+':'+String(mn).padStart(2,'0');
 }
 
 async function loadWeekFromCalendar() {
@@ -622,27 +728,38 @@ async function loadWeekFromCalendar() {
     const data = await res.json();
 
     weekEvents = (data.items || []).map(item => {
-      // Titulek formát: "🎮 Název hry - Formát hry - Liga" nebo "🎮 Název hry - Formát turnaje"
       const raw = item.summary || '—';
+      const cleanTitle = stripEmojiWeek(raw);
 
-      // Odstraň emoji ze začátku
-      const noEmoji = raw.replace(/^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Presentation}\s]+/u, '').trim();
-
-      // Rozděl podle " - " nebo " – "
-      const parts = noEmoji.split(/\s*[-–]\s*/);
+      const parts = cleanTitle.split(/\s*[-–]\s*/);
       const gameName  = parts[0]?.trim() || raw;
-      const gameFormat = parts[1]?.trim() || '';  // Constructed, Draft, Standard...
-      const tourneyType = parts[2]?.trim() || ''; // Liga, Turnaj, FNM...
-
+      const gameFormat = parts[1]?.trim() || '';
+      const tourneyType = parts[2]?.trim() || '';
       const isLeague = /liga/i.test(tourneyType) || /liga/i.test(gameFormat);
+      const isFinale = /fin[aá]le/i.test(raw);
+
+      const startDate = new Date(item.start?.dateTime || item.start?.date);
+      const fields = parseDescWeek(item.description);
+      const autoTime = startDate.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
+      const startTime = fields['start'] || autoTime;
+      const regTime = fields['registrace'] || subMinsWeek(startTime, 30);
 
       return {
         title: gameName,
         gameFormat,
         tourneyType,
         isLeague,
+        isFinale,
         rawTitle: raw,
-        startDate: new Date(item.start?.dateTime || item.start?.date),
+        cleanTitle,
+        startDate,
+        startTime,
+        regTime,
+        format: fields['formát'] || gameFormat || '—',
+        place:  fields['místo']  || '—',
+        rounds: fields['počet kol'] || '—',
+        entry:  fields['vstupné']   || '—',
+        prizes: fields['ceny']      || '—',
       };
     }).filter(e => !isNaN(e.startDate));
 
@@ -655,7 +772,7 @@ async function loadWeekFromCalendar() {
 function renderWeekNoData() {
   const grid = document.getElementById('week-grid');
   if (grid) grid.innerHTML = `<div style="grid-column:1/-1;padding:16px 20px;color:var(--text3);font-size:13px">
-    Nastav Google Calendar API v <a href="/hrananetu-tcg-dev/tcg-kalendar.html" style="color:var(--pl)">Kalendáři</a> pro zobrazení událostí.
+    Nastav Google Calendar API v <a href="/tcg-kalendar.html" style="color:var(--pl)">Kalendáři</a> pro zobrazení událostí.
   </div>`;
   renderWeek();
 }
@@ -731,5 +848,21 @@ document.getElementById("stat-leagues").textContent = LEAGUES.length;
 <script>
 !function(){var o=false;window.toggleMenu=function(){o=!o;document.getElementById('hbg').classList.toggle('open',o);document.getElementById('mob-nav').classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';};document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('#mob-nav a').forEach(function(a){a.addEventListener('click',function(){o=false;document.getElementById('hbg').classList.remove('open');document.getElementById('mob-nav').classList.remove('open');document.body.style.overflow='';});});});}();
 </script>
+
+<div class="modal-overlay" id="week-modal" onclick="if(event.target===this)closeWeekModal()">
+  <div class="modal">
+    <div class="modal-top" id="wm-top"></div>
+    <div class="modal-head">
+      <div>
+        <div class="modal-tag" id="wm-tag"></div>
+        <div class="modal-title" id="wm-title"></div>
+        <div class="modal-date" id="wm-date"></div>
+      </div>
+      <button class="modal-x" onclick="closeWeekModal()">✕</button>
+    </div>
+    <div class="modal-body" id="wm-body"></div>
+  </div>
+</div>
+
 </body>
 </html>
