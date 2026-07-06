@@ -83,9 +83,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .round-detail{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:-2px;margin-bottom:4px}
 .round-detail.open{display:block}
 .round-detail-
-.round-detail-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700}
-.round-detail-meta{display:flex;gap:16px;flex-wrap:wrap}
-.rdm{font-size:12px;color:var(--text3)}
+
+
+
 .rdm strong{color:var(--text2);font-weight:500}
 .round-results-table{width:100%;border-collapse:collapse;margin-top:14px}
 .round-results-table th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
@@ -433,7 +433,7 @@ async function loadData(sheetIdArg, tabArg) {
   if (!sheetId) { if (statusEl) statusEl.textContent = 'Nastav Sheets ID na úvodní stránce.'; return; }
   if (statusEl) statusEl.textContent = 'Načítám…';
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`List "${tab}" nenalezen nebo Sheets není veřejný.`);
     const text = await res.text();

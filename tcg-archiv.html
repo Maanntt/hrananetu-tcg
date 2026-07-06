@@ -216,7 +216,7 @@ async function loadMasterMeta() {
 }
 
 async function fetchLeagueSheetData(sheetId, tabName) {
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=${Date.now()}`;
   const res = await fetch(url);
   if (!res.ok) return null;
   const text = await res.text();

@@ -401,7 +401,7 @@ async function loadLeagueAvg(l) {
     }
     if (!sheetId) return;
 
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
     const res = await fetch(url);
     if (!res.ok) return;
     const text = await res.text();

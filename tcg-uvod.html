@@ -495,7 +495,7 @@ async function loadLeagueTop3(l, season) {
     // Zajisti čisté ID bez URL části
     const sheetId = (saved.sheetId||'').replace(/[^a-zA-Z0-9_-]/g,'').substring(0,44);
     const tab = saved.tab || season;
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('HTTP ' + res.status);
 
@@ -807,7 +807,7 @@ async function loadStats(season) {
       const saved = JSON.parse(localStorage.getItem('hn_' + l.id) || 'null');
       if (!saved || !saved.sheetId) return;
 
-      const url = `https://docs.google.com/spreadsheets/d/${saved.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(season)}`;
+      const url = `https://docs.google.com/spreadsheets/d/${saved.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(season)}&_=${Date.now()}`;
       const res = await fetch(url);
       if (!res.ok) return;
       const text = await res.text();

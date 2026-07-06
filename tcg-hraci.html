@@ -226,7 +226,7 @@ function parseCSVLineSingle(line) {
 }
 
 async function fetchLeagueData(sheetId, tabName) {
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=${Date.now()}`;
   const res = await fetch(url);
   if (!res.ok) return [];
   const text = await res.text();
