@@ -124,7 +124,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js"></script>
+<script src="hn-data.js?v=3"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -172,6 +172,8 @@ function parseCzechDate(str) {
 }
 
 // Načti Ligy (sheetId mapping) a jen PROŠLÉ sezóny z Master Sheetu
+let podzimStart = null; // datum startu nejbližší podzimní sezóny (pro bránu "v přípravě")
+
 async function loadMasterMeta() {
   const [ligyRows, sezRows] = await Promise.all([
     fetchMasterTab('Ligy'),
@@ -186,9 +188,18 @@ async function loadMasterMeta() {
   });
 
   const today = new Date(); today.setHours(0,0,0,0);
-  seasonsList = sezRows.slice(1)
+  const allSeasons = sezRows.slice(1)
     .filter(r => r[0])
-    .map(r => ({ name: r[0].trim(), start: parseCzechDate(r[1]), end: parseCzechDate(r[2]) }))
+    .map(r => ({ name: r[0].trim(), start: parseCzechDate(r[1]), end: parseCzechDate(r[2]) }));
+
+  // Najdi start nejbližší (aktuální/budoucí) podzimní sezóny - archiv se "probudí" až tehdy
+  const podzimRow = allSeasons
+    .filter(s => plainText(s.name).includes('podzim') && s.start)
+    .sort((a, b) => a.start - b.start)
+    .find(s => s.end ? s.end >= today : true);
+  podzimStart = podzimRow ? podzimRow.start : null;
+
+  seasonsList = allSeasons
     .filter(s => s.end && s.end < today) // striktně proslé sezóny (skončily před dneškem)
     .sort((a, b) => b.start - a.start); // nejnovější první
 }
@@ -331,6 +342,19 @@ async function init() {
 
   try {
     await loadMasterMeta();
+
+    // Archiv je zatím v přípravě - spustí se až s příchodem podzimní sezóny
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (podzimStart && today < podzimStart) {
+      document.getElementById('season-tabs').innerHTML = '';
+      status.style.display = 'block';
+      status.innerHTML = `
+        <div style="padding:40px 20px">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:8px">V přípravě</div>
+          <div style="font-size:13px;color:var(--text3)">Archiv sezón se spustí s příchodem podzimní sezóny.</div>
+        </div>`;
+      return;
+    }
 
     if (!seasonsList.length) {
       status.textContent = 'Zatím nejsou k dispozici žádná archivní data. Jakmile skončí první sezóna, objeví se zde.';
