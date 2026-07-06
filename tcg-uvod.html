@@ -421,12 +421,20 @@ async function loadMasterSheet(sheetId) {
     }
   };
 
+  // Sloupce: Liga | Formát | 1.místo | 2.místo | 3.místo | 4.místo | 5-8.místo (sloučený)
+  // 5-8.místo se opakuje pro místa 5,6,7,8 (stejná odměna pro celou skupinu)
+  function buildPlaces(r) {
+    const p1 = (r[2]||'').trim(), p2 = (r[3]||'').trim(), p3 = (r[4]||'').trim(), p4 = (r[5]||'').trim();
+    const p58 = (r[6]||'').trim();
+    return [p1, p2, p3, p4, p58, p58, p58, p58];
+  }
+
   // Nejdřív "Všechny" pro každou ligu
   const allLeagueIds = Object.values(LEAGUE_NAME_MAP);
   cenyRows.slice(1).forEach(r => {
     const ligaName = (r[0]||'').trim();
-    const places = [r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9]].map(v => (v||'').trim());
     if (ligaName.toLowerCase() === 'všechny') {
+      const places = buildPlaces(r);
       allLeagueIds.forEach(id => applyRow(ensureLeague(id), r[1], places));
     }
   });
@@ -435,8 +443,7 @@ async function loadMasterSheet(sheetId) {
     const ligaName = (r[0]||'').trim();
     if (ligaName.toLowerCase() === 'všechny') return;
     const id = LEAGUE_NAME_MAP[ligaName.toLowerCase()];
-    const places = [r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9]].map(v => (v||'').trim());
-    if (id) applyRow(ensureLeague(id), r[1], places);
+    if (id) applyRow(ensureLeague(id), r[1], buildPlaces(r));
   });
   localStorage.setItem('hn_prizes', JSON.stringify(prizes));
 

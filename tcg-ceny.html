@@ -160,6 +160,89 @@ footer a{color:var(--pl);text-decoration:none}
 </footer>
 
 <script>
+const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
+
+const LEAGUE_NAME_MAP = {
+  'flesh and blood': 'fab', 'flesh & blood': 'fab',
+  'gundam': 'gd',
+  'mtg draft': 'mtgd',
+  'mtg modern': 'mtgm',
+  'mtg pauper': 'mtgpa',
+  'mtg premodern': 'mtgp',
+  'mtg standard': 'mtgstd',
+  'one piece': 'op',
+  'pokémon': 'pk', 'pokemon': 'pk',
+  'riftbound': 'rb',
+  'sorcery': 'so',
+  'yu-gi-oh!': 'ygo', 'yu-gi-oh': 'ygo', 'yugioh': 'ygo',
+};
+
+function parseCSVMaster(text) {
+  const rows = [];
+  for (const line of text.trim().split('\n')) {
+    if (!line.trim()) continue;
+    const cells = []; let cur = '', inQ = false;
+    for (const c of line) {
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+      else cur += c;
+    }
+    cells.push(cur.trim());
+    rows.push(cells);
+  }
+  return rows;
+}
+
+async function fetchMasterCenyTab() {
+  const url = `https://docs.google.com/spreadsheets/d/${MASTER_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Ceny')}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Nelze načíst Ceny z Master Sheetu');
+  const text = await res.text();
+  if (text.includes('google.visualization') || text.trim().startsWith('/*')) {
+    throw new Error('List "Ceny" nenalezen');
+  }
+  return parseCSVMaster(text);
+}
+
+function buildPlacesRow(r) {
+  const p1 = (r[2]||'').trim(), p2 = (r[3]||'').trim(), p3 = (r[4]||'').trim(), p4 = (r[5]||'').trim();
+  const p58 = (r[6]||'').trim();
+  return [p1, p2, p3, p4, p58, p58, p58, p58];
+}
+
+async function loadCenyFromMaster() {
+  try {
+    const cenyRows = await fetchMasterCenyTab();
+    const prizes = {};
+    const ensureLeague = (id) => { if (!prizes[id]) prizes[id] = { zeb: [], top4: [], top8: [] }; return prizes[id]; };
+    const applyRow = (target, format, places) => {
+      const fmt = (format||'').toUpperCase().trim();
+      if (fmt.includes('ŽEBŘÍČEK') || fmt === 'ZEBRICEK') target.zeb = places.slice(0, 3);
+      else if (fmt.includes('TOP4') || fmt.includes('TOP 4')) target.top4 = places.slice(0, 4);
+      else if (fmt.includes('TOP8') || fmt.includes('TOP 8')) target.top8 = places.slice(0, 8);
+    };
+
+    const allLeagueIds = Object.values(LEAGUE_NAME_MAP);
+    cenyRows.slice(1).forEach(r => {
+      const ligaName = (r[0]||'').trim();
+      if (ligaName.toLowerCase() === 'všechny') {
+        const places = buildPlacesRow(r);
+        allLeagueIds.forEach(id => applyRow(ensureLeague(id), r[1], places));
+      }
+    });
+    cenyRows.slice(1).forEach(r => {
+      const ligaName = (r[0]||'').trim();
+      if (ligaName.toLowerCase() === 'všechny') return;
+      const id = LEAGUE_NAME_MAP[ligaName.toLowerCase()];
+      if (id) applyRow(ensureLeague(id), r[1], buildPlacesRow(r));
+    });
+
+    localStorage.setItem('hn_prizes', JSON.stringify(prizes));
+  } catch(e) {
+    console.warn('Nelze načíst ceny z Master Sheetu, používám lokální cache:', e.message);
+  }
+}
+
 const LEAGUES = [
   {id:'fab',  code:'FAB',       name:'Flesh and Blood', color:'#4ade80'},
   {id:'gd',   code:'GUNDAM',    name:'Gundam',          color:'#fcd34d'},
@@ -180,8 +263,8 @@ const FORMAT_DEFS = [
     defaults:['Booster Box','4× Booster','2× Booster'] },
   { key:'top4', type:'TOP 4',    thresh:'průměr 8–12 hráčů',  places:4,
     defaults:['Booster Box','Booster Display','4× Booster','2× Booster'] },
-  { key:'top8', type:'TOP 8',    thresh:'průměr 13+ hráčů',   places:8,
-    defaults:['Booster Box','Booster Display','6× Booster','6× Booster','2× Booster','2× Booster','2× Booster','2× Booster'] },
+  { key:'top8', type:'TOP 8',    thresh:'průměr 13+ hráčů',   places:5,
+    defaults:['Booster Box','Booster Display','6× Booster','6× Booster','2× Booster'] },
 ];
 
 // avg → aktivní formát typ
@@ -339,11 +422,23 @@ function getFormatsForLeague(id) {
   return FORMAT_DEFS.map(def => {
     const saved = leaguePrizes[def.key] || [];
     const prizes = [];
-    for (let i = 0; i < def.places; i++) {
-      const val = (saved[i] || '').trim() || def.defaults[i] || '';
-      if (!val) continue;
-      prizes.push({ place: (i + 1) + '.', gold: i === 0, main: val });
+
+    if (def.key === 'top8') {
+      // Místa 1.–4. samostatně, 5.–8. sloučeně (odpovídá struktuře Sheetu)
+      for (let i = 0; i < 4; i++) {
+        const val = (saved[i] || '').trim() || def.defaults[i] || '';
+        if (val) prizes.push({ place: (i + 1) + '.', gold: i === 0, main: val });
+      }
+      const val58 = (saved[4] || '').trim() || def.defaults[4] || '';
+      if (val58) prizes.push({ place: '5.–8.', gold: false, main: val58 });
+    } else {
+      for (let i = 0; i < def.places; i++) {
+        const val = (saved[i] || '').trim() || def.defaults[i] || '';
+        if (!val) continue;
+        prizes.push({ place: (i + 1) + '.', gold: i === 0, main: val });
+      }
     }
+
     return { type: def.type, thresh: def.thresh, prizes };
   });
 }
@@ -370,6 +465,9 @@ function renderFmtCard(fmt, isActive) {
 async function init() {
   renderTabs();
   renderDetails();
+
+  // Načti ceny přímo z Master Sheetu (nezávisle na návštěvě Úvodu)
+  await loadCenyFromMaster();
 
   // Načti průměry ze Sheets
   await Promise.all(LEAGUES.map(l => loadLeagueAvg(l)));
