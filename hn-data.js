@@ -108,11 +108,16 @@ window.HN = (function () {
   }
 
   // ── Pravidlo "nejlepších X výsledků" ──
-  // 1-8 turnajů v sezóně → počítá se 7 nejlepších výsledků.
-  // 9 a více turnajů v sezóně → počítá se 8 nejlepších výsledků.
+  // 1-4 turnaje  → počítají se všechny (žádné škrtání)
+  // 5-6 turnajů  → počítají se 4 nejlepší výsledky
+  // 7-8 turnajů  → počítá se 6 nejlepších výsledků
+  // 9 a více     → počítá se 8 nejlepších výsledků
   // totalRounds = celkový počet ligových turnajů naplánovaných v sezóně (ne jen odehraných).
   function bestOfThreshold(totalRounds) {
-    return totalRounds >= 9 ? 8 : 7;
+    if (totalRounds >= 9) return 8;
+    if (totalRounds >= 7) return 6;
+    if (totalRounds >= 5) return 4;
+    return totalRounds;
   }
 
   // Spočítá celkové body hráče jako součet `threshold` nejlepších výsledků
