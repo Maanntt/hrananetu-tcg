@@ -124,7 +124,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=3"></script>
+<script src="hn-data.js?v=4"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -252,9 +252,11 @@ async function loadLeagueForSeason(league, seasonTab) {
   const dataRows = rows.slice(1).filter(r => r[0] && r[0].trim());
   if (!dataRows.length) return null;
 
+  const bestOfN = HN.bestOfThreshold(roundIdxs.length);
+
   const players = dataRows.map(r => ({
     name: r[0].trim(),
-    pts: parseFloat(r[pointsIdx]) || 0,
+    pts: HN.computeBestOfScore(roundIdxs.map(ri => parseFloat(r[ri]) || 0), bestOfN),
     topka: topkaIdx >= 0 && !isNaN(parseFloat(r[topkaIdx])) ? parseFloat(r[topkaIdx]) : null,
   })).sort((a,b) => b.pts - a.pts);
 

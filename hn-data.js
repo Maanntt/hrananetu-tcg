@@ -107,6 +107,21 @@ window.HN = (function () {
     else if (fmt.includes('TOP8') || fmt.includes('TOP 8')) target.top8 = places.slice(0, 8);
   }
 
+  // ── Pravidlo "nejlepších X výsledků" ──
+  // 1-8 turnajů v sezóně → počítá se 7 nejlepších výsledků.
+  // 9 a více turnajů v sezóně → počítá se 8 nejlepších výsledků.
+  // totalRounds = celkový počet ligových turnajů naplánovaných v sezóně (ne jen odehraných).
+  function bestOfThreshold(totalRounds) {
+    return totalRounds >= 9 ? 8 : 7;
+  }
+
+  // Spočítá celkové body hráče jako součet `threshold` nejlepších výsledků
+  // z pole bodů za jednotlivé turnaje (chybějící/neodehrané turnaje = 0, přirozeně vypadnou).
+  function computeBestOfScore(roundPoints, threshold) {
+    const sorted = [...roundPoints].sort((a, b) => b - a);
+    return sorted.slice(0, threshold).reduce((s, v) => s + v, 0);
+  }
+
   let _loadPromise = null;
 
   // ── Ochrana proti tichému fallbacku Google gviz API ──
@@ -265,5 +280,5 @@ window.HN = (function () {
     return text;
   }
 
-  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, load };
+  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, computeBestOfScore, load };
 })();

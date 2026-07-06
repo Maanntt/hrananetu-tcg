@@ -122,7 +122,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=3"></script>
+<script src="hn-data.js?v=4"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -223,20 +223,24 @@ async function fetchLeagueData(sheetId, tabName) {
     }
   }
 
-  let overrideIdx = -1;
+  let overrideIdx = -1, topkaIdx = -1;
   for (let i = effectiveLen - 1; i > pointsIdx; i--) {
     const h = plainText(headers[i]);
-    if (h.includes('poradi') || h.includes('override')) { overrideIdx = i; break; }
+    if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
+    if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
   }
-  const finaleIdx = overrideIdx >= 0 ? overrideIdx - 1 : effectiveLen - 1;
+  let finaleIdx = effectiveLen - 1;
+  while (finaleIdx === overrideIdx || finaleIdx === topkaIdx) finaleIdx--;
 
   const roundIdxs = [];
   for (let i = pointsIdx + 1; i < finaleIdx; i++) if (headers[i]) roundIdxs.push(i);
+  const bestOfN = HN.bestOfThreshold(roundIdxs.length);
 
   return rows.slice(1).map(row => {
     const name = (row[0] || '').trim();
     if (!name) return null;
-    const points = parseFloat(row[pointsIdx]) || 0;
+    const roundPts = roundIdxs.map(i => parseFloat(row[i]) || 0);
+    const points = HN.computeBestOfScore(roundPts, bestOfN);
     const played = roundIdxs.filter(i => parseFloat(row[i]) > 0).length;
     return { name, points, played };
   }).filter(Boolean);

@@ -295,7 +295,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=3"></script>
+<script src="hn-data.js?v=4"></script>
 <script>
 const LEAGUES = [
   {id:'fab', color:'#4ade80'},
@@ -369,22 +369,40 @@ async function loadLeagueTop3(l, season) {
 
     // Najdi sloupec "Body Celkově" - podle názvu, jinak podle pozice před prvním datem
     const header = rows[0];
+    let effectiveLen = header.length;
+    while (effectiveLen > 0 && !(header[effectiveLen - 1] || '').trim()) effectiveLen--;
+
     let pointsIdx = 1;
     let foundByName = false;
-    for (let i = 1; i < header.length; i++) {
+    for (let i = 1; i < effectiveLen; i++) {
       const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
       if (h.includes('body')) { pointsIdx = i; foundByName = true; break; }
     }
     if (!foundByName) {
-      for (let i = 1; i < header.length; i++) {
+      for (let i = 1; i < effectiveLen; i++) {
         if (/^\d{1,2}\.\s*\d{1,2}\.?$/.test((header[i]||'').trim())) { pointsIdx = Math.max(1, i-1); break; }
       }
     }
 
+    // Najdi override/Topka sloupce, ať nejsou omylem započítané jako kolo
+    let overrideIdx = -1, topkaIdx = -1;
+    for (let i = effectiveLen - 1; i > pointsIdx; i--) {
+      const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
+      if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
+    }
+    let finaleIdx = effectiveLen - 1;
+    while (finaleIdx === overrideIdx || finaleIdx === topkaIdx) finaleIdx--;
+
+    const roundIdxs = [];
+    for (let i = pointsIdx + 1; i < finaleIdx; i++) if (header[i]) roundIdxs.push(i);
+    const bestOfN = HN.bestOfThreshold(roundIdxs.length);
+
     const players = rows.slice(1)
       .map(r => {
         const name = (r[0]||'').replace(/^\"*|\"*$/g,'').trim();
-        const pts  = parseFloat((r[pointsIdx]||'').replace(/^\"*|\"*$/g,'').replace(/[^0-9.]/g,'')) || 0;
+        const roundPts = roundIdxs.map(ri => parseFloat((r[ri]||'').replace(/^\"*|\"*$/g,'').replace(/[^0-9.]/g,'')) || 0);
+        const pts = HN.computeBestOfScore(roundPts, bestOfN);
         return {name, pts};
       })
       .filter(p => p.name && p.name.length > 1 && isNaN(Number(p.name)))

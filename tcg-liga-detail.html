@@ -235,6 +235,7 @@ footer a{color:var(--pl);text-decoration:none}
           <div class="panel-title">Celkové pořadí</div>
           <div class="panel-badge" id="standings-badge">—</div>
         </div>
+        <div id="bestof-note" style="padding:10px 18px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:none"></div>
         <table class="standings-table" id="standings-table">
           <tbody id="standings-body">
             <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načti data ze Sheets.</td></tr>
@@ -250,7 +251,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=3"></script>
+<script src="hn-data.js?v=4"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -495,24 +496,30 @@ function parseSheets(text) {
     roundCols.push({idx: i, label: headers[i], date});
   }
 
+  // Práh "nejlepších X výsledků" podle celkového počtu turnajů v sezóně
+  const bestOfN = HN.bestOfThreshold(roundCols.length);
+
   // Hráči
   const players = [];
   lines.slice(1).forEach((line, i) => {
     const row = parseCSVLine(line);
     const name = (row[0] || '').trim();
     if (!name) return;
-    const total = parseFloat(row[pointsIdx]) || 0;
+    const sheetTotal = parseFloat(row[pointsIdx]) || 0;
     const isFinalist = /fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1';
     const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
     // Počet odehraných turnajů = kolik kol má hráč hodnotu > 0
     const playedCount = rounds.filter(r => r > 0).length;
+    // Celkové body = součet `bestOfN` nejlepších výsledků (pravidlo "nejlepších X výsledků")
+    const total = HN.computeBestOfScore(rounds, bestOfN);
+    const droppedCount = Math.max(0, playedCount - bestOfN);
     // Ruční override pořadí (vyplní organizátor při shodě bodů i turnajů)
     const overrideRaw = overrideIdx >= 0 ? parseFloat(row[overrideIdx]) : NaN;
     const override = isNaN(overrideRaw) ? null : overrideRaw;
     // Sloupec "Topka" = ruční konečné pořadí ve finálovém turnaji (1-4 nebo 1-8)
     const topkaRaw = topkaIdx >= 0 ? parseFloat(row[topkaIdx]) : NaN;
     const topka = isNaN(topkaRaw) ? null : topkaRaw;
-    players.push({name, total, rounds, playedCount, override, isFinalist, topka, color: AV_COLORS[i % AV_COLORS.length]});
+    players.push({name, total, sheetTotal, rounds, playedCount, droppedCount, override, isFinalist, topka, color: AV_COLORS[i % AV_COLORS.length]});
   });
 
   // Řazení: 1) body sestupně, 2) méně odehraných turnajů výš, 3) ruční override
@@ -543,12 +550,12 @@ function parseSheets(text) {
     avgPlayers = count > 0 ? sum / count : 0;
   }
 
-  return {players, roundCols, playedRounds, totalRounds: roundCols.length, avgPlayers};
+  return {players, roundCols, playedRounds, totalRounds: roundCols.length, avgPlayers, bestOfN};
 }
 
 /* ── Render All ── */
 function renderAll(data) {
-  const {players, roundCols, playedRounds, totalRounds, avgPlayers} = data;
+  const {players, roundCols, playedRounds, totalRounds, avgPlayers, bestOfN} = data;
   const today = new Date(); today.setHours(0,0,0,0);
   const fmt = finaleFormat(avgPlayers);
 
@@ -563,6 +570,13 @@ function renderAll(data) {
 
   // Standings badge
   document.getElementById('standings-badge').textContent = `Kolo ${playedRounds}/${totalRounds}`;
+
+  // Pravidlo "nejlepších X výsledků" - vysvětlivka nad tabulkou
+  const bestofNote = document.getElementById('bestof-note');
+  if (bestofNote) {
+    bestofNote.style.display = 'block';
+    bestofNote.innerHTML = `📊 Do celkových bodů se počítá <b style="color:var(--pl)">${bestOfN} nejlepších výsledků</b> ze ${totalRounds} turnajů sezóny (${totalRounds <= 8 ? '1–8 turnajů → 7 nejlepších' : '9 a více turnajů → 8 nejlepších'}).`;
+  }
 
   renderRounds(roundCols, players, today);
 
@@ -800,7 +814,10 @@ function renderStandingsRows(players, topN, showAll) {
         <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="st-name">${p.name}</a>
         ${badge}
       </div></td>
-      <td style="text-align:right"><span class="st-pts">${p.total}</span></td>
+      <td style="text-align:right">
+        <span class="st-pts">${p.total}</span>
+        ${p.droppedCount > 0 ? `<div style="font-size:9px;color:var(--text3);margin-top:1px" title="Nejlepších ${p.playedCount - p.droppedCount} z ${p.playedCount} odehraných turnajů">${p.playedCount - p.droppedCount}/${p.playedCount} turnajů</div>` : ''}
+      </td>
     </tr>`;
   }).join('')
   + (hasMore ? `<tr id="standings-toggle-row">
