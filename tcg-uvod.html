@@ -272,629 +272,198 @@ footer a{color:var(--pl);text-decoration:none}
 
 <div id="admin-area" style="text-align:center;padding:12px 0 4px">
   <span id="admin-trigger" onclick="adminAuth()" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;opacity:.3;transition:opacity .3s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.3'" title=""></span>
-  <div class="setup-panel" id="setup-panel" style="text-align:left;margin:16px 28px 0;max-width:1280px;margin-left:auto;margin-right:auto">
-    <div class="setup-label">Google Calendar</div>
-    <div class="setup-row" style="grid-column:1/-1;margin-bottom:8px">
-      <div class="setup-lbl"><span class="setup-dot" style="background:var(--purple)"></span>API Key</div>
-      <input class="setup-inp" id="cfg-api-key" type="password" placeholder="AIzaSy..."/>
+  <div class="setup-panel" id="setup-panel" style="text-align:left;margin:16px 28px 0;max-width:640px;margin-left:auto;margin-right:auto">
+    <div class="setup-label">Master Config Sheet</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px">Jeden centrální Google Sheet obsahuje vše: Sheets ID lig, ceny, Google Calendar API a sezóny.</div>
+    <div class="setup-row" style="grid-column:1/-1;margin-bottom:14px">
+      <div class="setup-lbl"><span class="setup-dot" style="background:var(--gold)"></span>Master Sheet ID nebo odkaz</div>
+      <input class="setup-inp" id="master-sheet-id" placeholder="Vlož ID nebo celý odkaz na Google Sheet..."/>
     </div>
-    <div class="setup-row" style="grid-column:1/-1;margin-bottom:16px">
-      <div class="setup-lbl"><span class="setup-dot" style="background:var(--purple)"></span>Calendar ID</div>
-      <input class="setup-inp" id="cfg-cal-id" placeholder="abc@group.calendar.google.com"/>
-    </div>
-    <div class="setup-label">Google Sheets — Ligy</div>
-          <div class="setup-grid">
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#4ade80"></span>Flesh and Blood</div><input class="setup-inp" id="sid-fab" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fcd34d"></span>Gundam</div><input class="setup-inp" id="sid-gd" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#b39ddb"></span>MTG Draft</div><input class="setup-inp" id="sid-mtgd" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#9b4dff"></span>MTG Modern</div><input class="setup-inp" id="sid-mtgm" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#a78bfa"></span>MTG Pauper</div><input class="setup-inp" id="sid-mtgpa" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c51df5"></span>MTG Premodern</div><input class="setup-inp" id="sid-mtgp" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#f87171"></span>One Piece</div><input class="setup-inp" id="sid-op" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#ffcb05"></span>Pokémon</div><input class="setup-inp" id="sid-pk" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#7fb3f5"></span>Riftbound</div><input class="setup-inp" id="sid-rb" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#c084fc"></span>Sorcery</div><input class="setup-inp" id="sid-so" placeholder="Sheets ID..."/></div>
-      <div class="setup-row"><div class="setup-lbl"><span class="setup-dot" style="background:#fb923c"></span>Yu-Gi-Oh!</div><input class="setup-inp" id="sid-ygo" placeholder="Sheets ID..."/></div>
-    </div>
-    <div class="setup-bottom">
-      <select class="setup-sel" id="setup-season">
-        <option value="Léto 2026">Letní sezóna 2026</option>
-        <option value="Jaro 2026">Jarní sezóna 2026</option>
-        <option value="Podzim 2026">Podzimní sezóna 2026</option>
-        <option value="Zima 2026">Zimní sezóna 2026</option>
-        <option value="Zima 2025">Zimní sezóna 2025</option>
-      </select>
-
-    
-    <div class="setup-label" style="margin-top:16px">Ceny & Odměny</div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;grid-column:1/-1" id="prize-tabs">
-  <button onclick="showPrizeTab('fab')" id="ptab-fab" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin-right:5px"></span>Flesh and Blood</button>
-  <button onclick="showPrizeTab('gd')" id="ptab-gd" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#fcd34d;margin-right:5px"></span>Gundam</button>
-  <button onclick="showPrizeTab('mtgcmd')" id="ptab-mtgcmd" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#818cf8;margin-right:5px"></span>MTG Commander</button>
-  <button onclick="showPrizeTab('mtgd')" id="ptab-mtgd" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#b39ddb;margin-right:5px"></span>MTG Draft</button>
-  <button onclick="showPrizeTab('mtgm')" id="ptab-mtgm" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#9b4dff;margin-right:5px"></span>MTG Modern</button>
-  <button onclick="showPrizeTab('mtgpa')" id="ptab-mtgpa" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#a78bfa;margin-right:5px"></span>MTG Pauper</button>
-  <button onclick="showPrizeTab('mtgpre')" id="ptab-mtgpre" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f472b6;margin-right:5px"></span>MTG Prerelease</button>
-  <button onclick="showPrizeTab('mtgp')" id="ptab-mtgp" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#c51df5;margin-right:5px"></span>MTG Premodern</button>
-  <button onclick="showPrizeTab('mtgstd')" id="ptab-mtgstd" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22d3ee;margin-right:5px"></span>MTG Standard</button>
-  <button onclick="showPrizeTab('op')" id="ptab-op" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f87171;margin-right:5px"></span>One Piece</button>
-  <button onclick="showPrizeTab('pk')" id="ptab-pk" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffcb05;margin-right:5px"></span>Pokémon</button>
-  <button onclick="showPrizeTab('rb')" id="ptab-rb" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#7fb3f5;margin-right:5px"></span>Riftbound</button>
-  <button onclick="showPrizeTab('so')" id="ptab-so" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#c084fc;margin-right:5px"></span>Sorcery</button>
-  <button onclick="showPrizeTab('ygo')" id="ptab-ygo" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;transition:all .15s"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#fb923c;margin-right:5px"></span>Yu-Gi-Oh!</button>
-</div>
-
-    <div style="grid-column:1/-1" id="prize-content">
-  <div id="prize-panel-fab" style="display:block">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">Flesh and Blood</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-fab-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-fab-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-fab-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-fab-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-gd" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">Gundam</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-gd-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-gd-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-gd-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-gd-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgcmd" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Commander</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgcmd-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgcmd-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgcmd-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgcmd-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgd" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Draft</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgd-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgd-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgd-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgd-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgm" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Modern</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgm-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgm-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgm-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgm-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgpa" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Pauper</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgpa-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgpa-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgpa-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpa-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgpre" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Prerelease</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgpre-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgpre-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgpre-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgpre-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgp" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Premodern</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgp-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgp-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgp-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgp-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-mtgstd" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">MTG Standard</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-mtgstd-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-mtgstd-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-mtgstd-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-mtgstd-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-op" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">One Piece</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-op-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-op-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-op-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-op-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-pk" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">Pokémon</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-pk-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-pk-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-pk-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-pk-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-rb" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">Riftbound</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-rb-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-rb-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-rb-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-rb-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-so" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">Sorcery</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-so-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-so-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-so-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-so-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
-  </div>
-  <div id="prize-panel-ygo" style="display:none">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Ceny pro ligu <strong style="color:var(--text)">Yu-Gi-Oh!</strong> — ponech prázdné pro výchozí hodnoty</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Žebříček <span style="color:var(--text3);font-weight:400">(&lt;8)</span></div>
-        <input class="setup-inp" id="prize-ygo-zeb-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-zeb-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-zeb-3" placeholder="3. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 4 <span style="color:var(--text3);font-weight:400">(8–12)</span></div>
-        <input class="setup-inp" id="prize-ygo-top4-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-top4-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-top4-34" placeholder="3.–4. místo">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">TOP 8 <span style="color:var(--text3);font-weight:400">(13+)</span></div>
-        <input class="setup-inp" id="prize-ygo-top8-1" placeholder="1. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-top8-2" placeholder="2. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-top8-34" placeholder="3.–4. místo" style="margin-bottom:5px">
-        <input class="setup-inp" id="prize-ygo-top8-58" placeholder="5.–8. místo">
-      </div>
-    </div>
+    <button class="setup-btn" onclick="saveAndLoad()">Načíst a uložit</button>
+    <span class="setup-status" id="setup-status"></span>
   </div>
 </div>
 
-
-      <button class="setup-btn" onclick="saveAndLoad()">Uložit a načíst data</button>
-      <span class="setup-status" id="setup-status"></span>
-    </div>
-  </div>
-
-</div>
 <footer>
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
 <script>
 const LEAGUES = [
-  {id:'fab', color:'#4ade80', sheet:'Flesh and Blood liga'},
-  {id:'gd', color:'#fcd34d', sheet:'Gundam liga'},
-  {id:'mtgd', color:'#b39ddb', sheet:'MTG Draft liga'},
-  {id:'mtgm', color:'#9b4dff', sheet:'MTG Modern liga'},
-  {id:'mtgpa', color:'#a78bfa', sheet:'MTG Pauper liga'},
-  {id:'mtgp', color:'#c51df5', sheet:'MTG Premodern liga'},
-  {id:'op', color:'#f87171', sheet:'One Piece liga'},
-  {id:'pk', color:'#ffcb05', sheet:'Pokémon liga'},
-  {id:'rb', color:'#7fb3f5', sheet:'Riftbound liga'},
-  {id:'so', color:'#c084fc', sheet:'Sorcery liga'},
-  {id:'ygo', color:'#fb923c', sheet:'Yu-Gi-Oh! liga'},
+  {id:'fab', color:'#4ade80'},
+  {id:'gd', color:'#fcd34d'},
+  {id:'mtgd', color:'#b39ddb'},
+  {id:'mtgm', color:'#9b4dff'},
+  {id:'mtgpa', color:'#a78bfa'},
+  {id:'mtgp', color:'#c51df5'},
+  {id:'mtgstd', color:'#22d3ee'},
+  {id:'op', color:'#f87171'},
+  {id:'pk', color:'#ffcb05'},
+  {id:'rb', color:'#7fb3f5'},
+  {id:'so', color:'#c084fc'},
+  {id:'ygo', color:'#fb923c'},
 ];
 
 // ── Načti uložené hodnoty do inputů ──
 
 
-function loadSaved() {
-  // Google Calendar
-  try {
-    const cal = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}');
-    const ak = document.getElementById('cfg-api-key');
-    const ci = document.getElementById('cfg-cal-id');
-    if (ak && cal.apiKey) ak.value = cal.apiKey;
-    if (ci && cal.calId)  ci.value = cal.calId;
-  } catch(e) {}
+// ── Mapování názvů lig (v master sheetu) na ID ──
+const LEAGUE_NAME_MAP = {
+  'flesh and blood': 'fab', 'flesh & blood': 'fab',
+  'gundam': 'gd',
+  'mtg draft': 'mtgd',
+  'mtg modern': 'mtgm',
+  'mtg pauper': 'mtgpa',
+  'mtg premodern': 'mtgp',
+  'mtg standard': 'mtgstd',
+  'one piece': 'op',
+  'pokémon': 'pk', 'pokemon': 'pk',
+  'riftbound': 'rb',
+  'sorcery': 'so',
+  'yu-gi-oh!': 'ygo', 'yu-gi-oh': 'ygo', 'yugioh': 'ygo',
+};
 
-  // Ligy Sheets IDs
-  LEAGUES.forEach(l => {
-    const el = document.getElementById('sid-' + l.id);
-    if (!el) return;
-    try {
-      const s = localStorage.getItem('hn_' + l.id);
-      if (s) el.value = JSON.parse(s).sheetId || '';
-    } catch(e) {}
-  });
-  try {
-    const cfg = JSON.parse(localStorage.getItem('hn_cfg') || '{}');
-    if (cfg.season) document.getElementById('setup-season').value = cfg.season;
-  } catch(e) {}
-
-  // Načti aktivní sezónu z config
-  try {
-    const active = JSON.parse(localStorage.getItem('hn_active_season') || 'null');
-    if (active) {
-      const el = document.getElementById('hero-label');
-      if (el) el.textContent = active.name;
-    }
-  } catch(e) {}
-
-  // Načti ceny per liga
-  try {
-    const p = JSON.parse(localStorage.getItem('hn_prizes') || '{}');
-    const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-    set('prize-fab-zeb-1',p['fab']?.zeb?.p1); set('prize-fab-zeb-2',p['fab']?.zeb?.p2); set('prize-fab-zeb-3',p['fab']?.zeb?.p3);
-    set('prize-fab-top4-1',p['fab']?.top4?.p1); set('prize-fab-top4-2',p['fab']?.top4?.p2); set('prize-fab-top4-34',p['fab']?.top4?.p34);
-    set('prize-fab-top8-1',p['fab']?.top8?.p1); set('prize-fab-top8-2',p['fab']?.top8?.p2); set('prize-fab-top8-34',p['fab']?.top8?.p34); set('prize-fab-top8-58',p['fab']?.top8?.p58);
-    set('prize-gd-zeb-1',p['gd']?.zeb?.p1); set('prize-gd-zeb-2',p['gd']?.zeb?.p2); set('prize-gd-zeb-3',p['gd']?.zeb?.p3);
-    set('prize-gd-top4-1',p['gd']?.top4?.p1); set('prize-gd-top4-2',p['gd']?.top4?.p2); set('prize-gd-top4-34',p['gd']?.top4?.p34);
-    set('prize-gd-top8-1',p['gd']?.top8?.p1); set('prize-gd-top8-2',p['gd']?.top8?.p2); set('prize-gd-top8-34',p['gd']?.top8?.p34); set('prize-gd-top8-58',p['gd']?.top8?.p58);
-    set('prize-mtgcmd-zeb-1',p['mtgcmd']?.zeb?.p1); set('prize-mtgcmd-zeb-2',p['mtgcmd']?.zeb?.p2); set('prize-mtgcmd-zeb-3',p['mtgcmd']?.zeb?.p3);
-    set('prize-mtgcmd-top4-1',p['mtgcmd']?.top4?.p1); set('prize-mtgcmd-top4-2',p['mtgcmd']?.top4?.p2); set('prize-mtgcmd-top4-34',p['mtgcmd']?.top4?.p34);
-    set('prize-mtgcmd-top8-1',p['mtgcmd']?.top8?.p1); set('prize-mtgcmd-top8-2',p['mtgcmd']?.top8?.p2); set('prize-mtgcmd-top8-34',p['mtgcmd']?.top8?.p34); set('prize-mtgcmd-top8-58',p['mtgcmd']?.top8?.p58);
-    set('prize-mtgd-zeb-1',p['mtgd']?.zeb?.p1); set('prize-mtgd-zeb-2',p['mtgd']?.zeb?.p2); set('prize-mtgd-zeb-3',p['mtgd']?.zeb?.p3);
-    set('prize-mtgd-top4-1',p['mtgd']?.top4?.p1); set('prize-mtgd-top4-2',p['mtgd']?.top4?.p2); set('prize-mtgd-top4-34',p['mtgd']?.top4?.p34);
-    set('prize-mtgd-top8-1',p['mtgd']?.top8?.p1); set('prize-mtgd-top8-2',p['mtgd']?.top8?.p2); set('prize-mtgd-top8-34',p['mtgd']?.top8?.p34); set('prize-mtgd-top8-58',p['mtgd']?.top8?.p58);
-    set('prize-mtgm-zeb-1',p['mtgm']?.zeb?.p1); set('prize-mtgm-zeb-2',p['mtgm']?.zeb?.p2); set('prize-mtgm-zeb-3',p['mtgm']?.zeb?.p3);
-    set('prize-mtgm-top4-1',p['mtgm']?.top4?.p1); set('prize-mtgm-top4-2',p['mtgm']?.top4?.p2); set('prize-mtgm-top4-34',p['mtgm']?.top4?.p34);
-    set('prize-mtgm-top8-1',p['mtgm']?.top8?.p1); set('prize-mtgm-top8-2',p['mtgm']?.top8?.p2); set('prize-mtgm-top8-34',p['mtgm']?.top8?.p34); set('prize-mtgm-top8-58',p['mtgm']?.top8?.p58);
-    set('prize-mtgpa-zeb-1',p['mtgpa']?.zeb?.p1); set('prize-mtgpa-zeb-2',p['mtgpa']?.zeb?.p2); set('prize-mtgpa-zeb-3',p['mtgpa']?.zeb?.p3);
-    set('prize-mtgpa-top4-1',p['mtgpa']?.top4?.p1); set('prize-mtgpa-top4-2',p['mtgpa']?.top4?.p2); set('prize-mtgpa-top4-34',p['mtgpa']?.top4?.p34);
-    set('prize-mtgpa-top8-1',p['mtgpa']?.top8?.p1); set('prize-mtgpa-top8-2',p['mtgpa']?.top8?.p2); set('prize-mtgpa-top8-34',p['mtgpa']?.top8?.p34); set('prize-mtgpa-top8-58',p['mtgpa']?.top8?.p58);
-    set('prize-mtgpre-zeb-1',p['mtgpre']?.zeb?.p1); set('prize-mtgpre-zeb-2',p['mtgpre']?.zeb?.p2); set('prize-mtgpre-zeb-3',p['mtgpre']?.zeb?.p3);
-    set('prize-mtgpre-top4-1',p['mtgpre']?.top4?.p1); set('prize-mtgpre-top4-2',p['mtgpre']?.top4?.p2); set('prize-mtgpre-top4-34',p['mtgpre']?.top4?.p34);
-    set('prize-mtgpre-top8-1',p['mtgpre']?.top8?.p1); set('prize-mtgpre-top8-2',p['mtgpre']?.top8?.p2); set('prize-mtgpre-top8-34',p['mtgpre']?.top8?.p34); set('prize-mtgpre-top8-58',p['mtgpre']?.top8?.p58);
-    set('prize-mtgp-zeb-1',p['mtgp']?.zeb?.p1); set('prize-mtgp-zeb-2',p['mtgp']?.zeb?.p2); set('prize-mtgp-zeb-3',p['mtgp']?.zeb?.p3);
-    set('prize-mtgp-top4-1',p['mtgp']?.top4?.p1); set('prize-mtgp-top4-2',p['mtgp']?.top4?.p2); set('prize-mtgp-top4-34',p['mtgp']?.top4?.p34);
-    set('prize-mtgp-top8-1',p['mtgp']?.top8?.p1); set('prize-mtgp-top8-2',p['mtgp']?.top8?.p2); set('prize-mtgp-top8-34',p['mtgp']?.top8?.p34); set('prize-mtgp-top8-58',p['mtgp']?.top8?.p58);
-    set('prize-mtgstd-zeb-1',p['mtgstd']?.zeb?.p1); set('prize-mtgstd-zeb-2',p['mtgstd']?.zeb?.p2); set('prize-mtgstd-zeb-3',p['mtgstd']?.zeb?.p3);
-    set('prize-mtgstd-top4-1',p['mtgstd']?.top4?.p1); set('prize-mtgstd-top4-2',p['mtgstd']?.top4?.p2); set('prize-mtgstd-top4-34',p['mtgstd']?.top4?.p34);
-    set('prize-mtgstd-top8-1',p['mtgstd']?.top8?.p1); set('prize-mtgstd-top8-2',p['mtgstd']?.top8?.p2); set('prize-mtgstd-top8-34',p['mtgstd']?.top8?.p34); set('prize-mtgstd-top8-58',p['mtgstd']?.top8?.p58);
-    set('prize-op-zeb-1',p['op']?.zeb?.p1); set('prize-op-zeb-2',p['op']?.zeb?.p2); set('prize-op-zeb-3',p['op']?.zeb?.p3);
-    set('prize-op-top4-1',p['op']?.top4?.p1); set('prize-op-top4-2',p['op']?.top4?.p2); set('prize-op-top4-34',p['op']?.top4?.p34);
-    set('prize-op-top8-1',p['op']?.top8?.p1); set('prize-op-top8-2',p['op']?.top8?.p2); set('prize-op-top8-34',p['op']?.top8?.p34); set('prize-op-top8-58',p['op']?.top8?.p58);
-    set('prize-pk-zeb-1',p['pk']?.zeb?.p1); set('prize-pk-zeb-2',p['pk']?.zeb?.p2); set('prize-pk-zeb-3',p['pk']?.zeb?.p3);
-    set('prize-pk-top4-1',p['pk']?.top4?.p1); set('prize-pk-top4-2',p['pk']?.top4?.p2); set('prize-pk-top4-34',p['pk']?.top4?.p34);
-    set('prize-pk-top8-1',p['pk']?.top8?.p1); set('prize-pk-top8-2',p['pk']?.top8?.p2); set('prize-pk-top8-34',p['pk']?.top8?.p34); set('prize-pk-top8-58',p['pk']?.top8?.p58);
-    set('prize-rb-zeb-1',p['rb']?.zeb?.p1); set('prize-rb-zeb-2',p['rb']?.zeb?.p2); set('prize-rb-zeb-3',p['rb']?.zeb?.p3);
-    set('prize-rb-top4-1',p['rb']?.top4?.p1); set('prize-rb-top4-2',p['rb']?.top4?.p2); set('prize-rb-top4-34',p['rb']?.top4?.p34);
-    set('prize-rb-top8-1',p['rb']?.top8?.p1); set('prize-rb-top8-2',p['rb']?.top8?.p2); set('prize-rb-top8-34',p['rb']?.top8?.p34); set('prize-rb-top8-58',p['rb']?.top8?.p58);
-    set('prize-so-zeb-1',p['so']?.zeb?.p1); set('prize-so-zeb-2',p['so']?.zeb?.p2); set('prize-so-zeb-3',p['so']?.zeb?.p3);
-    set('prize-so-top4-1',p['so']?.top4?.p1); set('prize-so-top4-2',p['so']?.top4?.p2); set('prize-so-top4-34',p['so']?.top4?.p34);
-    set('prize-so-top8-1',p['so']?.top8?.p1); set('prize-so-top8-2',p['so']?.top8?.p2); set('prize-so-top8-34',p['so']?.top8?.p34); set('prize-so-top8-58',p['so']?.top8?.p58);
-    set('prize-ygo-zeb-1',p['ygo']?.zeb?.p1); set('prize-ygo-zeb-2',p['ygo']?.zeb?.p2); set('prize-ygo-zeb-3',p['ygo']?.zeb?.p3);
-    set('prize-ygo-top4-1',p['ygo']?.top4?.p1); set('prize-ygo-top4-2',p['ygo']?.top4?.p2); set('prize-ygo-top4-34',p['ygo']?.top4?.p34);
-    set('prize-ygo-top8-1',p['ygo']?.top8?.p1); set('prize-ygo-top8-2',p['ygo']?.top8?.p2); set('prize-ygo-top8-34',p['ygo']?.top8?.p34); set('prize-ygo-top8-58',p['ygo']?.top8?.p58);
-  } catch(e) {}
+function extractSheetId(raw) {
+  const match = (raw||'').match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : (raw||'').replace(/[^a-zA-Z0-9_-]/g,'').trim();
 }
 
-// ── Ulož a načti data ──
-async function saveAndLoad() {
-  const season = document.getElementById('setup-season').value;
-  const status = document.getElementById('setup-status');
-  if (status) status.textContent = 'Ukládám…';
+function parseCzechDate(str) {
+  const m = (str||'').trim().match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/);
+  if (!m) return null;
+  return new Date(parseInt(m[3]), parseInt(m[2])-1, parseInt(m[1]));
+}
 
-  // Ulož Google Calendar API
-  const apiKeyEl = document.getElementById('cfg-api-key');
-  const calIdEl  = document.getElementById('cfg-cal-id');
-  if (apiKeyEl && calIdEl) {
-    const apiKey = apiKeyEl.value.trim();
-    const calId  = calIdEl.value.trim();
-    if (apiKey || calId) {
-      // Načti existující a updatuj
-      let existing = {};
-      try { existing = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
-      localStorage.setItem('hrananetu_cfg', JSON.stringify({
-        apiKey: apiKey || existing.apiKey || '',
-        calId:  calId  || existing.calId  || '',
-      }));
+function determineActiveSeason(seasonRows) {
+  // seasonRows: [[Sezóna, Začátek, Konec], ...]
+  const today = new Date(); today.setHours(0,0,0,0);
+  for (const row of seasonRows) {
+    const start = parseCzechDate(row[1]);
+    const end   = parseCzechDate(row[2]);
+    if (start && end && today >= start && today <= end) return row[0];
+  }
+  // Fallback - nejbližší budoucí sezóna, jinak poslední v seznamu
+  const future = seasonRows
+    .map(r => ({ name: r[0], start: parseCzechDate(r[1]) }))
+    .filter(r => r.start && r.start > today)
+    .sort((a,b) => a.start - b.start);
+  if (future.length) return future[0].name;
+  return seasonRows.length ? seasonRows[seasonRows.length-1][0] : null;
+}
+
+// ── Master Sheet loader ──
+async function fetchMasterTab(sheetId, tabName) {
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Nelze načíst list "' + tabName + '"');
+  const text = await res.text();
+  if (text.includes('google.visualization') || text.trim().startsWith('/*')) {
+    throw new Error('List "' + tabName + '" nenalezen v Master Sheetu');
+  }
+  return parseCSV(text);
+}
+
+async function loadMasterSheet(sheetId) {
+  const [ligyRows, cenyRows, kalRows, sezRows] = await Promise.all([
+    fetchMasterTab(sheetId, 'Ligy'),
+    fetchMasterTab(sheetId, 'Ceny'),
+    fetchMasterTab(sheetId, 'Kalendar'),
+    fetchMasterTab(sheetId, 'Sezony'),
+  ]);
+
+  // ── Sezóny → aktivní sezóna ──
+  const seasonData = sezRows.slice(1).filter(r => r[0]);
+  const activeSeason = determineActiveSeason(seasonData) || 'Léto 2026';
+  localStorage.setItem('hn_cfg', JSON.stringify({season: activeSeason}));
+
+  // ── Kalendář API ──
+  const kal = {};
+  kalRows.slice(1).forEach(r => { if (r[0]) kal[r[0].trim()] = (r[1]||'').trim(); });
+  if (kal['API Key'] || kal['Calendar ID']) {
+    localStorage.setItem('hrananetu_cfg', JSON.stringify({
+      apiKey: kal['API Key'] || '',
+      calId:  kal['Calendar ID'] || '',
+    }));
+  }
+
+  // ── Ligy → Sheets ID pro každou ligu ──
+  ligyRows.slice(1).forEach(r => {
+    const id = (r[0]||'').trim();
+    const sid = (r[2]||'').trim();
+    if (id && sid) {
+      localStorage.setItem('hn_' + id, JSON.stringify({sheetId: sid, tab: activeSeason}));
     }
-  }
-
-  // Ulož Config Sheet ID
-  const configEl = document.getElementById('sid-config');
-  if (configEl && configEl.value.trim()) {
-    const raw = configEl.value.trim();
-    const match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    const cid = match ? match[1] : raw.replace(/[^a-zA-Z0-9_-]/g,'');
-    saveConfigSheetId(cid);
-  }
-
-  // Ulož Sheets ID každé ligy
-  LEAGUES.forEach(l => {
-    const el = document.getElementById('sid-' + l.id);
-    if (!el || !el.value.trim()) return;
-    const raw = el.value.trim();
-    const match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    const sheetId = match ? match[1] : raw.replace(/[^a-zA-Z0-9_-]/g,'').substring(0,44);
-    if (sheetId) localStorage.setItem('hn_' + l.id, JSON.stringify({sheetId, tab: season}));
   });
-  localStorage.setItem('hn_cfg', JSON.stringify({season}));
 
-  // Ulož ceny pro každou ligu
+  // ── Ceny → per liga, "Všechny" jako fallback ──
   const prizes = {};
-  prizes['fab'] = {
-    zeb:  { p1:document.getElementById('prize-fab-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-fab-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-fab-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-fab-top4-1')?.value.trim()||'', p2:document.getElementById('prize-fab-top4-2')?.value.trim()||'', p34:document.getElementById('prize-fab-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-fab-top8-1')?.value.trim()||'', p2:document.getElementById('prize-fab-top8-2')?.value.trim()||'', p34:document.getElementById('prize-fab-top8-34')?.value.trim()||'', p58:document.getElementById('prize-fab-top8-58')?.value.trim()||'' },
+  const ensureLeague = (id) => {
+    if (!prizes[id]) prizes[id] = { zeb:{}, top4:{}, top8:{} };
+    return prizes[id];
   };
-  prizes['gd'] = {
-    zeb:  { p1:document.getElementById('prize-gd-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-gd-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-gd-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-gd-top4-1')?.value.trim()||'', p2:document.getElementById('prize-gd-top4-2')?.value.trim()||'', p34:document.getElementById('prize-gd-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-gd-top8-1')?.value.trim()||'', p2:document.getElementById('prize-gd-top8-2')?.value.trim()||'', p34:document.getElementById('prize-gd-top8-34')?.value.trim()||'', p58:document.getElementById('prize-gd-top8-58')?.value.trim()||'' },
+  const applyRow = (target, format, c,d,e,f) => {
+    const fmt = (format||'').toUpperCase().trim();
+    if (fmt.includes('ŽEBŘÍČEK') || fmt === 'ZEBRICEK') {
+      target.zeb = { p1:c||'', p2:d||'', p3:e||'' };
+    } else if (fmt.includes('TOP4') || fmt.includes('TOP 4')) {
+      target.top4 = { p1:c||'', p2:d||'', p34:e||'' };
+    } else if (fmt.includes('TOP8') || fmt.includes('TOP 8')) {
+      target.top8 = { p1:c||'', p2:d||'', p34:e||'', p58:f||'' };
+    }
   };
-  prizes['mtgcmd'] = {
-    zeb:  { p1:document.getElementById('prize-mtgcmd-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgcmd-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgcmd-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgcmd-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgcmd-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgcmd-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgcmd-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgcmd-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgcmd-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgcmd-top8-58')?.value.trim()||'' },
-  };
-  prizes['mtgd'] = {
-    zeb:  { p1:document.getElementById('prize-mtgd-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgd-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgd-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgd-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgd-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgd-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgd-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgd-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgd-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgd-top8-58')?.value.trim()||'' },
-  };
-  prizes['mtgm'] = {
-    zeb:  { p1:document.getElementById('prize-mtgm-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgm-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgm-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgm-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgm-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgm-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgm-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgm-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgm-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgm-top8-58')?.value.trim()||'' },
-  };
-  prizes['mtgpa'] = {
-    zeb:  { p1:document.getElementById('prize-mtgpa-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgpa-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgpa-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgpa-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgpa-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgpa-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgpa-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgpa-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgpa-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgpa-top8-58')?.value.trim()||'' },
-  };
-  prizes['mtgpre'] = {
-    zeb:  { p1:document.getElementById('prize-mtgpre-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgpre-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgpre-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgpre-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgpre-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgpre-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgpre-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgpre-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgpre-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgpre-top8-58')?.value.trim()||'' },
-  };
-  prizes['mtgp'] = {
-    zeb:  { p1:document.getElementById('prize-mtgp-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgp-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgp-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgp-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgp-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgp-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgp-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgp-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgp-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgp-top8-58')?.value.trim()||'' },
-  };
-  prizes['mtgstd'] = {
-    zeb:  { p1:document.getElementById('prize-mtgstd-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-mtgstd-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-mtgstd-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-mtgstd-top4-1')?.value.trim()||'', p2:document.getElementById('prize-mtgstd-top4-2')?.value.trim()||'', p34:document.getElementById('prize-mtgstd-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-mtgstd-top8-1')?.value.trim()||'', p2:document.getElementById('prize-mtgstd-top8-2')?.value.trim()||'', p34:document.getElementById('prize-mtgstd-top8-34')?.value.trim()||'', p58:document.getElementById('prize-mtgstd-top8-58')?.value.trim()||'' },
-  };
-  prizes['op'] = {
-    zeb:  { p1:document.getElementById('prize-op-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-op-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-op-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-op-top4-1')?.value.trim()||'', p2:document.getElementById('prize-op-top4-2')?.value.trim()||'', p34:document.getElementById('prize-op-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-op-top8-1')?.value.trim()||'', p2:document.getElementById('prize-op-top8-2')?.value.trim()||'', p34:document.getElementById('prize-op-top8-34')?.value.trim()||'', p58:document.getElementById('prize-op-top8-58')?.value.trim()||'' },
-  };
-  prizes['pk'] = {
-    zeb:  { p1:document.getElementById('prize-pk-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-pk-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-pk-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-pk-top4-1')?.value.trim()||'', p2:document.getElementById('prize-pk-top4-2')?.value.trim()||'', p34:document.getElementById('prize-pk-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-pk-top8-1')?.value.trim()||'', p2:document.getElementById('prize-pk-top8-2')?.value.trim()||'', p34:document.getElementById('prize-pk-top8-34')?.value.trim()||'', p58:document.getElementById('prize-pk-top8-58')?.value.trim()||'' },
-  };
-  prizes['rb'] = {
-    zeb:  { p1:document.getElementById('prize-rb-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-rb-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-rb-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-rb-top4-1')?.value.trim()||'', p2:document.getElementById('prize-rb-top4-2')?.value.trim()||'', p34:document.getElementById('prize-rb-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-rb-top8-1')?.value.trim()||'', p2:document.getElementById('prize-rb-top8-2')?.value.trim()||'', p34:document.getElementById('prize-rb-top8-34')?.value.trim()||'', p58:document.getElementById('prize-rb-top8-58')?.value.trim()||'' },
-  };
-  prizes['so'] = {
-    zeb:  { p1:document.getElementById('prize-so-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-so-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-so-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-so-top4-1')?.value.trim()||'', p2:document.getElementById('prize-so-top4-2')?.value.trim()||'', p34:document.getElementById('prize-so-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-so-top8-1')?.value.trim()||'', p2:document.getElementById('prize-so-top8-2')?.value.trim()||'', p34:document.getElementById('prize-so-top8-34')?.value.trim()||'', p58:document.getElementById('prize-so-top8-58')?.value.trim()||'' },
-  };
-  prizes['ygo'] = {
-    zeb:  { p1:document.getElementById('prize-ygo-zeb-1')?.value.trim()||'', p2:document.getElementById('prize-ygo-zeb-2')?.value.trim()||'', p3:document.getElementById('prize-ygo-zeb-3')?.value.trim()||'' },
-    top4: { p1:document.getElementById('prize-ygo-top4-1')?.value.trim()||'', p2:document.getElementById('prize-ygo-top4-2')?.value.trim()||'', p34:document.getElementById('prize-ygo-top4-34')?.value.trim()||'' },
-    top8: { p1:document.getElementById('prize-ygo-top8-1')?.value.trim()||'', p2:document.getElementById('prize-ygo-top8-2')?.value.trim()||'', p34:document.getElementById('prize-ygo-top8-34')?.value.trim()||'', p58:document.getElementById('prize-ygo-top8-58')?.value.trim()||'' },
-  };
+
+  // Nejdřív "Všechny" pro každou ligu
+  const allLeagueIds = Object.values(LEAGUE_NAME_MAP);
+  cenyRows.slice(1).forEach(r => {
+    const ligaName = (r[0]||'').trim();
+    if (ligaName.toLowerCase() === 'všechny') {
+      allLeagueIds.forEach(id => applyRow(ensureLeague(id), r[1], r[2],r[3],r[4],r[5]));
+    }
+  });
+  // Pak konkrétní ligy (přepíší "Všechny")
+  cenyRows.slice(1).forEach(r => {
+    const ligaName = (r[0]||'').trim();
+    if (ligaName.toLowerCase() === 'všechny') return;
+    const id = LEAGUE_NAME_MAP[ligaName.toLowerCase()];
+    if (id) applyRow(ensureLeague(id), r[1], r[2],r[3],r[4],r[5]);
+  });
   localStorage.setItem('hn_prizes', JSON.stringify(prizes));
 
-  if (status) status.textContent = 'Načítám data…';
-  await loadAllTopPlayers(season);
+  return { activeSeason, leaguesCount: ligyRows.length - 1 };
+}
+
+// ── Ulož Master Sheet ID a načti vše ──
+function loadSaved() {
+  const el = document.getElementById('master-sheet-id');
+  if (el) {
+    const saved = localStorage.getItem('hn_master_sheet') || '';
+    el.value = saved;
+  }
+}
+
+async function saveAndLoad() {
+  const el = document.getElementById('master-sheet-id');
+  const status = document.getElementById('setup-status');
+  if (!el || !el.value.trim()) {
+    if (status) status.textContent = '⚠ Vlož Master Sheet ID';
+    return;
+  }
+
+  const sheetId = extractSheetId(el.value.trim());
+  localStorage.setItem('hn_master_sheet', sheetId);
+
+  if (status) status.textContent = 'Načítám Master Sheet…';
+  try {
+    const result = await loadMasterSheet(sheetId);
+    if (status) status.textContent = `✓ Načteno (${result.leaguesCount} lig, sezóna ${result.activeSeason})`;
+  } catch(err) {
+    if (status) status.textContent = '⚠ ' + err.message;
+    return;
+  }
+
+  await loadAllTopPlayers();
   await loadStats();
-  if (status) status.textContent = '✓ Uloženo a načteno';
+  await loadWeekFromCalendar();
 }
 
 // ── Načti TOP3 pro všechny ligy ──
@@ -1181,16 +750,6 @@ async function loadStats(season) {
 
 
 
-function showPrizeTab(id) {
-  document.querySelectorAll('[id^="prize-panel-"]').forEach(el => el.style.display='none');
-  document.querySelectorAll('[id^="ptab-"]').forEach(el => {
-    el.style.borderColor='var(--border2)';el.style.color='var(--text2)';
-  });
-  const panel = document.getElementById('prize-panel-'+id);
-  const tab   = document.getElementById('ptab-'+id);
-  if (panel) panel.style.display='block';
-  if (tab) { tab.style.borderColor='var(--purple)'; tab.style.color='var(--pl)'; }
-}
 
 /* ── ADMIN AUTH ── */
 const ADMIN_KEY = 'hn_admin_auth';
@@ -1218,10 +777,15 @@ function adminAuth() {
 document.getElementById("stat-leagues").textContent = LEAGUES.length;
 loadSaved();
 (async () => {
+  // Pokud je Master Sheet uložen, automaticky ho znovu načti (čerstvá data)
+  const masterSheetId = localStorage.getItem('hn_master_sheet');
+  if (masterSheetId) {
+    try { await loadMasterSheet(masterSheetId); } catch(e) { console.warn('Master sheet reload failed:', e); }
+  }
   await loadAllTopPlayers();
   await loadStats();
+  await loadWeekFromCalendar();
 })();
-loadWeekFromCalendar();
 </script>
 
 

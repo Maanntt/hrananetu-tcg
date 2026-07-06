@@ -158,12 +158,12 @@ footer a{color:var(--pl);text-decoration:none}
         <option value="all">Všechny hry</option>
         <option value="fab">Flesh and Blood</option>
         <option value="gd">Gundam</option>
-        <option value="mtgcmd">MTG Commander</option>
         <option value="mtgd">MTG Draft</option>
         <option value="mtgm">MTG Modern</option>
+        <option value="mtgcmd">MTG Commander</option>
         <option value="mtgpa">MTG Pauper</option>
-        <option value="mtgpre">MTG Prerelease</option>
         <option value="mtgp">MTG Premodern</option>
+        <option value="mtgpre">MTG Prerelease</option>
         <option value="mtgstd">MTG Standard</option>
         <option value="op">One Piece</option>
         <option value="pk">Pokémon</option>
@@ -257,8 +257,8 @@ function detectLiga(raw) {
   if (game === 'mtg' || game === 'magic') {
     if (format.includes('premodern'))                            return 'mtgp';
     if (format.includes('pauper'))                               return 'mtgpa';
-    if (format.includes('prerelease'))                           return 'mtgpre';
-    if (format.includes('commander') || format.includes('edh')) return 'mtgcmd';
+    if (format.includes('commander') || format.includes('edh'))  return 'mtgcmd';
+    if (format.includes('prerelease') || format.includes('pre-release')) return 'mtgpre';
     if (format.includes('modern'))                               return 'mtgm';
     if (format.includes('standard') || format.includes('pioneer')) return 'mtgstd';
     if (format.includes('draft') || format.includes('sealed'))  return 'mtgd';
