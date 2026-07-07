@@ -120,6 +120,15 @@ window.HN = (function () {
     return totalRounds;
   }
 
+  // Textový popisek aktuálně platné úrovně pravidla (pro zobrazení v UI) -
+  // vždy odvozený ze stejných prahů jako bestOfThreshold, takže se nemůže rozejít.
+  function bestOfTierLabel(totalRounds) {
+    if (totalRounds >= 9) return '9 a více turnajů → nejlepších 8';
+    if (totalRounds >= 7) return '7–8 turnajů → nejlepších 6';
+    if (totalRounds >= 5) return '5–6 turnajů → nejlepší 4';
+    return '1–4 turnaje → počítají se všechny';
+  }
+
   // Spočítá celkové body hráče jako součet `threshold` nejlepších výsledků
   // z pole bodů za jednotlivé turnaje (chybějící/neodehrané turnaje = 0, přirozeně vypadnou).
   function computeBestOfScore(roundPoints, threshold) {
@@ -285,5 +294,5 @@ window.HN = (function () {
     return text;
   }
 
-  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, computeBestOfScore, load };
+  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, load };
 })();

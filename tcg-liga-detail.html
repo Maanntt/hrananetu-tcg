@@ -251,7 +251,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=5"></script>
+<script src="hn-data.js?v=6"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -575,7 +575,7 @@ function renderAll(data) {
   const bestofNote = document.getElementById('bestof-note');
   if (bestofNote) {
     bestofNote.style.display = 'block';
-    bestofNote.innerHTML = `📊 Do celkových bodů se počítá <b style="color:var(--pl)">${bestOfN} nejlepších výsledků</b> ze ${totalRounds} turnajů sezóny (${totalRounds <= 8 ? '1–8 turnajů → 7 nejlepších' : '9 a více turnajů → 8 nejlepších'}).`;
+    bestofNote.innerHTML = `📊 Do celkových bodů se počítá <b style="color:var(--pl)">${bestOfN} nejlepších výsledků</b> ze ${totalRounds} turnajů sezóny (${HN.bestOfTierLabel(totalRounds)}).`;
   }
 
   renderRounds(roundCols, players, today);
