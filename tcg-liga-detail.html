@@ -251,7 +251,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=6"></script>
+<script src="hn-data.js?v=7"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -816,7 +816,7 @@ function renderStandingsRows(players, topN, showAll) {
       </div></td>
       <td style="text-align:right">
         <span class="st-pts">${p.total}</span>
-        ${p.droppedCount > 0 ? `<div style="font-size:9px;color:var(--text3);margin-top:1px" title="Nejlepších ${p.playedCount - p.droppedCount} z ${p.playedCount} odehraných turnajů">${p.playedCount - p.droppedCount}/${p.playedCount} turnajů</div>` : ''}
+        <div style="font-size:9px;color:var(--text3);margin-top:1px" title="${p.droppedCount > 0 ? `Nejlepších ${p.playedCount - p.droppedCount} z ${p.playedCount} odehraných turnajů` : `Odehráno ${p.playedCount} turnajů, počítají se všechny`}">${p.droppedCount > 0 ? `${p.playedCount - p.droppedCount}/${p.playedCount}` : p.playedCount} ${p.playedCount === 1 ? 'turnaj' : p.playedCount >= 2 && p.playedCount <= 4 ? 'turnaje' : 'turnajů'}</div>
       </td>
     </tr>`;
   }).join('')

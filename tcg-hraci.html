@@ -122,7 +122,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=6"></script>
+<script src="hn-data.js?v=7"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -313,7 +313,6 @@ async function renderSeasonTable(seasonName) {
         </div>
       </td>
       <td class="tr played-val">${p.played}</td>
-      <td class="tr pts-val">${p.points}</td>
       <td class="tr">${bonusHtml}</td>
     </tr>`;
   }).join('');
@@ -324,7 +323,6 @@ async function renderSeasonTable(seasonName) {
         <th>#</th>
         <th>Hráč</th>
         <th class="tr">Turnajů</th>
-        <th class="tr">Body</th>
         <th class="tr">Bity za věrnost</th>
       </tr></thead>
       <tbody>${bodyRows}</tbody>
