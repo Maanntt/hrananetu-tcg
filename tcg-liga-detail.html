@@ -112,11 +112,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .panel-badge.gold{background:rgba(240,165,0,.12);color:var(--gold);border-color:rgba(240,165,0,.3)}
 
 /* STANDINGS TABULKA */
-.standings-table{width:100%;border-collapse:collapse}
-.standings-table thead th{padding:8px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)}
+.standings-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.standings-table thead th{padding:8px 8px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.standings-table thead th:first-child{padding-left:16px}
+.standings-table thead th:last-child{padding-right:16px}
 .standings-table thead th.tr{text-align:right}
-.standings-table td{padding:9px 18px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
-.st-played{font-size:12px;color:var(--text3);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.standings-table td{padding:8px 8px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden}
+.standings-table td:first-child{padding-left:16px}
+.standings-table td:last-child{padding-right:16px}
+.st-th-rank{width:22px}
+.st-th-turn{width:52px}
+.st-th-body{width:48px}
+.st-played{font-size:11px;color:var(--text3);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .st-played.dropped{color:var(--gold)}
 .standings-table tr:last-child td{border-bottom:none}
 .standings-table tr:hover td{background:rgba(255,255,255,.025)}
@@ -124,9 +131,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .standings-table tr.st-topN td{background:rgba(197,29,245,.03)}
 .st-rank{font-weight:700;font-size:12px;color:var(--text3);width:28px}
 .st-rank.r1{color:#f0a500}.st-rank.r2{color:#c0c0c0}.st-rank.r3{color:#cd7f32}
-.st-player{display:flex;align-items:center;gap:8px}
+.st-player{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
 .st-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.st-name{font-size:13px;font-weight:500;color:var(--text);text-decoration:none;transition:color .15s}
+.st-name{font-size:13px;font-weight:500;color:var(--text);text-decoration:none;transition:color .15s;overflow-wrap:anywhere}
 .st-name:hover{color:var(--pl)}
 .st-pts{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;text-align:right}
 .st-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;white-space:nowrap}
@@ -150,7 +157,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:0;text-align:center;font-size:12px;color:var(--text3)}
 footer a{color:var(--pl);text-decoration:none}
 @media(max-width:900px){.page{grid-template-columns:1fr}.right-panel{position:static}}
-@media(max-width:480px){.liga-hero-name{font-size:34px}.podium{gap:4px}.podium-card{padding:12px 6px}.standings-table td,.standings-table th{padding:8px 10px}.st-pts{font-size:16px}.st-played{font-size:11px}.standings-table thead th{font-size:9px}}
+@media(max-width:480px){.liga-hero-name{font-size:34px}.podium{gap:4px}.podium-card{padding:12px 6px}.st-pts{font-size:15px}.st-av{width:22px;height:22px;font-size:8px}.st-badge{font-size:8px;padding:1px 4px}.st-player{gap:5px}}
 
 /* Hamburger */
 </style>
@@ -240,17 +247,19 @@ footer a{color:var(--pl);text-decoration:none}
           <div class="panel-badge" id="standings-badge">—</div>
         </div>
         <div id="bestof-note" style="padding:10px 18px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:none"></div>
+        <div style="overflow-x:auto">
         <table class="standings-table" id="standings-table">
           <thead><tr>
-            <th style="width:28px"></th>
+            <th class="st-th-rank"></th>
             <th>Hráč</th>
-            <th class="tr" style="width:70px">Turnajů</th>
-            <th class="tr" style="width:64px">Body</th>
+            <th class="tr st-th-turn">Turnajů</th>
+            <th class="tr st-th-body">Body</th>
           </tr></thead>
           <tbody id="standings-body">
             <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načti data ze Sheets.</td></tr>
           </tbody>
         </table>
+        </div>
       </div>
 
     </div>
@@ -261,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=8"></script>
+<script src="hn-data.js?v=10"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
