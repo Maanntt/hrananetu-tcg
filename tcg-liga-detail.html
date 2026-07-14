@@ -113,7 +113,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* STANDINGS TABULKA */
 .standings-table{width:100%;border-collapse:collapse}
+.standings-table thead th{padding:8px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)}
+.standings-table thead th.tr{text-align:right}
 .standings-table td{padding:9px 18px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+.st-played{font-size:12px;color:var(--text3);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.st-played.dropped{color:var(--gold)}
 .standings-table tr:last-child td{border-bottom:none}
 .standings-table tr:hover td{background:rgba(255,255,255,.025)}
 .standings-table tr.st-top3 td{background:rgba(240,165,0,.04)}
@@ -146,7 +150,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:0;text-align:center;font-size:12px;color:var(--text3)}
 footer a{color:var(--pl);text-decoration:none}
 @media(max-width:900px){.page{grid-template-columns:1fr}.right-panel{position:static}}
-@media(max-width:480px){.liga-hero-name{font-size:34px}.podium{gap:4px}.podium-card{padding:12px 6px}}
+@media(max-width:480px){.liga-hero-name{font-size:34px}.podium{gap:4px}.podium-card{padding:12px 6px}.standings-table td,.standings-table th{padding:8px 10px}.st-pts{font-size:16px}.st-played{font-size:11px}.standings-table thead th{font-size:9px}}
 
 /* Hamburger */
 </style>
@@ -237,8 +241,14 @@ footer a{color:var(--pl);text-decoration:none}
         </div>
         <div id="bestof-note" style="padding:10px 18px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:none"></div>
         <table class="standings-table" id="standings-table">
+          <thead><tr>
+            <th style="width:28px"></th>
+            <th>Hráč</th>
+            <th class="tr" style="width:70px">Turnajů</th>
+            <th class="tr" style="width:64px">Body</th>
+          </tr></thead>
           <tbody id="standings-body">
-            <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načti data ze Sheets.</td></tr>
+            <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načti data ze Sheets.</td></tr>
           </tbody>
         </table>
       </div>
@@ -251,7 +261,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=7"></script>
+<script src="hn-data.js?v=8"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -814,14 +824,12 @@ function renderStandingsRows(players, topN, showAll) {
         <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="st-name">${p.name}</a>
         ${badge}
       </div></td>
-      <td style="text-align:right">
-        <span class="st-pts">${p.total}</span>
-        <div style="font-size:9px;color:var(--text3);margin-top:1px" title="${p.droppedCount > 0 ? `Nejlepších ${p.playedCount - p.droppedCount} z ${p.playedCount} odehraných turnajů` : `Odehráno ${p.playedCount} turnajů, počítají se všechny`}">${p.droppedCount > 0 ? `${p.playedCount - p.droppedCount}/${p.playedCount}` : p.playedCount} ${p.playedCount === 1 ? 'turnaj' : p.playedCount >= 2 && p.playedCount <= 4 ? 'turnaje' : 'turnajů'}</div>
-      </td>
+      <td class="st-played ${p.droppedCount > 0 ? 'dropped' : ''}" title="${p.droppedCount > 0 ? `Nejlepších ${p.playedCount - p.droppedCount} z ${p.playedCount} odehraných turnajů` : `Odehráno ${p.playedCount} turnajů, počítají se všechny`}">${p.droppedCount > 0 ? `${p.playedCount - p.droppedCount}<span style="opacity:.5">/${p.playedCount}</span>` : p.playedCount}</td>
+      <td style="text-align:right"><span class="st-pts">${p.total}</span></td>
     </tr>`;
   }).join('')
   + (hasMore ? `<tr id="standings-toggle-row">
-    <td colspan="3" style="text-align:center;padding:10px">
+    <td colspan="4" style="text-align:center;padding:10px">
       <button onclick="toggleStandings()" style="background:none;border:none;color:var(--pl);font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;padding:4px 0">
         ${showAll
           ? `↑ Zobrazit méně`
