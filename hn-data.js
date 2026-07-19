@@ -252,11 +252,25 @@ window.HN = (function () {
 
         // Pravidla — VOLITELNÁ záložka. Pokud v Master Sheetu neexistuje,
         // tcg-pravidla.html použije svůj statický text jako fallback.
+        //
+        // Formát: řádek s vyplněným "Nadpis" založí novou kartu pravidla.
+        // Řádek s PRÁZDNÝM "Nadpis" (jen vyplněný "Text") se přidá jako další
+        // řádek/odrážka k PŘEDCHOZÍ kartě - takže se odrážky dají zapisovat
+        // jako obyčejné další řádky tabulky, bez nutnosti víceřádkových buněk.
         try {
           const pravRows = await fetchTab('Pravidla');
-          data.rules = pravRows.slice(1)
-            .filter(r => r[0] || r[1])
-            .map(r => ({ heading: (r[0] || '').trim(), text: (r[1] || '').trim() }));
+          const rules = [];
+          pravRows.slice(1).forEach(r => {
+            const heading = (r[0] || '').trim();
+            const textLine = (r[1] || '').trim();
+            if (!heading && !textLine) return; // prázdný řádek
+            if (heading) {
+              rules.push({ heading, lines: textLine ? [textLine] : [] });
+            } else if (rules.length) {
+              rules[rules.length - 1].lines.push(textLine);
+            }
+          });
+          data.rules = rules.map(r => ({ heading: r.heading, text: r.lines.join('\n') }));
           localStorage.setItem('hn_rules', JSON.stringify(data.rules));
         } catch (e) {
           // Záložka "Pravidla" zatím v sheetu není — v pořádku, není to chyba.
