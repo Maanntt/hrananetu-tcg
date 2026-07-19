@@ -316,24 +316,44 @@ footer a{color:var(--pl);text-decoration:none}
   <div style="margin-top:6px">Data načítána z Google Sheets a Google Kalendáře · <a href="mailto:info@hrananetu.cz">info@hrananetu.cz</a></div>
 </footer>
 
-<script src="hn-data.js?v=10"></script>
+<script src="hn-data.js?v=11"></script>
 <script>
 function escapeHtml(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // Text z buňky může obsahovat víc řádků (Google Sheets zalomení = \n uvnitř buňky).
-// Každý řádek vykreslíme jako samostatný odstavec, "- " na začátku řádku jako odrážku.
+// Řádky se seskupí do bloků podle typu: běžný text -> odstavec, "- "/"• " -> odrážkový seznam.
+// Bloky se pak vykreslí ve správném pořadí (funguje i pro mix odstavce + odrážek v jedné buňce).
 function renderRuleText(text) {
   const lines = (text || '').split(/\r?\n/).filter(l => l.trim());
   if (!lines.length) return '';
-  const items = lines.filter(l => /^[-•]\s*/.test(l.trim()));
-  if (items.length === lines.length) {
-    return '<ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">' +
-      lines.map(l => '<li style="color:var(--text2);font-size:14px;line-height:1.6">' + escapeHtml(l.replace(/^[-•]\s*/, '')) + '</li>').join('') +
-      '</ul>';
-  }
-  return lines.map(l => '<p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:8px">' + escapeHtml(l) + '</p>').join('');
+
+  const blocks = [];
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    const isBullet = /^[-•]\s*/.test(trimmed);
+    const isNumbered = /^\d+[.)]\s*/.test(trimmed);
+    const type = isBullet ? 'ul' : (isNumbered ? 'ol' : 'p');
+    const content = isBullet ? trimmed.replace(/^[-•]\s*/, '') : (isNumbered ? trimmed.replace(/^\d+[.)]\s*/, '') : trimmed);
+    const last = blocks[blocks.length - 1];
+    if (last && last.type === type) last.items.push(content);
+    else blocks.push({type, items: [content]});
+  });
+
+  return blocks.map(b => {
+    if (b.type === 'ul') {
+      return '<ul style="margin:0 0 10px;padding-left:18px;display:flex;flex-direction:column;gap:6px">' +
+        b.items.map(t => '<li style="color:var(--text2);font-size:14px;line-height:1.6">' + escapeHtml(t) + '</li>').join('') +
+        '</ul>';
+    }
+    if (b.type === 'ol') {
+      return '<ol style="margin:0 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:6px">' +
+        b.items.map(t => '<li style="color:var(--text2);font-size:14px;line-height:1.6">' + escapeHtml(t) + '</li>').join('') +
+        '</ol>';
+    }
+    return b.items.map(t => '<p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:8px">' + escapeHtml(t) + '</p>').join('');
+  }).join('');
 }
 
 function renderRules(rules) {
