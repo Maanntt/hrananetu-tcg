@@ -44,7 +44,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* LAYOUT */
 .con{max-width:1280px;margin:0 auto;padding:0 28px}
-.archiv-body{max-width:720px;padding:28px 0 80px}
 .page{display:grid;grid-template-columns:1fr 340px;gap:32px;padding:40px 0 80px;align-items:start}
 
 /* BREADCRUMB */
@@ -227,59 +226,53 @@ footer a{color:var(--pl);text-decoration:none}
     </div>
   </div>
 
-  <!-- STANDINGS + FINÁLE (jednosloupcový layout, žádný rozpis jednotlivých kol) -->
-  <div class="archiv-body">
-
-    <!-- PODIUM -->
-    <div class="panel-section" id="podium-section" style="display:none">
-      <div class="panel-head">
-        <div class="panel-title">Nejlepší hráči sezóny</div>
-        <div class="panel-badge gold">TOP 3</div>
-      </div>
-      <div class="podium-wrap">
-        <div class="podium" id="podium"></div>
+  <!-- SHEETS CONFIG -->
+<div class="page">
+    <!-- LEVÝ PANEL — KOLA -->
+    <div class="left-panel">
+      <div class="rounds-title">Turnaje sezóny</div>
+      <div class="rounds-list" id="rounds-list">
+        <div style="color:var(--text3);font-size:13px;padding:8px 0">Načti data ze Sheets pro zobrazení turnajů.</div>
       </div>
     </div>
 
-    <!-- FINÁLOVÝ TURNAJ (podle sloupce "Topka") -->
-    <div class="panel-section" id="finale-section" style="display:none">
-      <div class="panel-head">
-        <div class="panel-title">Finálový turnaj</div>
-        <div class="panel-badge gold" id="finale-badge">—</div>
-      </div>
-      <table class="round-results-table" id="finale-table">
-        <thead><tr>
-          <th style="width:32px">#</th>
-          <th>Hráč</th>
-          <th class="tr">Body (sezóna)</th>
-        </tr></thead>
-        <tbody id="finale-body"></tbody>
-      </table>
-      <div id="finale-note" style="padding:10px 18px;font-size:11px;color:var(--text3);font-style:italic;display:none"></div>
-    </div>
+    <!-- PRAVÝ PANEL — STANDINGS -->
+    <div class="right-panel">
 
-    <!-- CELKOVÉ POŘADÍ SEZÓNY -->
-    <div class="panel-section">
-      <div class="panel-head">
-        <div class="panel-title">Celkové pořadí — sezóna</div>
-        <div class="panel-badge" id="standings-badge">—</div>
+      <!-- PODIUM -->
+      <div class="panel-section" id="podium-section" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">Nejlepší hráči</div>
+          <div class="panel-badge gold">TOP 3</div>
+        </div>
+        <div class="podium-wrap">
+          <div class="podium" id="podium"></div>
+        </div>
       </div>
-      <div id="bestof-note" style="padding:10px 18px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:none"></div>
-      <div style="overflow-x:auto">
-      <table class="standings-table" id="standings-table">
-        <thead><tr>
-          <th class="st-th-rank"></th>
-          <th>Hráč</th>
-          <th class="tr st-th-turn">Turnajů</th>
-          <th class="tr st-th-body">Body</th>
-        </tr></thead>
-        <tbody id="standings-body">
-          <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načítám…</td></tr>
-        </tbody>
-      </table>
-      </div>
-    </div>
 
+      <!-- CELKOVÉ POŘADÍ -->
+      <div class="panel-section">
+        <div class="panel-head">
+          <div class="panel-title">Celkové pořadí</div>
+          <div class="panel-badge" id="standings-badge">—</div>
+        </div>
+        <div id="bestof-note" style="padding:10px 18px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:none"></div>
+        <div style="overflow-x:auto">
+        <table class="standings-table" id="standings-table">
+          <thead><tr>
+            <th class="st-th-rank"></th>
+            <th>Hráč</th>
+            <th class="tr st-th-turn">Turnajů</th>
+            <th class="tr st-th-body">Body</th>
+          </tr></thead>
+          <tbody id="standings-body">
+            <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Načti data ze Sheets.</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -287,7 +280,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=21"></script>
+<script src="hn-data.js?v=22"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -597,10 +590,10 @@ function renderAll(data) {
   const bestofNote = document.getElementById('bestof-note');
   if (bestofNote) {
     bestofNote.style.display = 'block';
-    bestofNote.innerHTML = `📊 Do celkových bodů se počítalo <b style="color:var(--pl)">${bestOfN} nejlepších výsledků</b> ze ${totalRounds} turnajů sezóny (${HN.bestOfTierLabel(totalRounds)}).`;
+    bestofNote.innerHTML = `📊 Do celkových bodů se počítá <b style="color:var(--pl)">${bestOfN} nejlepších výsledků</b> ze ${totalRounds} turnajů sezóny (${HN.bestOfTierLabel(totalRounds)}).`;
   }
 
-  renderFinale(players, fmt);
+  renderRounds(roundCols, players, today);
 
   // Aktualizuj sezónu v hero z načtených dat
   if (roundCols.length) {
@@ -616,53 +609,180 @@ function renderAll(data) {
   renderStandings(players, fmt.n);
 }
 
-/* ── Finálový turnaj (podle sloupce "Topka", fallback na sezónní pořadí) ── */
-function renderFinale(players, fmt) {
-  const section  = document.getElementById('finale-section');
-  const badge    = document.getElementById('finale-badge');
-  const body     = document.getElementById('finale-body');
-  const noteEl   = document.getElementById('finale-note');
+/* ── Kola ── */
+function renderRounds(roundCols, players, today) {
+  const list = document.getElementById('rounds-list');
 
+  // Přidej finálové kolo pokud jsou data
+  const allRounds = [...roundCols];
+  // Finálové kolo = poslední sloupec FINÁLE (zvláštní označení)
+  const hasFinale = players.some(p => p.isFinalist);
+
+  list.innerHTML = allRounds.map((r, ri) => {
+    const isPast   = r.date && r.date <= today;
+    const isFuture = r.date && r.date > today;
+    const participants = isPast ? players.filter(p => p.rounds[ri] > 0).length : null;
+    const isFinaleRound = false; // finále je separátní
+
+    return `<div>
+      <button class="round-btn ${isFuture?'future':''}" onclick="toggleRound(${ri}, this)" id="rbtn-${ri}">
+        <div>
+          <div class="round-date">${r.date ? formatDate(r.date) : r.label}</div>
+          <div class="round-label">${isPast ? `Kolo ${ri+1} · odehráno` : `Kolo ${ri+1} · plánováno`}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${participants !== null ? `<span class="round-participants">${participants} hráčů</span>` : ''}
+          <span class="round-arrow">›</span>
+        </div>
+      </button>
+      <div class="round-detail" id="rdetail-${ri}">
+        ${renderRoundDetail(r, ri, players)}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Přidej finálové kolo pokud existuje
+  if (hasFinale) {
+    const fmt = finaleFormat(currentData.avgPlayers);
+    const isRealFinale = fmt.type !== 'Žebříček';
+    const finaleTitle = isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny';
+    const finaleSubtitle = isRealFinale
+      ? `Konec sezóny · odměny dle ${fmt.type}`
+      : 'Volný turnaj · nízká účast → odměny dle celkového žebříčku, ne finále';
+    const finaleNote = 'Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.';
+
+    const finaleDiv = document.createElement('div');
+    finaleDiv.innerHTML = `
+      <button class="round-btn finale-btn" onclick="toggleRound('finale', this)" id="rbtn-finale">
+        <div>
+          <div class="round-date">${finaleTitle}</div>
+          <div class="round-label">${finaleSubtitle}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">${finaleNote}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="round-arrow">›</span>
+        </div>
+      </button>
+      <div class="round-detail" id="rdetail-finale">
+        ${renderFinaleDetail(players, fmt.n)}
+      </div>`;
+    list.appendChild(finaleDiv);
+  }
+}
+
+function renderRoundDetail(r, ri, players) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isPast = r.date && r.date <= today;
+
+  if (!isPast) {
+    return `<div class="no-results">Tento turnaj ještě neproběhl.</div>`;
+  }
+
+  const participated = players
+    .filter(p => p.rounds[ri] > 0)
+    .sort((a, b) => b.rounds[ri] - a.rounds[ri]);
+
+  if (!participated.length) {
+    return `<div class="no-results">Žádná data pro toto kolo.</div>`;
+  }
+
+  return `
+    <table class="round-results-table">
+      <thead><tr>
+        <th style="width:32px">#</th>
+        <th>Hráč</th>
+        <th class="tr">Body za kolo</th>
+        <th class="tr">Celkem</th>
+      </tr></thead>
+      <tbody>
+        ${participated.map((p, i) => `
+          <tr>
+            <td style="font-size:12px;font-weight:600;color:var(--text3)">${i+1}.</td>
+            <td><div class="rrt-name">
+              <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+              <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
+            </div></td>
+            <td class="tr"><span class="rrt-pts pos">+${p.rounds[ri]}</span></td>
+            <td class="tr"><span class="rrt-pts">${p.total}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderFinaleDetail(players, topN) {
   const withTopka = players.filter(p => p.topka !== null && p.topka > 0);
-
   if (withTopka.length) {
-    // Skutečné konečné pořadí finále, jak ho organizátor zapsal do sloupce "Topka"
     withTopka.sort((a, b) => a.topka - b.topka);
-    section.style.display = '';
-    badge.textContent = fmt.type;
-    noteEl.style.display = 'none';
-    body.innerHTML = withTopka.map(p => `
-      <tr>
-        <td style="font-size:12px;font-weight:600;color:var(--text3);width:32px">${p.topka}.</td>
-        <td><div class="rrt-name">
-          <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
-          <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
-        </div></td>
-        <td class="tr"><span class="rrt-pts">${p.total} b.</span></td>
-      </tr>`).join('');
-    return;
+    return `
+      <div class="round-detail-header">
+        <div class="round-detail-title">Finálový turnaj — konečné pořadí</div>
+      </div>
+      <table class="round-results-table">
+        <thead><tr>
+          <th style="width:32px">#</th>
+          <th>Hráč</th>
+          <th class="tr">Body (sezóna)</th>
+        </tr></thead>
+        <tbody>
+          ${withTopka.map(p => `
+            <tr>
+              <td style="font-size:12px;font-weight:600;color:var(--text3)">${p.topka}.</td>
+              <td><div class="rrt-name">
+                <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+                <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
+              </div></td>
+              <td class="tr"><span class="rrt-pts">${p.total}</span></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
   }
 
-  // Fallback pro starší sezóny bez sloupce "Topka": odhad finalistů podle sezónního pořadí
-  if (fmt.n > 0 && players.length) {
-    const finalists = players.slice(0, fmt.n);
-    section.style.display = '';
-    badge.textContent = fmt.type;
-    noteEl.style.display = 'block';
-    noteEl.textContent = 'Konečné pořadí finále nebylo zaznamenáno (chybí sloupec "Topka") - řazeno podle sezónních bodů.';
-    body.innerHTML = finalists.map(p => `
-      <tr>
-        <td style="font-size:12px;font-weight:600;color:var(--text3);width:32px">${p.rank}.</td>
-        <td><div class="rrt-name">
-          <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
-          <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
-        </div></td>
-        <td class="tr"><span class="rrt-pts">${p.total} b.</span></td>
-      </tr>`).join('');
-    return;
-  }
+  const finalists = players.slice(0, topN);
+  return `
+    <div class="round-detail-header">
+      <div class="round-detail-title">Finálový turnaj — ${finaleFormat(currentData.avgPlayers).type}</div>
+      <div class="round-detail-meta">
+        <span class="rdm"><strong>${topN}</strong> postupujících</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">Konečné pořadí finále zatím nebylo zaznamenáno (sloupec "Topka") - zobrazeno podle sezónních bodů.</div>
+    </div>
+    <table class="round-results-table">
+      <thead><tr>
+        <th style="width:32px">#</th>
+        <th>Hráč</th>
+        <th class="tr">Body (žebříček)</th>
+      </tr></thead>
+      <tbody>
+        ${finalists.map(p => `
+          <tr>
+            <td style="font-size:12px;font-weight:600;color:var(--text3)">${p.rank}.</td>
+            <td><div class="rrt-name">
+              <div class="rrt-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+              <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="rrt-link">${p.name}</a>
+            </div></td>
+            <td class="tr"><span class="rrt-pts">${p.total}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
 
-  section.style.display = 'none';
+function toggleRound(ri, btn) {
+  const detail = document.getElementById('rdetail-' + ri);
+  const isOpen = detail.classList.contains('open');
+
+  // Zavři všechny
+  document.querySelectorAll('.round-detail.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.round-btn.active').forEach(b => b.classList.remove('active'));
+
+  if (!isOpen) {
+    detail.classList.add('open');
+    btn.classList.add('active');
+    activeRoundIdx = ri;
+    // Scroll do view na mobilu
+    setTimeout(() => detail.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+  } else {
+    activeRoundIdx = null;
+  }
 }
 
 /* ── Podium ── */
@@ -711,7 +831,6 @@ function renderStandingsRows(players, topN, showAll) {
       </div></td>
       <td class="st-played ${p.droppedCount > 0 ? 'dropped' : ''}" title="${p.droppedCount > 0 ? `Nejlepších ${p.playedCount - p.droppedCount} z ${p.playedCount} odehraných turnajů` : `Odehráno ${p.playedCount} turnajů, počítají se všechny`}">${p.droppedCount > 0 ? `${p.playedCount - p.droppedCount}<span style="opacity:.5">/${p.playedCount}</span>` : p.playedCount}</td>
       <td style="text-align:right"><span class="st-pts">${p.total}</span></td>
-      </td>
     </tr>`;
   }).join('')
   + (hasMore ? `<tr id="standings-toggle-row">
