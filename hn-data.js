@@ -217,6 +217,23 @@ window.HN = (function () {
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(k)) || 'leto';
   }
 
+  // Rychlý odhad sezóny podle dnešního data (bez čekání na Master Sheet).
+  // Používá se pro okamžité nastavení tématu hned při načtení stránky -
+  // eliminuje "probliknutí" starou barvou/sezónou, než doběhne síťový dotaz.
+  function guessSeasonName(date) {
+    const d = date || new Date();
+    const m = d.getMonth() + 1; // 1-12
+    const y = d.getFullYear();
+    if (m >= 3 && m <= 5) return `Jaro ${y}`;
+    if (m >= 6 && m <= 8) return `Léto ${y}`;
+    if (m >= 9 && m <= 11) return `Podzim ${y}`;
+    return `Zima ${m === 12 ? y : y - 1}`;
+  }
+
+  function applySeasonThemeGuess() {
+    return applySeasonTheme(guessSeasonName());
+  }
+
   // Hlavní funkce - zavolá se na každé stránce, jakmile je známá aktuální sezóna.
   function applySeasonTheme(activeSeason) {
     const key = seasonKeyFrom(activeSeason);
@@ -404,5 +421,11 @@ window.HN = (function () {
     return text;
   }
 
-  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, applySeasonTheme, load };
+  // Spusť se hned při načtení tohoto skriptu (ještě před fetch na Master Sheet) -
+  // stránka tak od první vteřiny ukazuje správnou sezónní barvu/dekorace místo
+  // výchozí (staré) hodnoty. HN.applySeasonTheme() se pak zavolá znovu s přesnými
+  // daty ze Sheets a případně to jemně doladí.
+  try { applySeasonThemeGuess(); } catch (e) {}
+
+  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, applySeasonTheme, guessSeasonName, applySeasonThemeGuess, load };
 })();

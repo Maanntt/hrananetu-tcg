@@ -296,7 +296,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=18"></script>
+<script src="hn-data.js?v=19"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -773,6 +773,7 @@ async function loadStats(season) {
 
 // ── START ──
 document.getElementById("stat-leagues").textContent = LEAGUES.length;
+applySeasonUi(HN.guessSeasonName()); // okamžitý odhad, ať nic nebliká starou barvou/sezónou
 (async () => {
   const master = await initMasterData();
   await loadAllTopPlayers(master.activeSeason);
