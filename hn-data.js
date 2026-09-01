@@ -156,28 +156,42 @@ window.HN = (function () {
     snow:   '<g stroke-linecap="round"><path d="M20 4v32M6 12l28 16M6 28l28-16"/><path d="M20 4l-4 4m4-4l4 4M20 36l-4-4m4 4l4-4M6 12l5 1m-5-1l1-5M34 12l-5 1m5-1l-1-5M6 28l1 5m-1-5l5-1M34 28l-1 5m1-5l-5-1"/></g>',
   };
 
-  // Rozptýlené pozice u okrajů obrazovky, ať dekorace nikdy nesedí přes text uprostřed
-  const FX_POSITIONS = [
-    {top:'6%',  left:'3%',  size:34, rot:-12},
-    {top:'14%', left:'92%', size:26, rot:18},
-    {top:'44%', left:'2%',  size:22, rot:8},
-    {top:'62%', left:'95%', size:30, rot:-20},
-    {top:'85%', left:'6%',  size:26, rot:15},
-    {top:'92%', left:'90%', size:20, rot:-8},
-  ];
-
   function ensureFxStyle() {
     if (document.getElementById('hn-fx-style')) return;
     const style = document.createElement('style');
     style.id = 'hn-fx-style';
     style.textContent = `
       #hn-season-fx{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-      .hn-fx-icon{position:absolute;opacity:.16;color:var(--pl,#d44fff);filter:drop-shadow(0 0 6px currentColor);animation:hnFxFloat 7s ease-in-out infinite}
+      .hn-fx-icon{position:absolute;top:-10vh;color:var(--pl,#d44fff);filter:drop-shadow(0 0 6px currentColor);animation-name:hnFxFall;animation-timing-function:linear;animation-iteration-count:infinite}
       .hn-fx-icon svg{display:block;fill:none;stroke:currentColor;stroke-width:1.4}
-      @keyframes hnFxFloat{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-14px) rotate(var(--r,0deg))}}
-      @media(max-width:640px){.hn-fx-icon{opacity:.11}.hn-fx-icon:nth-child(n+4){display:none}}
+      @keyframes hnFxFall{
+        0%   {transform:translate(0,-10vh) rotate(0deg);opacity:0}
+        8%   {opacity:var(--op,.18)}
+        50%  {transform:translate(var(--dx,24px),50vh) rotate(calc(var(--rot,220deg) * .5))}
+        92%  {opacity:var(--op,.18)}
+        100% {transform:translate(calc(var(--dx,24px) * -1),115vh) rotate(var(--rot,220deg));opacity:0}
+      }
+      @media(max-width:640px){.hn-fx-icon:nth-child(n+9){display:none}}
+      @media(prefers-reduced-motion:reduce){.hn-fx-icon{animation:none;display:none}}
     `;
     document.head.appendChild(style);
+  }
+
+  function buildFxItems(count) {
+    const items = [];
+    for (let i = 0; i < count; i++) {
+      const left = Math.min(97, Math.max(1, (i / count) * 100 + (Math.random() * 9 - 4.5)));
+      items.push({
+        left,
+        size: 16 + Math.round(Math.random() * 20),
+        duration: (9 + Math.random() * 9).toFixed(1),
+        delay: (Math.random() * 14).toFixed(1),
+        dx: Math.round(Math.random() * 70 - 35),
+        rot: Math.round(160 + Math.random() * 200) * (Math.random() > 0.5 ? 1 : -1),
+        op: (0.12 + Math.random() * 0.1).toFixed(2),
+      });
+    }
+    return items;
   }
 
   function renderSeasonFx(iconKey) {
@@ -189,8 +203,9 @@ window.HN = (function () {
       document.body.appendChild(layer);
     }
     const path = FX_ICONS[iconKey] || FX_ICONS.flower;
-    layer.innerHTML = FX_POSITIONS.map((p, i) => `
-      <div class="hn-fx-icon" style="top:${p.top};left:${p.left};width:${p.size}px;height:${p.size}px;--r:${p.rot}deg;animation-delay:${i * 0.6}s;transform:rotate(${p.rot}deg)">
+    const items = buildFxItems(13);
+    layer.innerHTML = items.map(p => `
+      <div class="hn-fx-icon" style="left:${p.left.toFixed(1)}%;width:${p.size}px;height:${p.size}px;--dx:${p.dx}px;--rot:${p.rot}deg;--op:${p.op};animation-duration:${p.duration}s;animation-delay:${p.delay}s">
         <svg viewBox="0 0 40 40">${path}</svg>
       </div>`).join('');
   }
