@@ -241,6 +241,7 @@ footer a{color:var(--pl);text-decoration:none}
       <div class="th-card"><div class="th-card-name" style="color:#7fb3f5"><a href="/tcg-liga-detail.html?liga=rb">RIFTBOUND →</a></div><div id="top-rb"><div class="th-msg">Načítám…</div></div></div>
       <div class="th-card"><div class="th-card-name" style="color:#c084fc"><a href="/tcg-liga-detail.html?liga=so">SORCERY →</a></div><div id="top-so"><div class="th-msg">Načítám…</div></div></div>
       <div class="th-card"><div class="th-card-name" style="color:#fb923c"><a href="/tcg-liga-detail.html?liga=ygo">YU-GI-OH! →</a></div><div id="top-ygo"><div class="th-msg">Načítám…</div></div></div>
+      <div class="th-card"><div class="th-card-name" style="color:#ef4444"><a href="/tcg-liga-detail.html?liga=cp">CYBERPUNK →</a></div><div id="top-cp"><div class="th-msg">Načítám…</div></div></div>
     </div>
   </div>
 
@@ -295,21 +296,9 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=12"></script>
+<script src="hn-data.js?v=14"></script>
 <script>
-const LEAGUES = [
-  {id:'fab', color:'#4ade80'},
-  {id:'gd', color:'#fcd34d'},
-  {id:'mtgd', color:'#b39ddb'},
-  {id:'mtgm', color:'#9b4dff'},
-  {id:'mtgpa', color:'#a78bfa'},
-  {id:'mtgp', color:'#c51df5'},
-  {id:'op', color:'#f87171'},
-  {id:'pk', color:'#ffcb05'},
-  {id:'rb', color:'#7fb3f5'},
-  {id:'so', color:'#c084fc'},
-  {id:'ygo', color:'#fb923c'},
-];
+const LEAGUES = HN.LEAGUES;
 
 // ── Načti uložené hodnoty do inputů ──
 

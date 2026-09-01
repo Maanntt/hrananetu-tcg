@@ -122,7 +122,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=12"></script>
+<script src="hn-data.js?v=14"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -181,10 +181,18 @@ async function loadMasterMeta() {
   });
 
   const today = new Date(); today.setHours(0,0,0,0);
-  seasonsList = sezRows.slice(1)
+  const allSeasonRows = sezRows.slice(1)
     .filter(r => r[0])
-    .map(r => ({ name: r[0].trim(), start: parseCzechDate(r[1]), end: parseCzechDate(r[2]) }))
+    .map(r => ({ name: r[0].trim(), start: parseCzechDate(r[1]), end: parseCzechDate(r[2]) }));
+
+  // Cutoff: nezobrazuj žádnou sezónu starší než "Léto 2026" (dřívější sezóny
+  // měly nekompletní/testovací data napříč ligami).
+  const cutoffSeason = allSeasonRows.find(s => plainText(s.name).includes('leto') && s.name.includes('2026'));
+  const cutoffStart = cutoffSeason ? cutoffSeason.start : null;
+
+  seasonsList = allSeasonRows
     .filter(s => s.start && s.start <= today) // jen aktuální a minulé sezóny, ne budoucí
+    .filter(s => !cutoffStart || s.start >= cutoffStart)
     .sort((a, b) => b.start - a.start); // nejnovější první
 
   activeSeason = seasonsList.find(s => s.end && today >= s.start && today <= s.end)?.name

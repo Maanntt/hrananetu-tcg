@@ -33,6 +33,7 @@ window.HN = (function () {
     { id: 'rb',    code: 'RIFTBOUND', name: 'Riftbound',       color: '#7fb3f5' },
     { id: 'so',    code: 'SORCERY',   name: 'Sorcery',         color: '#c084fc' },
     { id: 'ygo',   code: 'YGO',       name: 'Yu-Gi-Oh!',       color: '#fb923c' },
+    { id: 'cp',    code: 'CYBERPUNK', name: 'Cyberpunk',       color: '#ef4444' },
   ];
 
   // Mapování názvu ligy (jak je napsaná v Master Sheetu) → interní id
@@ -42,6 +43,7 @@ window.HN = (function () {
     'flesh & blood': 'fab',
     'pokemon': 'pk',
     'yu-gi-oh': 'ygo', 'yugioh': 'ygo',
+    'cyberpunk red': 'cp', 'cyberpunk 2077': 'cp',
   });
 
   function parseCSV(text) {

@@ -170,6 +170,7 @@ footer a{color:var(--pl);text-decoration:none}
         <option value="rb">Riftbound</option>
         <option value="so">Sorcery</option>
         <option value="ygo">Yu-Gi-Oh!</option>
+        <option value="cp">Cyberpunk</option>
         <option value="other">Ostatní akce</option>
       </select>
     </div>
@@ -207,7 +208,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=12"></script>
+<script src="hn-data.js?v=14"></script>
 <script>
 // ── KONFIGURACE LING ──
 // Klíč pro detekci: hledáme v rawTitle (bez emoji)
@@ -229,6 +230,7 @@ const LIGA_CFG = {
   gd:     { label:'Gundam',         color:'#fcd34d', cls:'gd'     },
   so:     { label:'Sorcery',        color:'#c084fc', cls:'so'     },
   ygo:    { label:'Yu-Gi-Oh!',      color:'#fb923c', cls:'ygo'    },
+  cp:     { label:'Cyberpunk',      color:'#ef4444', cls:'cp'     },
 };
 
 // Detekce ligy z titulku Google Calendar
@@ -253,6 +255,7 @@ function detectLiga(raw) {
   if (game.startsWith('flesh'))                                  return 'fab';
   if (game.startsWith('gundam'))                                 return 'gd';
   if (game.startsWith('sorcery'))                                return 'so';
+  if (game.startsWith('cyberpunk'))                              return 'cp';
 
   // MTG
   if (game === 'mtg' || game === 'magic') {

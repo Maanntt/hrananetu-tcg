@@ -124,7 +124,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=12"></script>
+<script src="hn-data.js?v=14"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -199,8 +199,14 @@ async function loadMasterMeta() {
     .find(s => s.end ? s.end >= today : true);
   podzimStart = podzimRow ? podzimRow.start : null;
 
+  // Cutoff: nezobrazuj žádnou sezónu starší než "Léto 2026" (dřívější sezóny
+  // měly nekompletní/testovací data napříč ligami).
+  const cutoffSeason = allSeasons.find(s => plainText(s.name).includes('leto') && s.name.includes('2026'));
+  const cutoffStart = cutoffSeason ? cutoffSeason.start : null;
+
   seasonsList = allSeasons
     .filter(s => s.end && s.end < today) // striktně proslé sezóny (skončily před dneškem)
+    .filter(s => !cutoffStart || s.start >= cutoffStart)
     .sort((a, b) => b.start - a.start); // nejnovější první
 }
 
