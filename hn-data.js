@@ -181,11 +181,14 @@ window.HN = (function () {
     const items = [];
     for (let i = 0; i < count; i++) {
       const left = Math.min(97, Math.max(1, (i / count) * 100 + (Math.random() * 9 - 4.5)));
+      const duration = 9 + Math.random() * 9;
       items.push({
         left,
         size: 16 + Math.round(Math.random() * 20),
-        duration: (9 + Math.random() * 9).toFixed(1),
-        delay: (Math.random() * 14).toFixed(1),
+        duration: duration.toFixed(1),
+        // Záporné zpoždění = animace "naskočí" rovnou v náhodné fázi pádu,
+        // takže hned na začátku vypadá, že už chvíli padá (žádné čekání na start).
+        delay: (-(Math.random() * duration)).toFixed(1),
         dx: Math.round(Math.random() * 70 - 35),
         rot: Math.round(160 + Math.random() * 200) * (Math.random() > 0.5 ? 1 : -1),
         op: (0.12 + Math.random() * 0.1).toFixed(2),
