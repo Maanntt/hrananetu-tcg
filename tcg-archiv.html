@@ -60,7 +60,7 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);position:stic
 .arch-card-name{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700}
 .arch-card-fmt{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
 .fmt-zeb{background:rgba(255,255,255,.08);color:var(--text2)}
-.fmt-top4{background:rgba(197,29,245,.15);color:var(--pl)}
+.fmt-top4{background:var(--pd,rgba(197,29,245,.15));color:var(--pl)}
 .fmt-top8{background:rgba(240,165,0,.15);color:var(--gold)}
 .arch-card-body{padding:16px 18px}
 .podium-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
@@ -124,7 +124,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=14"></script>
+<script src="hn-data.js?v=17"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -260,11 +260,16 @@ async function loadLeagueForSeason(league, seasonTab) {
 
   const bestOfN = HN.bestOfThreshold(roundIdxs.length);
 
-  const players = dataRows.map(r => ({
-    name: r[0].trim(),
-    pts: HN.computeBestOfScore(roundIdxs.map(ri => parseFloat(r[ri]) || 0), bestOfN),
-    topka: topkaIdx >= 0 && !isNaN(parseFloat(r[topkaIdx])) ? parseFloat(r[topkaIdx]) : null,
-  })).sort((a,b) => b.pts - a.pts);
+  const players = dataRows.map(r => {
+    const roundPts = roundIdxs.map(ri => parseFloat(r[ri]) || 0);
+    return {
+      name: r[0].trim(),
+      pts: HN.computeBestOfScore(roundPts, bestOfN),
+      played: roundPts.filter(v => v > 0).length,
+      topka: topkaIdx >= 0 && !isNaN(parseFloat(r[topkaIdx])) ? parseFloat(r[topkaIdx]) : null,
+    };
+  }).filter(p => p.played > 0) // hráč v listu bez odehraného turnaje (carry-over) se nezobrazuje
+    .sort((a,b) => b.pts - a.pts);
 
   // TOP3 karty: pokud je vyplněný sloupec "Topka" (skutečné pořadí finále), použij ho.
   // Jinak fallback na sezónní pořadí podle bodů (jako dřív).
@@ -350,6 +355,7 @@ async function init() {
 
   try {
     await loadMasterMeta();
+    HN.load().then(m => HN.applySeasonTheme(m.activeSeason)).catch(() => {});
 
     // Archiv je zatím v přípravě - spustí se až s příchodem podzimní sezóny
     const today = new Date(); today.setHours(0,0,0,0);

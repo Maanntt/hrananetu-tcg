@@ -159,12 +159,13 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=14"></script>
+<script src="hn-data.js?v=17"></script>
 <script>
 // Ceny se teď načítají přes sdílený hn-data.js loader (HN.load()),
 // který stahuje záložku "Ceny" z Master Sheetu a ukládá do localStorage['hn_prizes'].
 async function loadCenyFromMaster() {
-  await HN.load();
+  const m = await HN.load();
+  HN.applySeasonTheme(m.activeSeason);
 }
 
 const LEAGUES = HN.LEAGUES;

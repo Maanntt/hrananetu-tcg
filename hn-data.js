@@ -138,6 +138,85 @@ window.HN = (function () {
     return sorted.slice(0, threshold).reduce((s, v) => s + v, 0);
   }
 
+  // ── Sezónní téma (barvy + jemné neonové dekorace) ──
+  // Jedno místo pro celý web: barevné schéma (--purple/--pl/--pd/--pborder)
+  // se přepíná podle aktuální sezóny, + pár tematických neonových ikon
+  // (rozmístěné u okrajů obrazovky, jemné, pointer-events:none - nepřekáží).
+  const SEASON_THEMES = {
+    jaro:   { heroLabel:'Jarní',    purple:'#22c55e', pl:'#4ade80', pdRgb:'34,197,94',   icon:'flower' },
+    leto:   { heroLabel:'Letní',    purple:'#f0a500', pl:'#ffcf4d', pdRgb:'240,165,0',   icon:'drop'   },
+    podzim: { heroLabel:'Podzimní', purple:'#ff6b35', pl:'#ff9a66', pdRgb:'255,107,53',  icon:'leaf'   },
+    zima:   { heroLabel:'Zimní',    purple:'#0ea5e9', pl:'#7dd3fc', pdRgb:'14,165,233',  icon:'snow'   },
+  };
+
+  const FX_ICONS = {
+    flower: '<circle cx="20" cy="20" r="4"/><ellipse cx="20" cy="9" rx="5" ry="8"/><ellipse cx="31" cy="20" rx="8" ry="5"/><ellipse cx="20" cy="31" rx="5" ry="8"/><ellipse cx="9" cy="20" rx="8" ry="5"/>',
+    drop:   '<path d="M20 4C20 4 9 19 9 27a11 11 0 0 0 22 0C31 19 20 4 20 4Z"/>',
+    leaf:   '<path d="M7 33C6 15 23 5 34 5c1 15-7 29-26 29-4 0-4-2-1-1Z"/><path d="M10 31 27 12"/>',
+    snow:   '<g stroke-linecap="round"><path d="M20 4v32M6 12l28 16M6 28l28-16"/><path d="M20 4l-4 4m4-4l4 4M20 36l-4-4m4 4l4-4M6 12l5 1m-5-1l1-5M34 12l-5 1m5-1l-1-5M6 28l1 5m-1-5l5-1M34 28l-1 5m1-5l-5-1"/></g>',
+  };
+
+  // Rozptýlené pozice u okrajů obrazovky, ať dekorace nikdy nesedí přes text uprostřed
+  const FX_POSITIONS = [
+    {top:'6%',  left:'3%',  size:34, rot:-12},
+    {top:'14%', left:'92%', size:26, rot:18},
+    {top:'44%', left:'2%',  size:22, rot:8},
+    {top:'62%', left:'95%', size:30, rot:-20},
+    {top:'85%', left:'6%',  size:26, rot:15},
+    {top:'92%', left:'90%', size:20, rot:-8},
+  ];
+
+  function ensureFxStyle() {
+    if (document.getElementById('hn-fx-style')) return;
+    const style = document.createElement('style');
+    style.id = 'hn-fx-style';
+    style.textContent = `
+      #hn-season-fx{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+      .hn-fx-icon{position:absolute;opacity:.16;color:var(--pl,#d44fff);filter:drop-shadow(0 0 6px currentColor);animation:hnFxFloat 7s ease-in-out infinite}
+      .hn-fx-icon svg{display:block;fill:none;stroke:currentColor;stroke-width:1.4}
+      @keyframes hnFxFloat{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-14px) rotate(var(--r,0deg))}}
+      @media(max-width:640px){.hn-fx-icon{opacity:.11}.hn-fx-icon:nth-child(n+4){display:none}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function renderSeasonFx(iconKey) {
+    ensureFxStyle();
+    let layer = document.getElementById('hn-season-fx');
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.id = 'hn-season-fx';
+      document.body.appendChild(layer);
+    }
+    const path = FX_ICONS[iconKey] || FX_ICONS.flower;
+    layer.innerHTML = FX_POSITIONS.map((p, i) => `
+      <div class="hn-fx-icon" style="top:${p.top};left:${p.left};width:${p.size}px;height:${p.size}px;--r:${p.rot}deg;animation-delay:${i * 0.6}s;transform:rotate(${p.rot}deg)">
+        <svg viewBox="0 0 40 40">${path}</svg>
+      </div>`).join('');
+  }
+
+  // Vrátí klíč sezóny (jaro/leto/podzim/zima) podle názvu z Master Sheetu
+  function seasonKeyFrom(activeSeason) {
+    const name = activeSeason || 'Léto 2026';
+    return Object.keys(SEASON_THEMES).find(k => name.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(k)) || 'leto';
+  }
+
+  // Hlavní funkce - zavolá se na každé stránce, jakmile je známá aktuální sezóna.
+  function applySeasonTheme(activeSeason) {
+    const key = seasonKeyFrom(activeSeason);
+    const theme = SEASON_THEMES[key];
+
+    document.documentElement.style.setProperty('--purple', theme.purple);
+    document.documentElement.style.setProperty('--pl', theme.pl);
+    document.documentElement.style.setProperty('--pd', `rgba(${theme.pdRgb},0.15)`);
+    document.documentElement.style.setProperty('--pd-faint', `rgba(${theme.pdRgb},0.04)`);
+    document.documentElement.style.setProperty('--pborder', `rgba(${theme.pdRgb},0.3)`);
+
+    renderSeasonFx(theme.icon);
+    return { key, theme };
+  }
+
   let _loadPromise = null;
 
   // ── Ochrana proti tichému fallbacku Google gviz API ──
@@ -310,5 +389,5 @@ window.HN = (function () {
     return text;
   }
 
-  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, load };
+  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, applySeasonTheme, load };
 })();

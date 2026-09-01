@@ -109,7 +109,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .panel-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:20px}
 .panel-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .panel-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700}
-.panel-badge{background:var(--pd);color:var(--pl);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid rgba(197,29,245,.3)}
+.panel-badge{background:var(--pd);color:var(--pl);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid var(--pborder,rgba(197,29,245,.3))}
 .panel-badge.gold{background:rgba(240,165,0,.12);color:var(--gold);border-color:rgba(240,165,0,.3)}
 
 /* STANDINGS TABULKA */
@@ -129,7 +129,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .standings-table tr:last-child td{border-bottom:none}
 .standings-table tr:hover td{background:rgba(255,255,255,.025)}
 .standings-table tr.st-top3 td{background:rgba(240,165,0,.04)}
-.standings-table tr.st-topN td{background:rgba(197,29,245,.03)}
+.standings-table tr.st-topN td{background:var(--pd-faint,rgba(197,29,245,.03))}
 .st-rank{font-weight:700;font-size:12px;color:var(--text3);width:28px}
 .st-rank.r1{color:#f0a500}.st-rank.r2{color:#c0c0c0}.st-rank.r3{color:#cd7f32}
 .st-player{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
@@ -138,7 +138,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .st-name:hover{color:var(--pl)}
 .st-pts{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;text-align:right}
 .st-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;white-space:nowrap}
-.st-badge.finale{background:rgba(197,29,245,.15);color:var(--pl);border:1px solid rgba(197,29,245,.25)}
+.st-badge.finale{background:var(--pd,rgba(197,29,245,.15));color:var(--pl);border:1px solid var(--pborder,rgba(197,29,245,.25))}
 .st-badge.top3{background:rgba(240,165,0,.15);color:var(--gold);border:1px solid rgba(240,165,0,.25)}
 
 /* PODIUM */
@@ -287,7 +287,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=14"></script>
+<script src="hn-data.js?v=17"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -427,6 +427,7 @@ async function init() {
 
   // Najdi Sheet ID ligy z Master Sheetu (nezávisí na sezóně - stejná tabulka pro všechny sezóny)
   const master = await HN.load();
+  HN.applySeasonTheme(master.activeSeason);
   const entry = master.leagues[leagueId];
   if (!entry || !entry.sheetId) {
     document.getElementById('standings-body').innerHTML =
@@ -524,11 +525,13 @@ function parseSheets(text) {
     const row = parseCSVLine(line);
     const name = (row[0] || '').trim();
     if (!name) return;
+    const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
+    // Hráč je v listu (např. přenesený z minulé sezóny), ale v této sezóně
+    // ještě neodehrál žádný turnaj -> v žebříčku se vůbec nezobrazuje.
+    const playedCount = rounds.filter(r => r > 0).length;
+    if (playedCount === 0) return;
     const sheetTotal = parseFloat(row[pointsIdx]) || 0;
     const isFinalist = /fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1';
-    const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
-    // Počet odehraných turnajů = kolik kol má hráč hodnotu > 0
-    const playedCount = rounds.filter(r => r > 0).length;
     // Celkové body = součet `bestOfN` nejlepších výsledků (pravidlo "nejlepších X výsledků")
     const total = HN.computeBestOfScore(rounds, bestOfN);
     const droppedCount = Math.max(0, playedCount - bestOfN);

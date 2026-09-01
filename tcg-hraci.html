@@ -122,7 +122,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=14"></script>
+<script src="hn-data.js?v=17"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -250,6 +250,7 @@ async function fetchLeagueData(sheetId, tabName) {
     const roundPts = roundIdxs.map(i => parseFloat(row[i]) || 0);
     const points = HN.computeBestOfScore(roundPts, bestOfN);
     const played = roundIdxs.filter(i => parseFloat(row[i]) > 0).length;
+    if (played === 0) return null; // v listu, ale v této lize/sezóně ještě neodehrál nic
     return { name, points, played };
   }).filter(Boolean);
 }
@@ -344,6 +345,7 @@ async function init() {
 
   try {
     await loadMasterMeta();
+    HN.load().then(m => HN.applySeasonTheme(m.activeSeason)).catch(() => {});
     renderTabs();
     await renderSeasonTable(activeSeason);
   } catch (err) {

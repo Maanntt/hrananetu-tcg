@@ -44,8 +44,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* HERO */
 .hero{background:linear-gradient(135deg,#09090f 0%,#1a0a2e 50%,#09090f 100%);border-bottom:1px solid var(--border);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(197,29,245,.18) 0%,transparent 70%);pointer-events:none}
-.hero-label{display:inline-block;background:var(--pd);color:var(--pl);font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;padding:4px 14px;border-radius:20px;border:1px solid rgba(197,29,245,.3);margin-bottom:18px}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,var(--pd,rgba(197,29,245,.18)) 0%,transparent 70%);pointer-events:none}
+.hero-label{display:inline-block;background:var(--pd);color:var(--pl);font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;padding:4px 14px;border-radius:20px;border:1px solid var(--pborder,rgba(197,29,245,.3));margin-bottom:18px}
 .hero h1{font-family:'Rajdhani',sans-serif;font-size:50px;font-weight:700;line-height:1.1;margin-bottom:14px}
 .hero h1 b{color:var(--pl)}
 .hero p{font-size:15px;color:var(--text2);max-width:520px;margin:0 auto 28px}
@@ -103,7 +103,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .sz-card{background:var(--bg2);padding:20px 18px;border-right:1px solid var(--border);transition:background .15s}
 .sz-card:last-child{border-right:none}
 .sz-card:hover{background:var(--bg3)}
-.sz-card.active{background:rgba(197,29,245,.07)}
+.sz-card.active{background:var(--pd,rgba(197,29,245,.07))}
 .sz-eyebrow{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 .sz-card.active .sz-eyebrow{color:var(--pl)}
 .sz-name{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--text);line-height:1;margin-bottom:10px}
@@ -296,7 +296,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=14"></script>
+<script src="hn-data.js?v=17"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -310,9 +310,46 @@ function extractSheetId(raw) {
 
 // ── Načtení Master Sheetu přes sdílený hn-data.js loader ──
 // (nahrazuje dřívější duplicitní kód - viz hn-data.js pro detaily)
+function plainText(s) {
+  return (s || '').normalize('NFC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+// ── Sezónní téma ──
+// Barvy a neonové dekorace řeší sdílená HN.applySeasonTheme() (hn-data.js) -
+// platí stejně na celém webu. Tady se navíc přepíná jen to, co je specifické
+// pro úvodní stránku: text v hero labelu a zvýraznění karty v "Přehledu sezón".
+const SEASON_CARD_IDS = { jaro:'sz-jaro', leto:'sz-leto', podzim:'sz-podzim', zima:'sz-zima' };
+
+function applySeasonUi(activeSeason) {
+  const { key, theme } = HN.applySeasonTheme(activeSeason);
+  const name = activeSeason || 'Léto 2026';
+  const yearMatch = name.match(/\d{4}/);
+  const year = yearMatch ? yearMatch[0] : new Date().getFullYear();
+  const cardId = SEASON_CARD_IDS[key];
+
+  const heroLabel = document.getElementById('hero-label');
+  if (heroLabel) heroLabel.textContent = `${theme.heroLabel} Sezóna ${year}`;
+
+  Object.values(SEASON_CARD_IDS).forEach(id => {
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.classList.toggle('active', id === cardId);
+    const oldBadge = card.querySelector('.sz-badge');
+    if (oldBadge) oldBadge.remove();
+  });
+  const activeCard = document.getElementById(cardId);
+  if (activeCard) {
+    const badge = document.createElement('div');
+    badge.className = 'sz-badge';
+    badge.textContent = 'Aktuální sezóna';
+    activeCard.appendChild(badge);
+  }
+}
+
 async function initMasterData() {
   const result = await HN.load();
   if (!result.ok) console.warn('Master sheet se nepodařilo načíst, použita poslední lokální data.');
+  applySeasonUi(result.activeSeason);
   return result;
 }
 
@@ -392,9 +429,11 @@ async function loadLeagueTop3(l, season) {
         const name = (r[0]||'').replace(/^\"*|\"*$/g,'').trim();
         const roundPts = roundIdxs.map(ri => parseFloat((r[ri]||'').replace(/^\"*|\"*$/g,'').replace(/[^0-9.]/g,'')) || 0);
         const pts = HN.computeBestOfScore(roundPts, bestOfN);
-        return {name, pts};
+        const played = roundPts.filter(v => v > 0).length;
+        return {name, pts, played};
       })
       .filter(p => p.name && p.name.length > 1 && isNaN(Number(p.name)))
+      .filter(p => p.played > 0) // hráč v listu bez odehraného turnaje (carry-over) se nezobrazuje
       .sort((a,b) => b.pts - a.pts)
       .slice(0, 3);
 
@@ -677,12 +716,6 @@ async function loadStats(season) {
       const rows = await HN.fetchLeagueTab(saved.sheetId, season);
       if (!rows) return;
 
-      // Hráči = řádky od indexu 1 kde je neprázdné jméno
-      rows.slice(1).forEach(r => {
-        const name = (r[0]||'').replace(/^"+|"+$/g,'').trim();
-        if (name) totalPlayers.add(name.toLowerCase());
-      });
-
       // Najdi sloupec "Body Celkově" - podle názvu, jinak podle pozice před prvním datem
       const header = rows[0];
       let pointsIdx = 1;
@@ -696,6 +729,21 @@ async function loadStats(season) {
           if (/^\d{1,2}\.\s*\d{1,2}\.?$/.test((header[i]||'').trim())) { pointsIdx = Math.max(1, i-1); break; }
         }
       }
+
+      // Sloupce kol (mezi Body Celkově a posledním sloupcem)
+      const roundIdxs = [];
+      for (let i = pointsIdx + 1; i < header.length - 1; i++) {
+        if ((header[i]||'').trim()) roundIdxs.push(i);
+      }
+
+      // Hráči = řádky od indexu 1 kde je neprázdné jméno A odehráli aspoň 1 turnaj
+      // (hráč jen "v listu" bez odehraného turnaje = carry-over ze starší sezóny, nepočítá se)
+      rows.slice(1).forEach(r => {
+        const name = (r[0]||'').replace(/^"+|"+$/g,'').trim();
+        if (!name) return;
+        const played = roundIdxs.some(i => (parseFloat(r[i]) || 0) > 0);
+        if (played) totalPlayers.add(name.toLowerCase());
+      });
 
       // Turnaje = počet datumových sloupců hned za Body Celkově, až předposlední
       let rounds = 0;
@@ -726,9 +774,9 @@ async function loadStats(season) {
 // ── START ──
 document.getElementById("stat-leagues").textContent = LEAGUES.length;
 (async () => {
-  await initMasterData();
-  await loadAllTopPlayers();
-  await loadStats();
+  const master = await initMasterData();
+  await loadAllTopPlayers(master.activeSeason);
+  await loadStats(master.activeSeason);
   await loadWeekFromCalendar();
 })();
 </script>
