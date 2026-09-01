@@ -229,20 +229,7 @@ footer a{color:var(--pl);text-decoration:none}
       <div class="eyebrow" style="margin-bottom:0">Top hráči</div>
       <a href="/tcg-ligy.html" class="section-link">Všechny žebříčky →</a>
     </div>
-        <div class="th-grid">
-      <div class="th-card"><div class="th-card-name" style="color:#4ade80"><a href="/tcg-liga-detail.html?liga=fab">FLESH AND BLOOD →</a></div><div id="top-fab"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#fcd34d"><a href="/tcg-liga-detail.html?liga=gd">GUNDAM →</a></div><div id="top-gd"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#b39ddb"><a href="/tcg-liga-detail.html?liga=mtgd">MTG DRAFT →</a></div><div id="top-mtgd"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#9b4dff"><a href="/tcg-liga-detail.html?liga=mtgm">MTG MODERN →</a></div><div id="top-mtgm"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#a78bfa"><a href="/tcg-liga-detail.html?liga=mtgpa">MTG PAUPER →</a></div><div id="top-mtgpa"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#c51df5"><a href="/tcg-liga-detail.html?liga=mtgp">MTG PREMODERN →</a></div><div id="top-mtgp"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#f87171"><a href="/tcg-liga-detail.html?liga=op">ONE PIECE →</a></div><div id="top-op"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#ffcb05"><a href="/tcg-liga-detail.html?liga=pk">POKÉMON →</a></div><div id="top-pk"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#7fb3f5"><a href="/tcg-liga-detail.html?liga=rb">RIFTBOUND →</a></div><div id="top-rb"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#c084fc"><a href="/tcg-liga-detail.html?liga=so">SORCERY →</a></div><div id="top-so"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#fb923c"><a href="/tcg-liga-detail.html?liga=ygo">YU-GI-OH! →</a></div><div id="top-ygo"><div class="th-msg">Načítám…</div></div></div>
-      <div class="th-card"><div class="th-card-name" style="color:#ef4444"><a href="/tcg-liga-detail.html?liga=cp">CYBERPUNK →</a></div><div id="top-cp"><div class="th-msg">Načítám…</div></div></div>
-    </div>
+        <div class="th-grid" id="th-grid"></div>
   </div>
 
   <!-- SEZÓNY -->
@@ -296,9 +283,15 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=20"></script>
+<script src="hn-data.js?v=21"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
+
+function renderTopHraciGrid() {
+  document.getElementById('th-grid').innerHTML = LEAGUES.map(l => `
+    <div class="th-card"><div class="th-card-name" style="color:${l.color}"><a href="/tcg-liga-detail.html?liga=${l.id}">${l.name.toUpperCase()} →</a></div><div id="top-${l.id}"><div class="th-msg">Načítám…</div></div></div>
+  `).join('');
+}
 
 // ── Načti uložené hodnoty do inputů ──
 
@@ -773,6 +766,7 @@ async function loadStats(season) {
 
 // ── START ──
 document.getElementById("stat-leagues").textContent = LEAGUES.length;
+renderTopHraciGrid();
 applySeasonUi(HN.guessSeasonName()); // okamžitý odhad, ať nic nebliká starou barvou/sezónou
 (async () => {
   const master = await initMasterData();

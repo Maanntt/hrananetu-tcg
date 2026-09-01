@@ -156,22 +156,6 @@ footer a{color:var(--pl);text-decoration:none}
     <div class="filter-wrap">
       <select id="kal-filter" onchange="setFilter(this.value)">
         <option value="all">Všechny hry</option>
-        <option value="fab">Flesh and Blood</option>
-        <option value="gd">Gundam</option>
-        <option value="mtgd">MTG Draft</option>
-        <option value="mtgm">MTG Modern</option>
-        <option value="mtgcmd">MTG Commander</option>
-        <option value="mtgpa">MTG Pauper</option>
-        <option value="mtgp">MTG Premodern</option>
-        <option value="mtgpre">MTG Prerelease</option>
-        <option value="mtgstd">MTG Standard</option>
-        <option value="op">One Piece</option>
-        <option value="pk">Pokémon</option>
-        <option value="rb">Riftbound</option>
-        <option value="so">Sorcery</option>
-        <option value="ygo">Yu-Gi-Oh!</option>
-        <option value="cp">Cyberpunk</option>
-        <option value="other">Ostatní akce</option>
       </select>
     </div>
     <div class="nav-group">
@@ -208,7 +192,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=20"></script>
+<script src="hn-data.js?v=21"></script>
 <script>
 // ── KONFIGURACE LING ──
 // Klíč pro detekci: hledáme v rawTitle (bez emoji)
@@ -232,6 +216,22 @@ const LIGA_CFG = {
   ygo:    { label:'Yu-Gi-Oh!',      color:'#fb923c', cls:'ygo'    },
   cp:     { label:'Cyberpunk',      color:'#ef4444', cls:'cp'     },
 };
+
+function renderKalFilterOptions() {
+  const select = document.getElementById('kal-filter');
+  const ids = Object.keys(LIGA_CFG).sort((a, b) => LIGA_CFG[a].label.localeCompare(LIGA_CFG[b].label, 'cs'));
+  ids.forEach(id => {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = LIGA_CFG[id].label;
+    select.appendChild(opt);
+  });
+  const otherOpt = document.createElement('option');
+  otherOpt.value = 'other';
+  otherOpt.textContent = 'Ostatní akce';
+  select.appendChild(otherOpt);
+}
+renderKalFilterOptions();
 
 // Detekce ligy z titulku Google Calendar
 // Titulek (bez emoji): "MTG - Premodern - Liga" nebo "Riftbound - Skirmish - Liga"

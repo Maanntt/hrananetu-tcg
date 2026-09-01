@@ -20,21 +20,25 @@
 window.HN = (function () {
   const MASTER_SHEET_ID = '1GVu0smMspWVPOz1t7qY2tOuifdZRZ5Z6UvUN6x-mvAI';
 
-  // ── Kanonický seznam lig — JEDINÝ zdroj pravdy pro id/kód/název/barvu ──
-  const LEAGUES = [
-    { id: 'fab',   code: 'FAB',       name: 'Flesh and Blood', color: '#4ade80' },
-    { id: 'gd',    code: 'GUNDAM',    name: 'Gundam',          color: '#fcd34d' },
-    { id: 'mtgd',  code: 'MTG',       name: 'MTG Draft',       color: '#b39ddb' },
-    { id: 'mtgm',  code: 'MTG',       name: 'MTG Modern',      color: '#9b4dff' },
-    { id: 'mtgpa', code: 'MTG',       name: 'MTG Pauper',      color: '#a78bfa' },
-    { id: 'mtgp',  code: 'MTG',       name: 'MTG Premodern',   color: '#c51df5' },
-    { id: 'op',    code: 'ONE PIECE', name: 'One Piece',       color: '#f87171' },
-    { id: 'pk',    code: 'POKÉMON',   name: 'Pokémon',         color: '#ffcb05' },
-    { id: 'rb',    code: 'RIFTBOUND', name: 'Riftbound',       color: '#7fb3f5' },
-    { id: 'so',    code: 'SORCERY',   name: 'Sorcery',         color: '#c084fc' },
-    { id: 'ygo',   code: 'YGO',       name: 'Yu-Gi-Oh!',       color: '#fb923c' },
-    { id: 'cp',    code: 'CYBERPUNK', name: 'Cyberpunk',       color: '#ef4444' },
+  // ── Kanonický seznam lig — JEDINÝ zdroj pravdy pro id/kód/název/barvu/klíčová
+  // slova (pro detekci z Google Calendar). Pořadí zápisu níže je jedno -
+  // pole se hned pod tím samo seřadí abecedně podle názvu, takže i nově
+  // přidaná liga se na webu automaticky objeví na správném místě.
+  const LEAGUES_RAW = [
+    { id: 'fab',   code: 'FAB',       name: 'Flesh and Blood', color: '#4ade80', keywords: ['flesh', 'blood', 'fab'] },
+    { id: 'gd',    code: 'GUNDAM',    name: 'Gundam',          color: '#fcd34d', keywords: ['gundam'] },
+    { id: 'mtgd',  code: 'MTG',       name: 'MTG Draft',       color: '#b39ddb', keywords: ['draft'] },
+    { id: 'mtgm',  code: 'MTG',       name: 'MTG Modern',      color: '#9b4dff', keywords: ['modern'] },
+    { id: 'mtgpa', code: 'MTG',       name: 'MTG Pauper',      color: '#a78bfa', keywords: ['pauper'] },
+    { id: 'mtgp',  code: 'MTG',       name: 'MTG Premodern',   color: '#c51df5', keywords: ['premodern'] },
+    { id: 'op',    code: 'ONE PIECE', name: 'One Piece',       color: '#f87171', keywords: ['one piece'] },
+    { id: 'pk',    code: 'POKÉMON',   name: 'Pokémon',         color: '#ffcb05', keywords: ['pokémon', 'pokemon'] },
+    { id: 'rb',    code: 'RIFTBOUND', name: 'Riftbound',       color: '#7fb3f5', keywords: ['riftbound'] },
+    { id: 'so',    code: 'SORCERY',   name: 'Sorcery',         color: '#c084fc', keywords: ['sorcery'] },
+    { id: 'ygo',   code: 'YGO',       name: 'Yu-Gi-Oh!',       color: '#fb923c', keywords: ['yu-gi', 'yugi'] },
+    { id: 'cp',    code: 'CYBERPUNK', name: 'Cyberpunk',       color: '#ef4444', keywords: ['cyberpunk'] },
   ];
+  const LEAGUES = [...LEAGUES_RAW].sort((a, b) => a.name.localeCompare(b.name, 'cs'));
 
   // Mapování názvu ligy (jak je napsaná v Master Sheetu) → interní id
   const LEAGUE_NAME_MAP = {};
