@@ -280,7 +280,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=26"></script>
+<script src="hn-data.js?v=27"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -501,17 +501,30 @@ function parseSheets(text) {
     if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
   }
 
-  // FINÁLE sloupec = poslední platný sloupec, který není override ani Topka
-  let finaleIdx = effectiveLen - 1;
-  while (finaleIdx === overrideIdx || finaleIdx === topkaIdx) finaleIdx--;
+  // Sloupce kol = VŠECHNY datumové sloupce mezi Body Celkově a prvním speciálním
+  // sloupcem (Pořadí override / Topka). Finálový příznak se čte přímo ze sloupce
+  // override/topka (viz isFinalist níže), ne z posledního kola - v praxi se
+  // "FINÁLE" píše právě tam.
+  let roundsEnd;
+  if (overrideIdx !== -1 || topkaIdx !== -1) {
+    roundsEnd = effectiveLen;
+    if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
+    if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
+  } else {
+    // Žádný override/Topka sloupec - poslední sloupec je implicitní finále
+    // (starší jednodušší sheety) a do počtu kol se nezapočítává.
+    roundsEnd = effectiveLen - 1;
+  }
 
-  // Sloupce kol (hned za Body Celkově až předposlední/přede-předposlední)
   const roundCols = [];
-  for (let i = pointsIdx + 1; i < finaleIdx; i++) {
+  for (let i = pointsIdx + 1; i < roundsEnd; i++) {
     if (!headers[i]) continue;
     const date = parseCzechDate(headers[i]);
     roundCols.push({idx: i, label: headers[i], date});
   }
+  const finaleIdx = overrideIdx !== -1 ? overrideIdx
+                   : topkaIdx !== -1 ? topkaIdx
+                   : effectiveLen - 1;
 
   // Volitelný řádek "Set" (kdekoliv v tabulce) - do sloupečků jednotlivých kol
   // se do něj píše název draftovaného setu. Není to hráč, přeskočí se.
@@ -540,7 +553,7 @@ function parseSheets(text) {
     const playedCount = rounds.filter(r => r > 0).length;
     if (playedCount === 0) return;
     const sheetTotal = parseFloat(row[pointsIdx]) || 0;
-    const isFinalist = /fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1';
+    const isFinalist = finaleIdx >= 0 && (/fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1');
     // Celkové body = součet `bestOfN` nejlepších výsledků (pravidlo "nejlepších X výsledků")
     const total = HN.computeBestOfScore(rounds, bestOfN);
     const droppedCount = Math.max(0, playedCount - bestOfN);
