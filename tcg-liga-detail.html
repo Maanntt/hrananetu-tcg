@@ -270,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=24"></script>
+<script src="hn-data.js?v=25"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -466,6 +466,10 @@ function parseCSVLine(line) {
 }
 
 // Normalizuj text: odstraň diakritiku a mezery, malá písmena (spolehlivé porovnání i při jiné Unicode normalizaci z Sheets)
+function escapeHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 function plainText(s) {
   return (s || '').normalize('NFC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
@@ -515,6 +519,17 @@ function parseSheets(text) {
     roundCols.push({idx: i, label: headers[i], date});
   }
 
+  // Volitelný řádek "Set" (kdekoliv v tabulce, ne nutně hned pod hlavičkou) -
+  // do sloupečků jednotlivých kol se do něj píše název draftovaného setu.
+  // Není to hráč, takže se při čtení hráčů přeskočí.
+  let setRowLine = null;
+  lines.slice(1).forEach(line => {
+    const row = parseCSVLine(line);
+    const name = plainText(row[0] || '');
+    if (name === 'set') setRowLine = row;
+  });
+  roundCols.forEach(r => { r.setName = setRowLine ? (setRowLine[r.idx] || '').trim() : ''; });
+
   // Práh "nejlepších X výsledků" podle celkového počtu turnajů v sezóně
   const bestOfN = HN.bestOfThreshold(roundCols.length);
 
@@ -523,7 +538,7 @@ function parseSheets(text) {
   lines.slice(1).forEach((line, i) => {
     const row = parseCSVLine(line);
     const name = (row[0] || '').trim();
-    if (!name) return;
+    if (!name || plainText(name) === 'set') return;
     const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
     // Hráč je v listu (např. přenesený z minulé sezóny), ale v této sezóně
     // ještě neodehrál žádný turnaj -> v žebříčku se vůbec nezobrazuje.
@@ -633,7 +648,7 @@ function renderRounds(roundCols, players, today) {
     return `<div>
       <button class="round-btn ${isFuture?'future':''}" onclick="toggleRound(${ri}, this)" id="rbtn-${ri}">
         <div>
-          <div class="round-date">${r.date ? formatDate(r.date) : r.label}</div>
+          <div class="round-date">${r.date ? formatDate(r.date) : r.label}${r.setName ? ` – ${escapeHtml(r.setName)}` : ''}</div>
           <div class="round-label">${isPast ? `Kolo ${ri+1} · odehráno` : `Kolo ${ri+1} · plánováno`}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
