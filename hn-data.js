@@ -119,6 +119,54 @@ window.HN = (function () {
   // 7-8 turnajů  → počítá se 6 nejlepších výsledků
   // 9 a více     → počítá se 8 nejlepších výsledků
   // totalRounds = celkový počet ligových turnajů naplánovaných v sezóně (ne jen odehraných).
+  // Porovnání CELÝCH slov (ne podřetězec!) - jinak by 'modern' omylem
+  // chytilo i event "MTG Premodern" (obsahuje 'modern' jako podřetězec).
+  function keywordMatches(raw, kw) {
+    const esc = kw.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp('\\b' + esc + '\\b', 'i').test(raw);
+  }
+
+  // Stáhne z Google Calendar název setu pro každý draftový/sealed turnaj dané
+  // ligy v daném období. Konvence pojmenování eventu: "MTG - Draft Final Fantasy - Liga"
+  // (za slovem Draft/Sealed následuje název setu, před další pomlčkou).
+  // Vrací mapu "YYYY-MM-DD" -> název setu. Vrátí {} při chybě/chybějící konfiguraci.
+  async function fetchCalendarSetNames(apiKey, calId, leagueId, dateFrom, dateTo) {
+    if (!apiKey || !calId) return {};
+    const league = LEAGUES.find(l => l.id === leagueId);
+    const kws = (league && league.keywords) || [leagueId];
+    try {
+      const url = 'https://www.googleapis.com/calendar/v3/calendars/'
+        + encodeURIComponent(calId) + '/events?key=' + apiKey
+        + '&timeMin=' + dateFrom.toISOString()
+        + '&timeMax=' + dateTo.toISOString()
+        + '&singleEvents=true&orderBy=startTime&maxResults=250';
+      const res = await fetch(url);
+      if (!res.ok) return {};
+      const data = await res.json();
+      const result = {};
+      (data.items || []).forEach(item => {
+        const raw = item.summary || '';
+        if (!kws.some(kw => keywordMatches(raw, kw))) return;
+        const startRaw = item.start && (item.start.dateTime || item.start.date);
+        if (!startRaw) return;
+        const d = new Date(startRaw);
+        if (isNaN(d)) return;
+
+        const clean = raw.replace(/^[^\wÀ-ɏ(]+/u, '').trim();
+        const parts = clean.split(/\s*[-–]\s*/);
+        const middle = (parts[1] || '').trim(); // např. "Draft Final Fantasy"
+        const setName = middle.replace(/^(draft|sealed)\s*/i, '').trim();
+        if (!setName) return;
+
+        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        result[key] = setName;
+      });
+      return result;
+    } catch (e) {
+      return {};
+    }
+  }
+
   function bestOfThreshold(totalRounds) {
     if (totalRounds >= 9) return 8;
     if (totalRounds >= 7) return 6;
@@ -434,5 +482,5 @@ window.HN = (function () {
   // daty ze Sheets a případně to jemně doladí.
   try { applySeasonThemeGuess(); } catch (e) {}
 
-  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, applySeasonTheme, guessSeasonName, applySeasonThemeGuess, load };
+  return { MASTER_SHEET_ID, LEAGUES, LEAGUE_NAME_MAP, parseCSV, fetchTab, fetchLeagueTab, fetchLeagueTabText, getSheetTabTitles, bestOfThreshold, bestOfTierLabel, computeBestOfScore, applySeasonTheme, guessSeasonName, applySeasonThemeGuess, fetchCalendarSetNames, load };
 })();

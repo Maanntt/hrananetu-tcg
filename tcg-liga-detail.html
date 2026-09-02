@@ -270,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=27"></script>
+<script src="hn-data.js?v=28"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -535,21 +535,6 @@ function parseSheets(text) {
                    : topkaIdx !== -1 ? topkaIdx
                    : effectiveLen - 1;
 
-  // Volitelný řádek "Set" (kdekoliv v tabulce, ne nutně hned pod hlavičkou) -
-  // do sloupečků jednotlivých kol se do něj píše název draftovaného setu.
-  // Není to hráč, takže se při čtení hráčů přeskočí.
-  let setRowLine = null;
-  lines.slice(1).forEach(line => {
-    const row = parseCSVLine(line);
-    const name = plainText(row[0] || '');
-    if (name !== 'set') return;
-    if (!setRowLine) { setRowLine = row; return; }
-    // Pokud existuje víc řádků "Set" (např. zbytek z testování), sluč jejich
-    // hodnoty dohromady - prázdné buňky doplní ta druhá, nic se nepřepíše.
-    row.forEach((v, i) => { if (v && v.trim() && !setRowLine[i]) setRowLine[i] = v; });
-  });
-  roundCols.forEach(r => { r.setName = setRowLine ? (setRowLine[r.idx] || '').trim() : ''; });
-
   // Práh "nejlepších X výsledků" podle celkového počtu turnajů v sezóně
   const bestOfN = HN.bestOfThreshold(roundCols.length);
 
@@ -635,6 +620,24 @@ function renderAll(data) {
   }
 
   renderRounds(roundCols, players, today);
+
+  // Doplň názvy setů z Google Calendar (asynchronně, dorenderuje se, jakmile dorazí)
+  (async () => {
+    let cfg = {};
+    try { cfg = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}'); } catch(e) {}
+    const dates = roundCols.map(r => r.date).filter(Boolean);
+    if (!cfg.apiKey || !cfg.calId || !dates.length) return;
+    const dateFrom = new Date(Math.min(...dates)); dateFrom.setDate(dateFrom.getDate() - 1);
+    const dateTo = new Date(Math.max(...dates)); dateTo.setDate(dateTo.getDate() + 1);
+    const setNames = await HN.fetchCalendarSetNames(cfg.apiKey, cfg.calId, leagueId, dateFrom, dateTo);
+    if (!Object.keys(setNames).length) return;
+    roundCols.forEach(r => {
+      if (!r.date) return;
+      const key = r.date.getFullYear() + '-' + String(r.date.getMonth() + 1).padStart(2, '0') + '-' + String(r.date.getDate()).padStart(2, '0');
+      if (setNames[key]) r.setName = setNames[key];
+    });
+    renderRounds(roundCols, players, today);
+  })();
 
   // Aktualizuj sezónu v hero z načtených dat
   if (roundCols.length) {
