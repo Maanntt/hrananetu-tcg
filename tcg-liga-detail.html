@@ -270,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=25"></script>
+<script src="hn-data.js?v=26"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -526,7 +526,11 @@ function parseSheets(text) {
   lines.slice(1).forEach(line => {
     const row = parseCSVLine(line);
     const name = plainText(row[0] || '');
-    if (name === 'set') setRowLine = row;
+    if (name !== 'set') return;
+    if (!setRowLine) { setRowLine = row; return; }
+    // Pokud existuje víc řádků "Set" (např. zbytek z testování), sluč jejich
+    // hodnoty dohromady - prázdné buňky doplní ta druhá, nic se nepřepíše.
+    row.forEach((v, i) => { if (v && v.trim() && !setRowLine[i]) setRowLine[i] = v; });
   });
   roundCols.forEach(r => { r.setName = setRowLine ? (setRowLine[r.idx] || '').trim() : ''; });
 
