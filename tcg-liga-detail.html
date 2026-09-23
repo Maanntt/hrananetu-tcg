@@ -270,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=31"></script>
+<script src="hn-data.js?v=32"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -662,21 +662,36 @@ function renderAll(data) {
 /* ── Kola ── */
 function renderRounds(roundCols, players, today) {
   const list = document.getElementById('rounds-list');
-
-  // Finálové kolo se zobrazuje vždy na konci sezóny (bez ohledu na to, jestli
-  // už má někdo v tabulce reálně napsané "FINÁLE" - to přijde až po turnaji).
+  const fmt = finaleFormat(currentData.avgPlayers);
+  const isRealFinale = fmt.type !== 'Žebříček';
+  const lastIdx = roundCols.length - 1;
 
   list.innerHTML = roundCols.map((r, ri) => {
     const isPast   = r.date && r.date <= today;
     const isFuture = r.date && r.date > today;
     const participants = isPast ? players.filter(p => p.rounds[ri] > 0).length : null;
-    const isFinaleRound = false; // finále je separátní
+    const isFinaleRound = ri === lastIdx; // poslední kolo sezóny = finálový turnaj
+
+    const dateLabel = `${r.date ? formatDate(r.date) : r.label}${r.setName ? ` – ${escapeHtml(r.setName)}` : ''}`;
+    const roundLabel = isPast ? `Kolo ${ri+1} · odehráno` : `Kolo ${ri+1} · plánováno`;
+
+    const label = isFinaleRound
+      ? (isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny')
+      : roundLabel;
+    const sublabel = isFinaleRound
+      ? (isRealFinale ? `${roundLabel} · odměny dle ${fmt.type}` : `${roundLabel} · nízká účast → odměny dle celkového žebříčku`)
+      : '';
+    const finaleNote = isFinaleRound
+      ? `<div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.</div>`
+      : '';
 
     return `<div>
-      <button class="round-btn ${isFuture?'future':''}" onclick="toggleRound(${ri}, this)" id="rbtn-${ri}">
+      <button class="round-btn ${isFuture?'future':''} ${isFinaleRound?'finale-btn':''}" onclick="toggleRound(${ri}, this)" id="rbtn-${ri}">
         <div>
-          <div class="round-date">${r.date ? formatDate(r.date) : r.label}${r.setName ? ` – ${escapeHtml(r.setName)}` : ''}</div>
-          <div class="round-label">${isPast ? `Kolo ${ri+1} · odehráno` : `Kolo ${ri+1} · plánováno`}</div>
+          <div class="round-date">${isFinaleRound ? label : dateLabel}</div>
+          <div class="round-label">${isFinaleRound ? sublabel : label}</div>
+          ${isFinaleRound ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">${dateLabel}</div>` : ''}
+          ${finaleNote}
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           ${participants !== null ? `<span class="round-participants">${participants} hráčů</span>` : ''}
@@ -684,38 +699,10 @@ function renderRounds(roundCols, players, today) {
         </div>
       </button>
       <div class="round-detail" id="rdetail-${ri}">
-        ${renderRoundDetail(r, ri, players)}
+        ${isFinaleRound ? renderFinaleDetail(players, fmt.n) : renderRoundDetail(r, ri, players)}
       </div>
     </div>`;
   }).join('');
-
-  // Přidej finálové kolo - je vždy na konci sezóny
-  {
-    const fmt = finaleFormat(currentData.avgPlayers);
-    const isRealFinale = fmt.type !== 'Žebříček';
-    const finaleTitle = isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny';
-    const finaleSubtitle = isRealFinale
-      ? `Konec sezóny · odměny dle ${fmt.type}`
-      : 'Volný turnaj · nízká účast → odměny dle celkového žebříčku, ne finále';
-    const finaleNote = 'Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.';
-
-    const finaleDiv = document.createElement('div');
-    finaleDiv.innerHTML = `
-      <button class="round-btn finale-btn" onclick="toggleRound('finale', this)" id="rbtn-finale">
-        <div>
-          <div class="round-date">${finaleTitle}</div>
-          <div class="round-label">${finaleSubtitle}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">${finaleNote}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span class="round-arrow">›</span>
-        </div>
-      </button>
-      <div class="round-detail" id="rdetail-finale">
-        ${renderFinaleDetail(players, fmt.n)}
-      </div>`;
-    list.appendChild(finaleDiv);
-  }
 }
 
 function renderRoundDetail(r, ri, players) {
