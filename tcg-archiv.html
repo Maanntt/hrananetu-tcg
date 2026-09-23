@@ -124,7 +124,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=28"></script>
+<script src="hn-data.js?v=31"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -214,9 +214,12 @@ async function fetchLeagueSheetData(sheetId, tabName) {
   return HN.fetchLeagueTab(sheetId, tabName);
 }
 
-function finaleFormatFromAvg(avg) {
+function finaleFormatFromAvg(avg, leagueId) {
   if (avg >= 13) return {type:'TOP8', cls:'fmt-top8'};
-  if (avg >= 8)  return {type:'TOP4', cls:'fmt-top4'};
+  if (avg >= 8) {
+    if (leagueId === 'mtgd') return {type:'ŽEBŘÍČEK', cls:'fmt-zeb'};
+    return {type:'TOP4', cls:'fmt-top4'};
+  }
   return {type:'ŽEBŘÍČEK', cls:'fmt-zeb'};
 }
 
@@ -291,7 +294,7 @@ async function loadLeagueForSeason(league, seasonTab) {
   // nebo participační body bez turnaje) se v archivu sezóny nezobrazuje.
   if (count === 0) return null;
   const avg = count > 0 ? sum / count : 0;
-  const fmt = finaleFormatFromAvg(avg);
+  const fmt = finaleFormatFromAvg(avg, league.id);
 
   return { league, top3, totalPlayers: players.length, avg, fmt };
 }

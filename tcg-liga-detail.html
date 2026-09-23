@@ -270,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=28"></script>
+<script src="hn-data.js?v=31"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -348,9 +348,15 @@ function getLeagueId() {
 }
 
 function finaleFormat(avgPlayed) {
-  // Formát finále se určuje z průměrné účasti v ODEHRANÝCH kolech
+  // Formát finále se určuje z průměrné účasti v ODEHRANÝCH kolech.
+  // Výjimka: u MTG Draftu se TOP4 nehraje jako samostatný turnaj - ceny se jen
+  // rozdají podle celkového žebříčku. Reálný finálový turnaj u MTG Draftu
+  // proběhne až při účasti na úrovni TOP8.
   if (avgPlayed >= 13) return {type:'TOP8', n:8};
-  if (avgPlayed >= 8)  return {type:'TOP4', n:4};
+  if (avgPlayed >= 8) {
+    if (leagueId === 'mtgd') return {type:'Žebříček', n:3};
+    return {type:'TOP4', n:4};
+  }
   return {type:'Žebříček', n:3};
 }
 
@@ -657,12 +663,10 @@ function renderAll(data) {
 function renderRounds(roundCols, players, today) {
   const list = document.getElementById('rounds-list');
 
-  // Přidej finálové kolo pokud jsou data
-  const allRounds = [...roundCols];
-  // Finálové kolo = poslední sloupec FINÁLE (zvláštní označení)
-  const hasFinale = players.some(p => p.isFinalist);
+  // Finálové kolo se zobrazuje vždy na konci sezóny (bez ohledu na to, jestli
+  // už má někdo v tabulce reálně napsané "FINÁLE" - to přijde až po turnaji).
 
-  list.innerHTML = allRounds.map((r, ri) => {
+  list.innerHTML = roundCols.map((r, ri) => {
     const isPast   = r.date && r.date <= today;
     const isFuture = r.date && r.date > today;
     const participants = isPast ? players.filter(p => p.rounds[ri] > 0).length : null;
@@ -685,8 +689,8 @@ function renderRounds(roundCols, players, today) {
     </div>`;
   }).join('');
 
-  // Přidej finálové kolo pokud existuje
-  if (hasFinale) {
+  // Přidej finálové kolo - je vždy na konci sezóny
+  {
     const fmt = finaleFormat(currentData.avgPlayers);
     const isRealFinale = fmt.type !== 'Žebříček';
     const finaleTitle = isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny';

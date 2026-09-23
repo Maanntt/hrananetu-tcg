@@ -159,7 +159,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=28"></script>
+<script src="hn-data.js?v=31"></script>
 <script>
 // Ceny se teď načítají přes sdílený hn-data.js loader (HN.load()),
 // který stahuje záložku "Ceny" z Master Sheetu a ukládá do localStorage['hn_prizes'].
@@ -181,9 +181,12 @@ const FORMAT_DEFS = [
 ];
 
 // avg → aktivní formát typ
-function activeFormat(avg) {
+function activeFormat(avg, leagueId) {
   if (avg >= 13) return 'TOP 8';
-  if (avg >= 8)  return 'TOP 4';
+  if (avg >= 8) {
+    if (leagueId === 'mtgd') return 'ŽEBŘÍČEK';
+    return 'TOP 4';
+  }
   return 'ŽEBŘÍČEK';
 }
 
@@ -214,7 +217,7 @@ function renderTabs() {
 // ── Render detail jedné ligy ──
 function renderDetail(l) {
   const avg = leagueAvgs[l.id] || 0;
-  const active = activeFormat(avg);
+  const active = activeFormat(avg, l.id);
   const avgDisplay = avg > 0
     ? `<strong style="color:var(--text)">${avg.toFixed(1)}</strong> hráčů průměr/kolo`
     : '— data nejsou k dispozici';
@@ -415,7 +418,7 @@ async function init() {
   // Přerenderuj s daty
   document.getElementById('liga-details').innerHTML = LEAGUES.map(l => {
     const avg = leagueAvgs[l.id] || 0;
-    const activeType = activeFormat(avg);
+    const activeType = activeFormat(avg, l.id);
     const avgDisplay = avg > 0
       ? `<strong style="color:var(--text)">${avg.toFixed(1)}</strong> hráčů průměr/kolo`
       : '<span style="color:var(--text3)">— data nejsou k dispozici</span>';
