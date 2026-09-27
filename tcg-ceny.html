@@ -159,7 +159,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=32"></script>
+<script src="hn-data.js?v=33"></script>
 <script>
 // Ceny se teď načítají přes sdílený hn-data.js loader (HN.load()),
 // který stahuje záložku "Ceny" z Master Sheetu a ukládá do localStorage['hn_prizes'].
@@ -341,9 +341,24 @@ async function loadLeagueAvg(l) {
       }
     }
 
-    const finaleIdx = header.length - 1;
+    let effectiveLen = header.length;
+    while (effectiveLen > 0 && !(header[effectiveLen - 1] || '').trim()) effectiveLen--;
+
+    // Najdi override/Topka sloupce, ať nejsou omylem započítané jako kolo
+    let overrideIdx = -1, topkaIdx = -1;
+    for (let i = effectiveLen - 1; i > pointsIdx; i--) {
+      const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
+      if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
+    }
+    let roundsEnd = effectiveLen;
+    if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
+    if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
+
     const roundIdxs = [];
-    for (let i = pointsIdx + 1; i < finaleIdx; i++) { if (header[i]) roundIdxs.push(i); }
+    for (let i = pointsIdx + 1; i < roundsEnd; i++) { if (header[i]) roundIdxs.push(i); }
+    // Poslední datumový sloupec je finálový turnaj - nepočítá se do průměrné účasti.
+    if (roundIdxs.length) roundIdxs.pop();
 
     let sum = 0, count = 0;
     roundIdxs.forEach(ri => {

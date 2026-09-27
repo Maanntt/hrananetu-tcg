@@ -283,7 +283,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=32"></script>
+<script src="hn-data.js?v=33"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -411,19 +411,16 @@ async function loadLeagueTop3(l, season) {
       if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
     }
     // Sloupce kol = VŠECHNY datumové sloupce až po první speciální sloupec
-    // (Pořadí override / Topka). Pokud ani jeden neexistuje, poslední sloupec
-    // je implicitní finále (starší jednodušší sheety) a do kol se nepočítá.
-    let roundsEnd;
-    if (overrideIdx !== -1 || topkaIdx !== -1) {
-      roundsEnd = effectiveLen;
-      if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
-      if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
-    } else {
-      roundsEnd = effectiveLen - 1;
-    }
+    // (Pořadí override / Topka), nebo do konce sheetu. Poslední z nich je
+    // vždy finálový turnaj a níže se z počtu kol vyjme.
+    let roundsEnd = effectiveLen;
+    if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
+    if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
 
     const roundIdxs = [];
     for (let i = pointsIdx + 1; i < roundsEnd; i++) if (header[i]) roundIdxs.push(i);
+    // Poslední datumový sloupec je finálový turnaj - nepočítá se do sezóny.
+    if (roundIdxs.length) roundIdxs.pop();
     const bestOfN = HN.bestOfThreshold(roundIdxs.length);
 
     const players = rows.slice(1)
@@ -732,11 +729,26 @@ async function loadStats(season) {
         }
       }
 
-      // Sloupce kol (mezi Body Celkově a posledním sloupcem)
+      // Najdi override/Topka sloupce, ať nejsou omylem započítané jako kolo
+      let overrideIdx = -1, topkaIdx = -1;
+      let effectiveLen = header.length;
+      while (effectiveLen > 0 && !(header[effectiveLen - 1] || '').trim()) effectiveLen--;
+      for (let i = effectiveLen - 1; i > pointsIdx; i--) {
+        const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
+        if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
+      }
+      let roundsEnd = effectiveLen;
+      if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
+      if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
+
+      // Sloupce kol (mezi Body Celkově a prvním speciálním sloupcem)
       const roundIdxs = [];
-      for (let i = pointsIdx + 1; i < header.length - 1; i++) {
+      for (let i = pointsIdx + 1; i < roundsEnd; i++) {
         if ((header[i]||'').trim()) roundIdxs.push(i);
       }
+      // Poslední datumový sloupec je finálový turnaj - nepočítá se do sezóny.
+      if (roundIdxs.length) roundIdxs.pop();
 
       // Hráči = řádky od indexu 1 kde je neprázdné jméno A odehráli aspoň 1 turnaj
       // (hráč jen "v listu" bez odehraného turnaje = carry-over ze starší sezóny, nepočítá se)
@@ -747,15 +759,8 @@ async function loadStats(season) {
         if (played) totalPlayers.add(name.toLowerCase());
       });
 
-      // Turnaje = počet datumových sloupců hned za Body Celkově, až předposlední
-      let rounds = 0;
-      for (let i = pointsIdx + 1; i < header.length - 1; i++) {
-        const h = (header[i]||'').trim();
-        if (h) rounds++;
-      }
-      // Finále sloupec (poslední) - přidej pokud je neprázdný
-      const lastHeader = (header[header.length-1]||'').trim().toUpperCase();
-      if (lastHeader === 'FINÁLE' || lastHeader === 'FINALE') rounds++;
+      // Turnaje = počet sezónních kol (bez finále, viz roundIdxs výše)
+      const rounds = roundIdxs.length;
 
       totalRounds += rounds;
     } catch(e) {}

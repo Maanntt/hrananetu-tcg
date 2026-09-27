@@ -122,7 +122,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=32"></script>
+<script src="hn-data.js?v=33"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -237,17 +237,14 @@ async function fetchLeagueData(sheetId, tabName) {
     if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
     if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
   }
-  let roundsEnd;
-  if (overrideIdx !== -1 || topkaIdx !== -1) {
-    roundsEnd = effectiveLen;
-    if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
-    if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
-  } else {
-    roundsEnd = effectiveLen - 1;
-  }
+  let roundsEnd = effectiveLen;
+  if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
+  if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
 
   const roundIdxs = [];
   for (let i = pointsIdx + 1; i < roundsEnd; i++) if (headers[i]) roundIdxs.push(i);
+  // Poslední datumový sloupec je finálový turnaj - nepočítá se do sezóny.
+  if (roundIdxs.length) roundIdxs.pop();
   const bestOfN = HN.bestOfThreshold(roundIdxs.length);
 
   return rows.slice(1).map(row => {

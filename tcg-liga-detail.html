@@ -270,7 +270,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=32"></script>
+<script src="hn-data.js?v=33"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -514,19 +514,11 @@ function parseSheets(text) {
   }
 
   // Sloupce kol = VŠECHNY datumové sloupce mezi Body Celkově a prvním speciálním
-  // sloupcem (Pořadí override / Topka). Neubírá se žádné kolo navíc jako "finále" -
-  // finálový příznak se čte přímo ze sloupce override/topka (viz isFinalist níže),
-  // ne z posledního kola, protože v praxi se "FINÁLE" píše právě tam.
-  let roundsEnd;
-  if (overrideIdx !== -1 || topkaIdx !== -1) {
-    roundsEnd = effectiveLen;
-    if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
-    if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
-  } else {
-    // Žádný override/Topka sloupec - poslední sloupec je implicitní finále
-    // (starší jednodušší sheety) a do počtu kol se nezapočítává.
-    roundsEnd = effectiveLen - 1;
-  }
+  // sloupcem (Pořadí override / Topka), nebo do konce sheetu, pokud takový
+  // sloupec neexistuje. Poslední z nich je vždy finálový turnaj (viz níže).
+  let roundsEnd = effectiveLen;
+  if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
+  if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
 
   const roundCols = [];
   for (let i = pointsIdx + 1; i < roundsEnd; i++) {
@@ -541,8 +533,14 @@ function parseSheets(text) {
                    : topkaIdx !== -1 ? topkaIdx
                    : effectiveLen - 1;
 
-  // Práh "nejlepších X výsledků" podle celkového počtu turnajů v sezóně
-  const bestOfN = HN.bestOfThreshold(roundCols.length);
+  // Poslední datumový sloupec je vždy finálový turnaj sezóny - do "turnajů
+  // sezóny" (bodování, průměrná účast, "Kolo X/Y") se nepočítá, je to
+  // samostatná událost mimo běžný sezónní žebříček. `roundCols` (všechny
+  // včetně finále) se používá jen pro zobrazení seznamu turnajů.
+  const seasonRoundCols = roundCols.slice(0, -1);
+
+  // Práh "nejlepších X výsledků" podle počtu SEZÓNNÍCH turnajů (bez finále)
+  const bestOfN = HN.bestOfThreshold(seasonRoundCols.length);
 
   // Hráči
   const players = [];
@@ -551,14 +549,16 @@ function parseSheets(text) {
     const name = (row[0] || '').trim();
     if (!name || plainText(name) === 'set') return;
     const rounds = roundCols.map(r => { const v = parseFloat(row[r.idx]); return isNaN(v) ? 0 : v; });
+    const seasonRounds = rounds.slice(0, seasonRoundCols.length);
     // Hráč je v listu (např. přenesený z minulé sezóny), ale v této sezóně
     // ještě neodehrál žádný turnaj -> v žebříčku se vůbec nezobrazuje.
-    const playedCount = rounds.filter(r => r > 0).length;
+    const playedCount = seasonRounds.filter(r => r > 0).length;
     if (playedCount === 0) return;
     const sheetTotal = parseFloat(row[pointsIdx]) || 0;
     const isFinalist = finaleIdx >= 0 && (/fin/i.test(row[finaleIdx] || '') || row[finaleIdx] === '1');
-    // Celkové body = součet `bestOfN` nejlepších výsledků (pravidlo "nejlepších X výsledků")
-    const total = HN.computeBestOfScore(rounds, bestOfN);
+    // Celkové body = součet `bestOfN` nejlepších výsledků ZE SEZÓNNÍCH turnajů
+    // (pravidlo "nejlepších X výsledků"; finále se do toho nepočítá)
+    const total = HN.computeBestOfScore(seasonRounds, bestOfN);
     const droppedCount = Math.max(0, playedCount - bestOfN);
     // Ruční override pořadí (vyplní organizátor při shodě bodů i turnajů)
     const overrideRaw = overrideIdx >= 0 ? parseFloat(row[overrideIdx]) : NaN;
@@ -581,23 +581,23 @@ function parseSheets(text) {
   players.forEach((p, i) => p.rank = i + 1);
 
   const today = new Date(); today.setHours(0,0,0,0);
-  const playedRounds = roundCols.filter((r, ri) =>
+  const playedRounds = seasonRoundCols.filter((r, ri) =>
     r.date && r.date <= today && players.some(p => p.rounds[ri] > 0)
   ).length;
 
-  // avgPlayers = průměr jen z ODEHRANÝCH kol (ne plánovaných)
+  // avgPlayers = průměr jen ze SEZÓNNÍCH odehraných kol (ne finále, ne plánovaných)
   let avgPlayers = 0;
   if (playedRounds > 0) {
     let sum = 0;
     let count = 0;
-    roundCols.forEach((r, ri) => {
+    seasonRoundCols.forEach((r, ri) => {
       const played = players.filter(p => p.rounds[ri] > 0).length;
       if (played > 0) { sum += played; count++; }
     });
     avgPlayers = count > 0 ? sum / count : 0;
   }
 
-  return {players, roundCols, playedRounds, totalRounds: roundCols.length, avgPlayers, bestOfN};
+  return {players, roundCols, playedRounds, totalRounds: seasonRoundCols.length, avgPlayers, bestOfN};
 }
 
 /* ── Render All ── */
