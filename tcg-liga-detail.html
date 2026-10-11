@@ -75,6 +75,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .round-date{font-size:13px;font-weight:600;color:var(--text)}
 .round-label{font-size:11px;color:var(--text3);margin-top:1px}
 .round-participants{font-size:12px;color:var(--text3);flex-shrink:0}
+.round-participants.cancelled{color:var(--gold,#e6b800);font-weight:600;text-align:right}
 .round-arrow{font-size:14px;color:var(--text3);flex-shrink:0;transition:transform .15s}
 .round-btn.active .round-arrow{transform:rotate(90deg);color:var(--pl)}
 .round-btn.finale-btn .round-date{color:var(--gold)}
@@ -526,6 +527,20 @@ function parseSheets(text) {
     const date = parseCzechDate(headers[i]);
     roundCols.push({idx: i, label: headers[i], date});
   }
+
+  // Zrušený turnaj: organizátor místo bodů napíše do sloupce kola "Zrušeno"
+  // (např. z nedostatku hráčů). Turnaj se STÁLE počítá do celkového počtu
+  // turnajů sezóny (nijak se nevyřazuje z roundCols/seasonRoundCols) - jde
+  // čistě o grafické/textové odlišení v seznamu kol. Detekce: alespoň jedna
+  // neprázdná buňka v daném sloupci obsahuje text "zrušeno".
+  lines.slice(1).forEach(line => {
+    const row = parseCSVLine(line);
+    roundCols.forEach(r => {
+      if (r.cancelled) return;
+      const raw = (row[r.idx] || '').trim();
+      if (raw && plainText(raw).includes('zrusen')) r.cancelled = true;
+    });
+  });
   // Sloupec, kde se hledá text "FINÁLE" u finalistů - přednostně override/Topka
   // (tak to reálně organizátoři používají), jinak (starší sheety bez těchto
   // sloupců) poslední sloupec sheetu, jak to bylo původně navržené.
@@ -694,7 +709,7 @@ function renderRounds(roundCols, players, today) {
           ${finaleNote}
         </div>
         <div style="display:flex;align-items:center;gap:10px">
-          ${participants !== null ? `<span class="round-participants">${participants} hráčů</span>` : ''}
+          ${r.cancelled ? `<span class="round-participants cancelled">Zrušeno z nedostatku hráčů</span>` : (participants !== null ? `<span class="round-participants">${participants} hráčů</span>` : '')}
           <span class="round-arrow">›</span>
         </div>
       </button>
@@ -708,6 +723,10 @@ function renderRounds(roundCols, players, today) {
 function renderRoundDetail(r, ri, players) {
   const today = new Date(); today.setHours(0,0,0,0);
   const isPast = r.date && r.date <= today;
+
+  if (r.cancelled) {
+    return `<div class="no-results">Tento turnaj byl zrušen z nedostatku hráčů.</div>`;
+  }
 
   if (!isPast) {
     return `<div class="no-results">Tento turnaj ještě neproběhl.</div>`;
