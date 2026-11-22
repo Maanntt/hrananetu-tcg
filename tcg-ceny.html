@@ -181,12 +181,12 @@ const FORMAT_DEFS = [
 ];
 
 // avg → aktivní formát typ
+// Výjimka u MTG Draftu: v rozmezí TOP4 (8-12 hráčů) se samostatný finálový
+// turnaj nehraje, ale ceny za 1.-4. místo se podle žebříčku stejně rozdají -
+// aktivní formát proto zůstává TOP 4 (viz note u karty TOP4 v getFormatsForLeague).
 function activeFormat(avg, leagueId) {
   if (avg >= 13) return 'TOP 8';
-  if (avg >= 8) {
-    if (leagueId === 'mtgd') return 'ŽEBŘÍČEK';
-    return 'TOP 4';
-  }
+  if (avg >= 8) return 'TOP 4';
   return 'ŽEBŘÍČEK';
 }
 
@@ -399,11 +399,12 @@ function getFormatsForLeague(id) {
     }
 
     // Výjimka u MTG Draftu: při průměru 8-12 hráčů se TOP4 turnaj nehraje
-    // (draft ve 4 lidech nedává smysl) - karta zůstává vidět i s cenami,
-    // ale jen jako informace, že se tyto ceny rozdají podle celkového
-    // žebříčku místo odehrání samostatného finálového turnaje.
+    // jako samostatný bracket (draft ve 4 lidech nedává smysl), ale ceny
+    // za 1.-4. místo se stejně rozdají - jen přímo podle konečného pořadí
+    // v celkovém žebříčku sezóny, bez odehrání finále. Karta TOP4 proto
+    // zůstává aktivním formátem (viz activeFormat), jen s touto poznámkou.
     const note = (def.key === 'top4' && id === 'mtgd')
-      ? 'U MTG Draftu se tento turnaj nehraje - ceny se rozdají podle celkového žebříčku.'
+      ? 'U MTG Draftu se tento turnaj nehraje jako samostatný bracket - ceny se rozdají podle konečného pořadí v celkovém žebříčku sezóny.'
       : '';
 
     return { type: def.type, thresh: def.thresh, prizes, note };

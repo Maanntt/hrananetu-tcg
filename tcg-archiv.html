@@ -215,11 +215,10 @@ async function fetchLeagueSheetData(sheetId, tabName) {
 }
 
 function finaleFormatFromAvg(avg, leagueId) {
+  // Výjimka u MTG Draftu: TOP4 se nehraje jako samostatný turnaj, ale ceny
+  // za 1.-4. místo se podle žebříčku stejně rozdají - typ zůstává TOP4.
   if (avg >= 13) return {type:'TOP8', cls:'fmt-top8'};
-  if (avg >= 8) {
-    if (leagueId === 'mtgd') return {type:'ŽEBŘÍČEK', cls:'fmt-zeb'};
-    return {type:'TOP4', cls:'fmt-top4'};
-  }
+  if (avg >= 8) return {type:'TOP4', cls:'fmt-top4'};
   return {type:'ŽEBŘÍČEK', cls:'fmt-zeb'};
 }
 

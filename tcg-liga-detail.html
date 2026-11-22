@@ -350,12 +350,15 @@ function getLeagueId() {
 
 function finaleFormat(avgPlayed) {
   // Formát finále se určuje z průměrné účasti v ODEHRANÝCH kolech.
-  // Výjimka: u MTG Draftu se TOP4 nehraje jako samostatný turnaj - ceny se jen
-  // rozdají podle celkového žebříčku. Reálný finálový turnaj u MTG Draftu
-  // proběhne až při účasti na úrovni TOP8.
+  // Výjimka: u MTG Draftu se TOP4 nehraje jako samostatný finálový turnaj
+  // (draft ve 4 lidech nedává smysl) - ceny za 1.-4. místo (TOP4 odměny)
+  // se ale pořád rozdají, jen přímo podle konečného pořadí v žebříčku,
+  // bez odehrání bracketu. Reálný finálový turnaj u MTG Draftu proběhne
+  // až při účasti na úrovni TOP8. `noEvent: true` = žádný bracket se
+  // nehraje, i když typ není Žebříček.
   if (avgPlayed >= 13) return {type:'TOP8', n:8};
   if (avgPlayed >= 8) {
-    if (leagueId === 'mtgd') return {type:'Žebříček', n:3};
+    if (leagueId === 'mtgd') return {type:'TOP4', n:4, noEvent:true};
     return {type:'TOP4', n:4};
   }
   return {type:'Žebříček', n:3};
@@ -678,7 +681,7 @@ function renderAll(data) {
 function renderRounds(roundCols, players, today) {
   const list = document.getElementById('rounds-list');
   const fmt = finaleFormat(currentData.avgPlayers);
-  const isRealFinale = fmt.type !== 'Žebříček';
+  const isRealFinale = fmt.type !== 'Žebříček' && !fmt.noEvent;
   const lastIdx = roundCols.length - 1;
 
   list.innerHTML = roundCols.map((r, ri) => {
@@ -694,7 +697,7 @@ function renderRounds(roundCols, players, today) {
       ? (isRealFinale ? `Finálový turnaj · ${fmt.type}` : 'Poslední turnaj sezóny')
       : roundLabel;
     const sublabel = isFinaleRound
-      ? (isRealFinale ? `${roundLabel} · odměny dle ${fmt.type}` : `${roundLabel} · nízká účast → odměny dle celkového žebříčku`)
+      ? (isRealFinale ? `${roundLabel} · odměny dle ${fmt.type}` : (fmt.noEvent ? `${roundLabel} · bez finálového turnaje → odměny ${fmt.type} dle celkového žebříčku` : `${roundLabel} · nízká účast → odměny dle celkového žebříčku`))
       : '';
     const finaleNote = isFinaleRound
       ? `<div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">Formát se určuje z průměrné účasti a může se do konce sezóny ještě změnit.</div>`
@@ -792,13 +795,20 @@ function renderFinaleDetail(players, topN) {
   }
 
   const finalists = players.slice(0, topN);
+  const fmt2 = finaleFormat(currentData.avgPlayers);
+  const title = fmt2.noEvent
+    ? `Ceny ${fmt2.type} podle žebříčku — bez finálového turnaje`
+    : `Finálový turnaj — ${fmt2.type}`;
+  const metaNote = fmt2.noEvent
+    ? `<div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">U MTG Draftu se finálový turnaj nehraje - ceny dostávají přímo ${topN} nejlepší v celkovém žebříčku sezóny.</div>`
+    : `<div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">Konečné pořadí finále zatím nebylo zaznamenáno (sloupec "Topka") - zobrazeno podle sezónních bodů.</div>`;
   return `
     <div class="round-detail-header">
-      <div class="round-detail-title">Finálový turnaj — ${finaleFormat(currentData.avgPlayers).type}</div>
+      <div class="round-detail-title">${title}</div>
       <div class="round-detail-meta">
-        <span class="rdm"><strong>${topN}</strong> postupujících</span>
+        <span class="rdm"><strong>${topN}</strong> ${fmt2.noEvent ? 'oceněných' : 'postupujících'}</span>
       </div>
-      <div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">Konečné pořadí finále zatím nebylo zaznamenáno (sloupec "Topka") - zobrazeno podle sezónních bodů.</div>
+      ${metaNote}
     </div>
     <table class="round-results-table">
       <thead><tr>
