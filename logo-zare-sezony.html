@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body{background:#09090f;margin:0;padding:40px 20px;font-family:Arial,sans-serif}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;max-width:640px;margin:0 auto}
+  .card{background:#0f0f1c;border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;overflow:hidden}
+  .glow{position:absolute;top:50%;left:50%;width:220px;height:220px;transform:translate(-50%,-50%);border-radius:50%;filter:blur(38px);opacity:.55;z-index:0}
+  .logo{position:relative;z-index:1;height:56px;filter:drop-shadow(0 0 14px var(--c))}
+  .label{position:relative;z-index:1;color:#b8b4d0;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+  .jaro   {--c:#4ade80}
+  .leto   {--c:#ffcf4d}
+  .podzim {--c:#ff9a66}
+  .zima   {--c:#7dd3fc}
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="card jaro">
+      <div class="glow" style="background:var(--c)"></div>
+      <img class="logo" src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="logo">
+      <div class="label">Jarní sezóna</div>
+    </div>
+    <div class="card leto">
+      <div class="glow" style="background:var(--c)"></div>
+      <img class="logo" src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="logo">
+      <div class="label">Letní sezóna</div>
+    </div>
+    <div class="card podzim">
+      <div class="glow" style="background:var(--c)"></div>
+      <img class="logo" src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="logo">
+      <div class="label">Podzimní sezóna</div>
+    </div>
+    <div class="card zima">
+      <div class="glow" style="background:var(--c)"></div>
+      <img class="logo" src="https://hrana.s27.cdn-upgates.com/_cache/e/5/e58d562f12ea6847f27eb76cfaa9baac-hrana-netu-color.png" alt="logo">
+      <div class="label">Zimní sezóna</div>
+    </div>
+  </div>
+</body>
+</html>

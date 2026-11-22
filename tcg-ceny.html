@@ -377,7 +377,15 @@ function getFormatsForLeague(id) {
   try { allPrizes = JSON.parse(localStorage.getItem('hn_prizes') || '{}'); } catch(e) {}
   const leaguePrizes = allPrizes[id] || {};
 
-  return FORMAT_DEFS.map(def => {
+  // Výjimka u MTG Draftu: TOP4 se nikdy nehraje jako samostatný finálový
+  // turnaj (draft ve 4 lidech nedává smysl) - při průměru 8-12 hráčů se
+  // ceny jen rozdají podle celkového žebříčku stejně jako pod 8 hráčů.
+  // Reálný finálový turnaj nastává u MTG Draftu až při TOP8 (13+ hráčů).
+  // Karta TOP4 se proto pro tuto ligu vůbec nezobrazuje a práh žebříčku
+  // se rozšíří na "< 13 hráčů".
+  const defs = id === 'mtgd' ? FORMAT_DEFS.filter(d => d.key !== 'top4') : FORMAT_DEFS;
+
+  return defs.map(def => {
     const saved = leaguePrizes[def.key] || [];
     const prizes = [];
 
@@ -397,7 +405,11 @@ function getFormatsForLeague(id) {
       }
     }
 
-    return { type: def.type, thresh: def.thresh, prizes };
+    const thresh = (def.key === 'zeb' && id === 'mtgd')
+      ? 'průměr < 13 hráčů (u MTG Draftu se TOP4 nehraje)'
+      : def.thresh;
+
+    return { type: def.type, thresh, prizes };
   });
 }
 
