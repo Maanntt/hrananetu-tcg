@@ -229,6 +229,7 @@ function renderDetail(l) {
         <div class="fmt-type"${isActive ? ' style="color:var(--pl)"' : ''}>${f.type}</div>
         <div class="fmt-thresh">${f.thresh}</div>
         ${isActive ? '<div class="fmt-badge">✦ Aktuální formát</div>' : ''}
+        ${f.note ? `<div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:8px">${f.note}</div>` : ''}
       </div>
       <div class="fmt-body">
         ${f.prizes.map(p => `<div class="prize-row">
@@ -377,15 +378,7 @@ function getFormatsForLeague(id) {
   try { allPrizes = JSON.parse(localStorage.getItem('hn_prizes') || '{}'); } catch(e) {}
   const leaguePrizes = allPrizes[id] || {};
 
-  // Výjimka u MTG Draftu: TOP4 se nikdy nehraje jako samostatný finálový
-  // turnaj (draft ve 4 lidech nedává smysl) - při průměru 8-12 hráčů se
-  // ceny jen rozdají podle celkového žebříčku stejně jako pod 8 hráčů.
-  // Reálný finálový turnaj nastává u MTG Draftu až při TOP8 (13+ hráčů).
-  // Karta TOP4 se proto pro tuto ligu vůbec nezobrazuje a práh žebříčku
-  // se rozšíří na "< 13 hráčů".
-  const defs = id === 'mtgd' ? FORMAT_DEFS.filter(d => d.key !== 'top4') : FORMAT_DEFS;
-
-  return defs.map(def => {
+  return FORMAT_DEFS.map(def => {
     const saved = leaguePrizes[def.key] || [];
     const prizes = [];
 
@@ -405,11 +398,15 @@ function getFormatsForLeague(id) {
       }
     }
 
-    const thresh = (def.key === 'zeb' && id === 'mtgd')
-      ? 'průměr < 13 hráčů (u MTG Draftu se TOP4 nehraje)'
-      : def.thresh;
+    // Výjimka u MTG Draftu: při průměru 8-12 hráčů se TOP4 turnaj nehraje
+    // (draft ve 4 lidech nedává smysl) - karta zůstává vidět i s cenami,
+    // ale jen jako informace, že se tyto ceny rozdají podle celkového
+    // žebříčku místo odehrání samostatného finálového turnaje.
+    const note = (def.key === 'top4' && id === 'mtgd')
+      ? 'U MTG Draftu se tento turnaj nehraje - ceny se rozdají podle celkového žebříčku.'
+      : '';
 
-    return { type: def.type, thresh, prizes };
+    return { type: def.type, thresh: def.thresh, prizes, note };
   });
 }
 
@@ -419,6 +416,7 @@ function renderFmtCard(fmt, isActive) {
       <div class="fmt-type"${isActive ? ' style="color:var(--pl)"' : ''}>${fmt.type}</div>
       <div class="fmt-thresh">${fmt.thresh}</div>
       ${isActive ? '<div class="fmt-badge">✦ Aktuální formát</div>' : ''}
+      ${fmt.note ? `<div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:8px">${fmt.note}</div>` : ''}
     </div>
     <div class="fmt-body">
       ${fmt.prizes.map(p => `<div class="prize-row">
