@@ -407,8 +407,8 @@ async function loadLeagueTop3(l, season) {
     let overrideIdx = -1, topkaIdx = -1;
     for (let i = effectiveLen - 1; i > pointsIdx; i--) {
       const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      if (topkaIdx === -1 && (h.includes('vysledky') || h.includes('topka'))) { topkaIdx = i; continue; }
       if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
-      if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
     }
     // Sloupce kol = VŠECHNY datumové sloupce až po první speciální sloupec
     // (Pořadí override / Topka), nebo do konce sheetu. Poslední z nich je
@@ -735,8 +735,8 @@ async function loadStats(season) {
       while (effectiveLen > 0 && !(header[effectiveLen - 1] || '').trim()) effectiveLen--;
       for (let i = effectiveLen - 1; i > pointsIdx; i--) {
         const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        if (topkaIdx === -1 && (h.includes('vysledky') || h.includes('topka'))) { topkaIdx = i; continue; }
         if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
-        if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
       }
       let roundsEnd = effectiveLen;
       if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);

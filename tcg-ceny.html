@@ -349,8 +349,8 @@ async function loadLeagueAvg(l) {
     let overrideIdx = -1, topkaIdx = -1;
     for (let i = effectiveLen - 1; i > pointsIdx; i--) {
       const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      if (topkaIdx === -1 && (h.includes('vysledky') || h.includes('topka'))) { topkaIdx = i; continue; }
       if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
-      if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
     }
     let roundsEnd = effectiveLen;
     if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);

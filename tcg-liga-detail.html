@@ -155,6 +155,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .pod-name:hover{color:var(--pl)}
 .pod-pts{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-top:4px}
 
+/* VÝSLEDKY FINÁLE */
+.finale-winners{border:1px solid rgba(240,165,0,.3);background:rgba(240,165,0,.05);border-radius:14px;padding:20px 22px;margin:-12px 0 32px}
+.fw-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:14px}
+.fw-title-fmt{font-size:12px;font-weight:600;color:var(--text3);margin-left:8px;font-family:inherit;letter-spacing:.02em}
+.fw-row{display:flex;flex-wrap:wrap;gap:10px}
+.fw-card{flex:1 1 140px;min-width:120px;display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.fw-card.fw-1{border-color:rgba(240,165,0,.45);background:rgba(240,165,0,.08)}
+.fw-card.fw-2{border-color:rgba(192,192,192,.3)}
+.fw-card.fw-3{border-color:rgba(205,127,50,.3)}
+.fw-place{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--text3);width:28px;flex-shrink:0;text-align:center}
+.fw-1 .fw-place{color:#f0a500}.fw-2 .fw-place{color:#c0c0c0}.fw-3 .fw-place{color:#cd7f32}
+.fw-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.fw-name{font-size:13px;font-weight:600;color:var(--text);text-decoration:none;overflow-wrap:anywhere}
+.fw-name:hover{color:var(--pl)}
+@media(max-width:480px){.fw-card{flex:1 1 100%}}
+
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px;margin-top:0;text-align:center;font-size:12px;color:var(--text3)}
 footer a{color:var(--pl);text-decoration:none}
 @media(max-width:900px){.page{grid-template-columns:1fr}.right-panel{position:static}}
@@ -215,6 +231,12 @@ footer a{color:var(--pl);text-decoration:none}
         <a id="ceny-link" href="/tcg-ceny.html" style="font-size:13px;font-weight:600;color:var(--gold);text-decoration:none;opacity:.8;white-space:nowrap">🏆 Ceny & Odměny →</a>
       </div>
     </div>
+  </div>
+
+  <!-- VÝSLEDKY FINÁLOVÉHO TURNAJE (zobrazí se až po zapsání výsledků do sloupce "Pořadí override" / "Topka") -->
+  <div class="finale-winners" id="finale-winners" style="display:none">
+    <div class="fw-title">🏆 Výsledky finálového turnaje<span class="fw-title-fmt" id="fw-fmt"></span></div>
+    <div class="fw-row" id="fw-row"></div>
   </div>
 
   <!-- SHEETS CONFIG -->
@@ -509,17 +531,25 @@ function parseSheets(text) {
     }
   }
 
-  // Najdi sloupce "Pořadí override" a "Topka" kdekoliv od konce (v libovolném pořadí)
+  // Najdi sloupce "Pořadí override" a "Výsledky Finále" (dřív "Topka") kdekoliv
+  // od konce (v libovolném pořadí). Jde o DVA ROZDÍLNÉ sloupce s různým účelem:
+  // - "Pořadí override": ruční přepis POŘADÍ V SEZÓNNÍM ŽEBŘÍČKU, pokud mají
+  //   dva hráči stejné body i stejný počet turnajů (jen tie-break, NENÍ to
+  //   výsledek finále).
+  // - "Výsledky Finále" (resp. starší název "Topka"): dokud se finálový turnaj
+  //   neodehraje, obsahuje jen text "FINÁLE" (strukturální značka konce sezóny);
+  //   jakmile organizátor zapíše skutečné umístění (číslo), je to KONEČNÉ
+  //   POŘADÍ VE FINÁLE.
   let overrideIdx = -1, topkaIdx = -1;
   for (let i = effectiveLen - 1; i > pointsIdx; i--) {
     const h = plainText(headers[i]);
+    if (topkaIdx === -1 && (h.includes('vysledky') || h.includes('topka'))) { topkaIdx = i; continue; }
     if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
-    if (topkaIdx === -1 && h.includes('topka')) { topkaIdx = i; continue; }
   }
 
   // Sloupce kol = VŠECHNY datumové sloupce mezi Body Celkově a prvním speciálním
-  // sloupcem (Pořadí override / Topka), nebo do konce sheetu, pokud takový
-  // sloupec neexistuje. Poslední z nich je vždy finálový turnaj (viz níže).
+  // sloupcem (Pořadí override / Výsledky Finále), nebo do konce sheetu, pokud
+  // takový sloupec neexistuje. Poslední z nich je vždy finálový turnaj (viz níže).
   let roundsEnd = effectiveLen;
   if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
   if (topkaIdx !== -1) roundsEnd = Math.min(roundsEnd, topkaIdx);
@@ -544,11 +574,12 @@ function parseSheets(text) {
       if (raw && plainText(raw).includes('zrusen')) r.cancelled = true;
     });
   });
-  // Sloupec, kde se hledá text "FINÁLE" u finalistů - přednostně override/Topka
-  // (tak to reálně organizátoři používají), jinak (starší sheety bez těchto
-  // sloupců) poslední sloupec sheetu, jak to bylo původně navržené.
-  const finaleIdx = overrideIdx !== -1 ? overrideIdx
-                   : topkaIdx !== -1 ? topkaIdx
+  // Sloupec, kde se hledá text "FINÁLE" (jen strukturální značka, viz výše) -
+  // přednostně "Výsledky Finále" (tam ta značka reálně je), jinak "Pořadí
+  // override", jinak (starší sheety bez těchto sloupců) poslední sloupec
+  // sheetu, jak to bylo původně navržené.
+  const finaleIdx = topkaIdx !== -1 ? topkaIdx
+                   : overrideIdx !== -1 ? overrideIdx
                    : effectiveLen - 1;
 
   // Poslední datumový sloupec je vždy finálový turnaj sezóny - do "turnajů
@@ -578,10 +609,14 @@ function parseSheets(text) {
     // (pravidlo "nejlepších X výsledků"; finále se do toho nepočítá)
     const total = HN.computeBestOfScore(seasonRounds, bestOfN);
     const droppedCount = Math.max(0, playedCount - bestOfN);
-    // Ruční override pořadí (vyplní organizátor při shodě bodů i turnajů)
+    // "Pořadí override" = ruční přepis POŘADÍ V SEZÓNNÍM ŽEBŘÍČKU (tie-break
+    // při shodě bodů i počtu turnajů) - NENÍ to výsledek finále.
     const overrideRaw = overrideIdx >= 0 ? parseFloat(row[overrideIdx]) : NaN;
     const override = isNaN(overrideRaw) ? null : overrideRaw;
-    // Sloupec "Topka" = ruční konečné pořadí ve finálovém turnaji (1-4 nebo 1-8)
+    // "Výsledky Finále" = skutečné konečné umístění ve finálovém turnaji.
+    // Dokud se finále neodehraje, sloupec obsahuje jen text "FINÁLE" (žádné
+    // číslo -> parseFloat vrátí NaN -> topka zůstává null, dokud se tam
+    // nezapíše reálné umístění).
     const topkaRaw = topkaIdx >= 0 ? parseFloat(row[topkaIdx]) : NaN;
     const topka = isNaN(topkaRaw) ? null : topkaRaw;
     players.push({name, total, sheetTotal, rounds, playedCount, droppedCount, override, isFinalist, topka, color: AV_COLORS[i % AV_COLORS.length]});
@@ -675,6 +710,35 @@ function renderAll(data) {
   }
   renderPodium(players);
   renderStandings(players, fmt.n);
+  renderFinaleWinners(players, fmt);
+}
+
+/* ── Výsledky finálového turnaje (TOP4/TOP8) ──
+   Zobrazí se automaticky, jakmile je ve sloupci "Pořadí override" (nebo
+   "Topka") u alespoň jednoho hráče zapsané skutečné umístění (číslo),
+   tzn. až poté, co se finálový turnaj odehraje. Do té doby zůstává
+   schované - dokud sloupec obsahuje jen text "FINÁLE". */
+function renderFinaleWinners(players, fmt) {
+  const box = document.getElementById('finale-winners');
+  if (!box) return;
+  const withTopka = players.filter(p => p.topka !== null && p.topka > 0)
+                            .sort((a, b) => a.topka - b.topka);
+  if (!withTopka.length || fmt.noEvent || !(fmt.type === 'TOP4' || fmt.type === 'TOP8')) {
+    box.style.display = 'none';
+    return;
+  }
+  box.style.display = '';
+  document.getElementById('fw-fmt').textContent = fmt.type;
+  document.getElementById('fw-row').innerHTML = withTopka.map(p => {
+    const place = Math.round(p.topka);
+    const placeLabel = place >= 5 ? `${place}.` : `${place}.`;
+    const tier = place <= 3 ? `fw-${place}` : '';
+    return `<div class="fw-card ${tier}">
+      <div class="fw-place">${placeLabel}</div>
+      <div class="fw-av" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${initials(p.name)}</div>
+      <a href="/tcg-hraci.html?hrac=${slugify(p.name)}" class="fw-name">${p.name}</a>
+    </div>`;
+  }).join('');
 }
 
 /* ── Kola ── */
