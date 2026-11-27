@@ -283,7 +283,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=34"></script>
+<script src="hn-data.js?v=36"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -403,7 +403,7 @@ async function loadLeagueTop3(l, season) {
       }
     }
 
-    // Najdi override/Topka sloupce, ať nejsou omylem započítané jako kolo
+    // Najdi sloupce Pořadí override / Výsledky Finále, ať nejsou omylem započítané jako kolo
     let overrideIdx = -1, topkaIdx = -1;
     for (let i = effectiveLen - 1; i > pointsIdx; i--) {
       const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -411,7 +411,7 @@ async function loadLeagueTop3(l, season) {
       if (overrideIdx === -1 && (h.includes('poradi') || h.includes('override'))) { overrideIdx = i; continue; }
     }
     // Sloupce kol = VŠECHNY datumové sloupce až po první speciální sloupec
-    // (Pořadí override / Topka), nebo do konce sheetu. Poslední z nich je
+    // (Pořadí override / Výsledky Finále), nebo do konce sheetu. Poslední z nich je
     // vždy finálový turnaj a níže se z počtu kol vyjme.
     let roundsEnd = effectiveLen;
     if (overrideIdx !== -1) roundsEnd = Math.min(roundsEnd, overrideIdx);
@@ -729,7 +729,7 @@ async function loadStats(season) {
         }
       }
 
-      // Najdi override/Topka sloupce, ať nejsou omylem započítané jako kolo
+      // Najdi sloupce Pořadí override / Výsledky Finále, ať nejsou omylem započítané jako kolo
       let overrideIdx = -1, topkaIdx = -1;
       let effectiveLen = header.length;
       while (effectiveLen > 0 && !(header[effectiveLen - 1] || '').trim()) effectiveLen--;

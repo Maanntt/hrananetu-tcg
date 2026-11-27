@@ -124,7 +124,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=34"></script>
+<script src="hn-data.js?v=36"></script>
 <script>
 const LEAGUES = HN.LEAGUES;
 
@@ -278,7 +278,7 @@ async function loadLeagueForSeason(league, seasonTab) {
   }).filter(p => p.played > 0) // hráč v listu bez odehraného turnaje (carry-over) se nezobrazuje
     .sort((a,b) => b.pts - a.pts);
 
-  // TOP3 karty: pokud je vyplněný sloupec "Topka" (skutečné pořadí finále), použij ho.
+  // TOP3 karty: pokud je vyplněný sloupec "Výsledky Finále" (skutečné pořadí finále), použij ho.
   // Jinak fallback na sezónní pořadí podle bodů (jako dřív).
   const withTopka = players.filter(p => p.topka !== null && p.topka > 0).sort((a,b) => a.topka - b.topka);
   const top3 = withTopka.length ? withTopka.slice(0,3) : players.slice(0,3);

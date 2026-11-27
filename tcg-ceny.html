@@ -159,7 +159,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=34"></script>
+<script src="hn-data.js?v=36"></script>
 <script>
 // Ceny se teď načítají přes sdílený hn-data.js loader (HN.load()),
 // který stahuje záložku "Ceny" z Master Sheetu a ukládá do localStorage['hn_prizes'].
@@ -345,7 +345,7 @@ async function loadLeagueAvg(l) {
     let effectiveLen = header.length;
     while (effectiveLen > 0 && !(header[effectiveLen - 1] || '').trim()) effectiveLen--;
 
-    // Najdi override/Topka sloupce, ať nejsou omylem započítané jako kolo
+    // Najdi sloupce Pořadí override / Výsledky Finále, ať nejsou omylem započítané jako kolo
     let overrideIdx = -1, topkaIdx = -1;
     for (let i = effectiveLen - 1; i > pointsIdx; i--) {
       const h = (header[i]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();

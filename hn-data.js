@@ -317,6 +317,26 @@ window.HN = (function () {
   const _tabListCache = {};
   async function getSheetTabTitles(sheetId) {
     if (_tabListCache[sheetId] !== undefined) return _tabListCache[sheetId];
+
+    // 1) Oficiální Google Sheets API v4 (spolehlivé) - používá stejný API klíč
+    //    jako Kalendář z Master Sheetu (v Google Cloud musí být zapnuté Sheets API
+    //    a klíč k němu povolený).
+    try {
+      let apiKey = '';
+      try { apiKey = ((await load()).calendar || {}).apiKey || ''; } catch (e) {}
+      if (!apiKey) { try { apiKey = JSON.parse(localStorage.getItem('hrananetu_cfg') || '{}').apiKey || ''; } catch (e) {} }
+      if (apiKey) {
+        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets.properties.title&key=${encodeURIComponent(apiKey)}`;
+        const r = await fetch(apiUrl);
+        if (r.ok) {
+          const j = await r.json();
+          const t = ((j && j.sheets) || []).map(x => x.properties && x.properties.title).filter(Boolean);
+          if (t.length) { _tabListCache[sheetId] = t; return t; }
+        }
+      }
+    } catch (e) {}
+
+    // 2) Záloha: starý "worksheets feed" (může být nedostupný)
     try {
       const url = `https://spreadsheets.google.com/feeds/worksheets/${sheetId}/public/basic?alt=json`;
       const res = await fetch(url);
@@ -330,6 +350,25 @@ window.HN = (function () {
       _tabListCache[sheetId] = null;
       return null;
     }
+  }
+
+  // Pojistka proti tichému fallbacku Google Sheets: když list s požadovaným názvem
+  // (např. "Léto 2026") u dané ligy neexistuje a seznam listů se nepodařilo ověřit,
+  // Google vrátí data PRVNÍHO listu (např. "Podzim 2026"). Poznáme to podle dat v
+  // hlavičce: datumy kol musí odpovídat období sezóny z názvu listu (±1 měsíc).
+  // Pro nerozpoznaný název listu se kontrola přeskočí (vrací true).
+  function tabMatchesSeason(headerCells, tabName) {
+    const n = (tabName || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const seasonMonths = n.includes('leto') ? [6,7,8] : n.includes('podzim') ? [9,10,11]
+                       : n.includes('zima') ? [12,1,2] : n.includes('jaro') ? [3,4,5] : null;
+    if (!seasonMonths) return true;
+    const ok = new Set();
+    seasonMonths.forEach(m => { ok.add(m); ok.add(m === 1 ? 12 : m - 1); ok.add(m === 12 ? 1 : m + 1); });
+    const months = (headerCells || [])
+      .map(h => /^\s*(\d{1,2})\.\s*(\d{1,2})/.exec(h || ''))
+      .filter(Boolean).map(m => parseInt(m[2], 10));
+    if (!months.length) return true;
+    return months.filter(m => ok.has(m)).length >= months.length / 2;
   }
 
   // Stáhne konkrétní list (tab) konkrétní tabulky (liga) podle jména sezóny.
@@ -354,6 +393,7 @@ window.HN = (function () {
     if (text.includes('google.visualization') || text.trim().startsWith('/*') || text.includes('#REF')) return null;
     const rows = parseCSV(text);
     if (rows.length < 2) return null;
+    if (!tabMatchesSeason(rows[0], tabName)) return null;
     return rows;
   }
 
@@ -473,6 +513,8 @@ window.HN = (function () {
     if (text.includes('google.visualization') || text.trim().startsWith('/*') || text.includes('#REF')) {
       throw new Error(`List "${tabName}" nenalezen.`);
     }
+    const firstLine = (text.split('\n')[0] || '').split(',').map(c => c.replace(/^"|"$/g, ''));
+    if (!tabMatchesSeason(firstLine, tabName)) throw new Error(`List "${tabName}" v tabulce neexistuje.`);
     return text;
   }
 

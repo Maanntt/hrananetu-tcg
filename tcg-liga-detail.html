@@ -233,7 +233,7 @@ footer a{color:var(--pl);text-decoration:none}
     </div>
   </div>
 
-  <!-- VÝSLEDKY FINÁLOVÉHO TURNAJE (zobrazí se až po zapsání výsledků do sloupce "Pořadí override" / "Topka") -->
+  <!-- VÝSLEDKY FINÁLOVÉHO TURNAJE (zobrazí se až po zapsání výsledků do sloupce "Výsledky Finále") -->
   <div class="finale-winners" id="finale-winners" style="display:none">
     <div class="fw-title">🏆 Výsledky finálového turnaje<span class="fw-title-fmt" id="fw-fmt"></span></div>
     <div class="fw-row" id="fw-row"></div>
@@ -293,7 +293,7 @@ footer a{color:var(--pl);text-decoration:none}
   <div>© 2026 Hrana Stolu s.r.o. · <a href="https://www.hrananetu.cz">HranaNetu.cz</a> · Úvoz 466/8, 602 00 Brno</div>
 </footer>
 
-<script src="hn-data.js?v=34"></script>
+<script src="hn-data.js?v=36"></script>
 <script>
 /* ── SEZÓNY ──
    Jarní:   Únor–Květen    (finále Květen)
@@ -714,8 +714,8 @@ function renderAll(data) {
 }
 
 /* ── Výsledky finálového turnaje (TOP4/TOP8) ──
-   Zobrazí se automaticky, jakmile je ve sloupci "Pořadí override" (nebo
-   "Topka") u alespoň jednoho hráče zapsané skutečné umístění (číslo),
+   Zobrazí se automaticky, jakmile je ve sloupci "Výsledky Finále"
+   u alespoň jednoho hráče zapsané skutečné umístění (číslo),
    tzn. až poté, co se finálový turnaj odehraje. Do té doby zůstává
    schované - dokud sloupec obsahuje jen text "FINÁLE". */
 function renderFinaleWinners(players, fmt) {
@@ -865,7 +865,7 @@ function renderFinaleDetail(players, topN) {
     : `Finálový turnaj — ${fmt2.type}`;
   const metaNote = fmt2.noEvent
     ? `<div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">U MTG Draftu se finálový turnaj nehraje - ceny dostávají přímo ${topN} nejlepší v celkovém žebříčku sezóny.</div>`
-    : `<div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">Konečné pořadí finále zatím nebylo zaznamenáno (sloupec "Topka") - zobrazeno podle sezónních bodů.</div>`;
+    : `<div style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic">Konečné pořadí finále zatím nebylo zaznamenáno (sloupec "Výsledky Finále") - zobrazeno podle sezónních bodů.</div>`;
   return `
     <div class="round-detail-header">
       <div class="round-detail-title">${title}</div>
